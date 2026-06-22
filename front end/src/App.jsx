@@ -1,6 +1,10 @@
 import Discs from './Discs.jsx'
 
 export default function App() {
+  const scrollToMore = () => {
+    document.getElementById('more')?.scrollIntoView({ behavior: 'smooth' })
+  }
+
   return (
     <div className="page">
       {/* Announcement bar */}
@@ -45,11 +49,15 @@ export default function App() {
             and with Scale GenAI Platform, safely unlocks the value of AI.
           </p>
           <div className="hero-btns">
-            <button className="btn btn-primary">Book a Demo →</button>
-            <button className="btn btn-ghost">Build AI →</button>
+            <button className="btn btn-primary" onClick={scrollToMore}>
+              Show More →
+            </button>
           </div>
         </div>
+      </header>
 
+      {/* Below the fold — revealed by "Show More" */}
+      <section id="more" className="more-section">
         <p className="works-with">
           Scale works with <a href="#">Generative AI Companies</a>, U.S. Government Agencies &amp; Enterprises
         </p>
@@ -63,7 +71,7 @@ export default function App() {
           <span className="brand brand-bold">Adept</span>
           <span className="brand brand-bold">character.ai</span>
         </div>
-      </header>
+      </section>
     </div>
   )
 }
