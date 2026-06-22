@@ -1,4 +1,5 @@
 import Discs from './Discs.jsx'
+import AppCards from './AppCards.jsx'
 
 export default function App() {
   const scrollToMore = () => {
@@ -39,9 +40,9 @@ export default function App() {
 
         <div className="hero-inner">
           <h1>
-            Power <span className="grad">Generative AI</span>
+            Discover <span className="grad">AI Agents</span>
             <br />
-            With Your Data
+            that <span className="grad">work for you</span>
           </h1>
           <p className="sub">
             Make the best models with the best data. Scale Data Engine leverages your enterprise data,
@@ -57,7 +58,9 @@ export default function App() {
       </header>
 
       {/* Below the fold — revealed by "Show More" */}
-      <section id="more" className="more-section">
+      <AppCards />
+
+      <section className="more-section">
         <p className="works-with">
           Scale works with <a href="#">Generative AI Companies</a>, U.S. Government Agencies &amp; Enterprises
         </p>
