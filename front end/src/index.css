@@ -583,6 +583,7 @@ body {
   width: 46px;
   height: 46px;
   font-size: 22px;
+  color: var(--accent);
   border-radius: 12px;
   background:
     linear-gradient(180deg, color-mix(in srgb, var(--accent) 18%, transparent), transparent),
