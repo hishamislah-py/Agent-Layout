@@ -8,9 +8,9 @@ const vh = typeof window !== 'undefined' ? window.innerHeight : 800
 
 // geometry of each disc (matches the CSS placement)
 const G = {
-  top: { left: 0.33, top: 0.05, w: 270, ar: 412 / 535 },
-  right: { left: 0.60, top: 0.22, w: 300, ar: 664 / 534 },
-  bottom: { left: 0.14, top: 0.30, w: 400, ar: 427 / 570 },
+  top: { left: 0.33, top: 0.05, w: 340, ar: 412 / 535 },
+  right: { left: 0.60, top: 0.22, w: 380, ar: 664 / 534 },
+  bottom: { left: 0.14, top: 0.30, w: 500, ar: 427 / 570 },
 }
 
 export default function ScrollDiscs() {

@@ -151,8 +151,8 @@ body {
   will-change: opacity;
   background-color: #050506;
   background-image:
-    linear-gradient(rgba(245, 192, 16, 0.28) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(245, 192, 16, 0.28) 1px, transparent 1px);
+    linear-gradient(rgba(245, 192, 16, 0.12) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(245, 192, 16, 0.12) 1px, transparent 1px);
   background-size: 48px 48px, 48px 48px;
   background-position: center center;
 }
@@ -177,17 +177,17 @@ body {
 .sd-top {
   left: 33%;
   top: 5%;
-  width: 270px;
+  width: 340px;
 }
 .sd-right {
   left: 60%;
   top: 22%;
-  width: 300px;
+  width: 380px;
 }
 .sd-bottom {
   left: 14%;
   top: 30%;
-  width: 400px;
+  width: 500px;
 }
 
 /* ---------- Announcement bar ---------- */
@@ -301,7 +301,7 @@ body {
   z-index: 3;
 }
 .hero h1 {
-  font-size: clamp(2.2rem, 4.6vw, 4rem);
+  font-size: clamp(2.7rem, 5.6vw, 4.9rem);
   font-weight: 600;
   line-height: 1.1;
   letter-spacing: -1.5px;
@@ -336,8 +336,8 @@ body {
 }
 .sub {
   margin: 28px auto 0;
-  max-width: 640px;
-  font-size: 16px;
+  max-width: 700px;
+  font-size: 18px;
   line-height: 1.6;
   color: #a1a1aa;
 }
