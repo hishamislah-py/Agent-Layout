@@ -44,7 +44,11 @@ function Card({ app, index }) {
     >
       <div className="card-head">
         <motion.span layoutId={`icon-${app.name}`} className="card-icon">
-          {CARD_ICONS[app.slug] || app.icon}
+          {CARD_ICONS[app.slug] ? (
+            <img src={CARD_ICONS[app.slug]} alt="" className="card-icon-img" />
+          ) : (
+            app.icon
+          )}
         </motion.span>
         <motion.h3 layoutId={`name-${app.name}`} className="card-name">
           {app.name}

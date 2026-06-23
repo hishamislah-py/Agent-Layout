@@ -592,6 +592,11 @@ body {
   box-shadow: 0 6px 16px -8px color-mix(in srgb, var(--accent) 45%, transparent);
   transition: transform 0.3s ease;
 }
+.card-icon-img {
+  width: 26px;
+  height: 26px;
+  display: block;
+}
 .app-card:hover .card-icon {
   transform: scale(1.06);
 }
