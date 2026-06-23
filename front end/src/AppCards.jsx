@@ -1,7 +1,6 @@
-import { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { useNavigate } from 'react-router-dom'
+import { motion } from 'framer-motion'
 import { AGENTS } from './agents.js'
-import AgentDetail from './AgentDetail.jsx'
 
 const APPS = AGENTS
 
@@ -17,7 +16,9 @@ function Tags({ tags }) {
   )
 }
 
-function Card({ app, index, onSelect, isSelected }) {
+function Card({ app, index }) {
+  const navigate = useNavigate()
+
   const onMove = (e) => {
     const r = e.currentTarget.getBoundingClientRect()
     e.currentTarget.style.setProperty('--mx', `${e.clientX - r.left}px`)
@@ -28,11 +29,14 @@ function Card({ app, index, onSelect, isSelected }) {
     <motion.div
       layoutId={`card-${app.name}`}
       className="app-card"
-      style={{ '--accent': app.accent }}
+      style={{ '--accent': app.accent, cursor: 'pointer' }}
+      role="link"
+      tabIndex={0}
       onMouseMove={onMove}
-      onClick={() => onSelect(app)}
+      onClick={() => navigate(`/profile/${app.slug}`)}
+      onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && navigate(`/profile/${app.slug}`)}
       initial={{ opacity: 0, y: 28 }}
-      whileInView={{ opacity: isSelected ? 0 : 1, y: 0 }}
+      whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.5, delay: index * 0.07, ease: [0.22, 1, 0.36, 1] }}
       whileHover={{ y: -8 }}
@@ -54,14 +58,6 @@ function Card({ app, index, onSelect, isSelected }) {
 }
 
 export default function AppCards() {
-  const [selected, setSelected] = useState(null)
-
-  useEffect(() => {
-    const onKey = (e) => e.key === 'Escape' && setSelected(null)
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [])
-
   return (
     <section id="more" className="apps-section">
       <p className="apps-eyebrow">THE PLATFORM</p>
@@ -72,19 +68,9 @@ export default function AppCards() {
 
       <div className="apps-grid">
         {APPS.map((app, i) => (
-          <Card
-            key={app.name}
-            app={app}
-            index={i}
-            isSelected={selected?.name === app.name}
-            onSelect={setSelected}
-          />
+          <Card key={app.name} app={app} index={i} />
         ))}
       </div>
-
-      <AnimatePresence>
-        {selected && <AgentDetail app={selected} onClose={() => setSelected(null)} />}
-      </AnimatePresence>
     </section>
   )
 }

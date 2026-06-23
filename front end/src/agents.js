@@ -2,8 +2,9 @@
 export const AGENTS = [
   {
     name: 'HR Agent',
+    slug: 'hr-agent',
     icon: '👥',
-    accent: '#6b78b8',
+    accent: '#F5C010',
     url: 'https://ai.arttechgroup.com:7777/hr-agent/',
     tag: 'Agent',
     rating: 4.6,
@@ -29,8 +30,9 @@ export const AGENTS = [
   },
   {
     name: 'Cold Email Generator',
+    slug: 'coldemail',
     icon: '✉️',
-    accent: '#8a7bb0',
+    accent: '#FBD75B',
     url: 'https://ai.arttechgroup.com:7777/coldemail/',
     tag: 'Generative',
     rating: 4.5,
@@ -56,8 +58,9 @@ export const AGENTS = [
   },
   {
     name: 'Fintech Chatbot',
+    slug: 'chatbot',
     icon: '💬',
-    accent: '#5b86a8',
+    accent: '#E0A40C',
     url: 'https://ai.arttechgroup.com:7777/chatbot/',
     tag: 'Chatbot',
     rating: 4.7,
@@ -83,8 +86,9 @@ export const AGENTS = [
   },
   {
     name: 'Unified Chatbot',
+    slug: 'unified-chat',
     icon: '🤖',
-    accent: '#4f8f96',
+    accent: '#FFD43B',
     url: 'https://ai.arttechgroup.com:7777/unified-chat',
     tag: 'Chatbot',
     rating: 4.6,
@@ -110,8 +114,9 @@ export const AGENTS = [
   },
   {
     name: 'Art Intelligence Platform',
+    slug: 'art-intelligence',
     icon: '📊',
-    accent: '#a8916a',
+    accent: '#C8920A',
     url: 'https://ai.arttechgroup.com:7777/art-intelligence/dashboard',
     tag: 'Platform',
     rating: 4.8,
@@ -137,8 +142,9 @@ export const AGENTS = [
   },
   {
     name: 'FintechOps',
+    slug: 'fintechops',
     icon: '⚙️',
-    accent: '#5f9080',
+    accent: '#EAB308',
     url: 'https://fintechops-arttechgroup.pages.dev/',
     tag: 'Operations',
     rating: 4.5,
@@ -164,8 +170,9 @@ export const AGENTS = [
   },
   {
     name: 'Scheme Compliance Portal',
+    slug: 'scheme-compliance-art',
     icon: '🛡️',
-    accent: '#6e72a6',
+    accent: '#D9A41A',
     url: 'https://ai.arttechgroup.com:7777/scheme-compliance-art/login',
     tag: 'Compliance',
     rating: 4.7,

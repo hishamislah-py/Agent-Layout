@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
-import discTop from './assets/disc-top.png'
-import discRight from './assets/disc-right.png'
-import discBottom from './assets/disc-bottom.png'
+import discTop from './assets/disc-top-y.png'
+import discRight from './assets/disc-right-y.png'
+import discBottom from './assets/disc-bottom-y.png'
 
 // Scale's own rendered disc images, three of them positioned like the hero
 // screenshot. Each drifts gently and shifts slightly with the mouse (parallax).

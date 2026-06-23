@@ -1,5 +1,6 @@
-import Discs from './Discs.jsx'
+import ScrollDiscs from './ScrollDiscs.jsx'
 import AppCards from './AppCards.jsx'
+import RotatingText from './RotatingText.jsx'
 
 export default function App() {
   const scrollToMore = () => {
@@ -8,39 +9,13 @@ export default function App() {
 
   return (
     <div className="page">
-      {/* Announcement bar */}
-      <div className="announce">
-        <span className="announce-icon">✦</span>
-        <span>
-          Just Announced: Scale closes Series F funding round at $13.8B valuation led by Accel.
-        </span>
-        <a href="#" className="announce-link">
-          Read More →
-        </a>
-      </div>
-
-      {/* Navbar */}
-      <nav className="navbar">
-        <div className="logo">scale</div>
-        <ul className="nav-links">
-          <li>Products</li>
-          <li>Government</li>
-          <li>Customers</li>
-          <li>Resources</li>
-        </ul>
-        <div className="nav-right">
-          <button className="btn btn-outline">Book a Demo →</button>
-          <a href="#" className="login">Log In</a>
-        </div>
-      </nav>
+      <ScrollDiscs />
 
       {/* Hero */}
       <header className="hero">
-        <Discs />
-
         <div className="hero-inner">
           <h1>
-            Discover <span className="grad">AI Agents</span>
+            Discover <RotatingText />
             <br />
             that <span className="grad">work for you</span>
           </h1>

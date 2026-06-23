@@ -10,8 +10,8 @@ const PRICING = [
 
 const INTEGRATIONS = ['ChatGPT', 'Claude', 'REST API', 'Webhooks', 'Slack', 'Zapier', 'Microsoft 365', 'GitHub']
 
-const TABS = ['Overview', 'Features', 'Screenshots', 'Use Cases', 'Integrations', 'Pricing']
-const TAB_IDS = { Overview: 'overview', Features: 'features', Screenshots: 'screenshots', 'Use Cases': 'usecases', Integrations: 'integrations', Pricing: 'pricing' }
+const TABS = ['Live App', 'Overview', 'Features', 'Use Cases', 'Integrations', 'Pricing']
+const TAB_IDS = { 'Live App': 'live', Overview: 'overview', Features: 'features', 'Use Cases': 'usecases', Integrations: 'integrations', Pricing: 'pricing' }
 
 function Stars({ rating }) {
   return (
@@ -21,6 +21,33 @@ function Stars({ rating }) {
       ))}
       <span className="ad-rating-num">{rating.toFixed(1)}</span>
     </span>
+  )
+}
+
+function LiveEmbed({ app }) {
+  return (
+    <div className="ad-embed" style={{ '--accent': app.accent }}>
+      <div className="ad-embed-bar">
+        <span className="ad-embed-dots"><span /><span /><span /></span>
+        <span className="ad-embed-url">{app.url}</span>
+        <a className="ad-embed-open" href={app.url} target="_blank" rel="noopener noreferrer">
+          Open in new tab ↗
+        </a>
+      </div>
+      <div className="ad-embed-frame">
+        <iframe
+          src={app.url}
+          title={`${app.name} — live app`}
+          loading="lazy"
+          allow="clipboard-write; microphone; camera"
+          sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-downloads"
+        />
+      </div>
+      <p className="ad-embed-note">
+        If the app doesn’t appear above, it blocks being embedded —{' '}
+        <a href={app.url} target="_blank" rel="noopener noreferrer">open it in a new tab</a>.
+      </p>
+    </div>
   )
 }
 
@@ -108,6 +135,12 @@ export default function AgentDetail({ app, onClose }) {
               ))}
             </div>
 
+            <section id="live" className="ad-section">
+              <h2 className="ad-h2">Live App</h2>
+              <p className="ad-muted">Use {app.name} right here — no need to leave the page.</p>
+              <LiveEmbed app={app} />
+            </section>
+
             <section id="overview" className="ad-section">
               <h2 className="ad-h2">About {app.name}</h2>
               <div className="ad-block">
@@ -148,12 +181,6 @@ export default function AgentDetail({ app, onClose }) {
                   </div>
                 </div>
               ))}
-            </section>
-
-            <section id="screenshots" className="ad-section">
-              <h2 className="ad-h2">Screenshots</h2>
-              <p className="ad-muted">See {app.name} in action.</p>
-              <Shot app={app} label={`${app.name} — preview`} />
             </section>
 
             <section id="usecases" className="ad-section">

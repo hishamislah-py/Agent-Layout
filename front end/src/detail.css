@@ -4,12 +4,12 @@
   position: fixed;
   inset: 0;
   z-index: 200;
-  background: #07080d;
+  background: #0a0905;
   overflow-y: auto;
   color: #e7e7ea;
   text-align: left;
 }
-/* soft colour-gradient glows (fixed to viewport) */
+/* soft gold gradient glows (fixed to viewport) */
 .ad-overlay::before {
   content: '';
   position: fixed;
@@ -17,9 +17,9 @@
   z-index: 0;
   pointer-events: none;
   background:
-    radial-gradient(640px circle at 10% 6%, color-mix(in srgb, var(--accent) 22%, transparent), transparent 60%),
-    radial-gradient(720px circle at 92% 18%, rgba(80, 120, 210, 0.12), transparent 60%),
-    radial-gradient(680px circle at 78% 92%, rgba(150, 100, 200, 0.10), transparent 62%);
+    radial-gradient(640px circle at 10% 6%, color-mix(in srgb, var(--accent) 24%, transparent), transparent 60%),
+    radial-gradient(720px circle at 92% 18%, rgba(245, 192, 16, 0.12), transparent 60%),
+    radial-gradient(680px circle at 78% 92%, rgba(200, 146, 10, 0.10), transparent 62%);
 }
 /* faded grid, gently fading out toward the bottom */
 .ad-overlay::after {
@@ -29,8 +29,8 @@
   z-index: 0;
   pointer-events: none;
   background-image:
-    linear-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+    linear-gradient(rgba(245, 224, 150, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(245, 224, 150, 0.07) 1px, transparent 1px);
   background-size: 48px 48px, 48px 48px;
   -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 55%, transparent 100%);
   mask-image: linear-gradient(180deg, #000 0%, #000 55%, transparent 100%);
@@ -292,6 +292,82 @@
   font-size: 13px;
   color: #8b8b93;
   letter-spacing: 0.3px;
+}
+
+/* live app embed */
+.ad-embed {
+  margin-top: 20px;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background:
+    radial-gradient(120% 120% at 30% 0%, color-mix(in srgb, var(--accent) 16%, transparent), transparent 60%),
+    #0c0e17;
+}
+.ad-embed-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.ad-embed-dots {
+  display: flex;
+  gap: 7px;
+  flex: none;
+}
+.ad-embed-dots span {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.16);
+}
+.ad-embed-url {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+  color: #8b8b93;
+  background: rgba(255, 255, 255, 0.04);
+  padding: 5px 12px;
+  border-radius: 8px;
+}
+.ad-embed-open {
+  flex: none;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--accent);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.ad-embed-open:hover {
+  text-decoration: underline;
+}
+.ad-embed-frame {
+  position: relative;
+  width: 100%;
+  height: 78vh;
+  min-height: 520px;
+  background: #fff;
+}
+.ad-embed-frame iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+.ad-embed-note {
+  margin: 0;
+  padding: 10px 14px;
+  font-size: 12px;
+  color: #8b8b93;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+.ad-embed-note a {
+  color: var(--accent);
 }
 
 /* newsletter */
