@@ -22,10 +22,7 @@ export default function AgentProfile() {
     <div className="embed-page" style={{ '--accent': app.accent }}>
       <header className="embed-bar">
         <button className="embed-back" onClick={() => navigate('/')}>← Back</button>
-        <div className="embed-id">
-          <span className="embed-icon">{app.icon}</span>
-          <span className="embed-name">{app.name}</span>
-        </div>
+        <div className="embed-id"></div>
         <a className="embed-open" href={app.url} target="_blank" rel="noopener noreferrer">
           Open in new tab ↗
         </a>
