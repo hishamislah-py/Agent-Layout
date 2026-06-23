@@ -1,11 +1,13 @@
 import { useEffect, useRef } from 'react'
-import discTop from './assets/disc-top.png'
-import discBottom from './assets/disc-bottom.png'
+import discTop from './assets/disc-top-y.png'
+import discRight from './assets/disc-right-y.png'
+import discBottom from './assets/disc-bottom-y.png'
 
-// Scale's own rendered disc images, positioned like the hero screenshot.
-// Each drifts gently and shifts slightly with the mouse (parallax).
+// Scale's own rendered disc images, three of them positioned like the hero
+// screenshot. Each drifts gently and shifts slightly with the mouse (parallax).
 export default function Discs() {
   const topRef = useRef(null)
+  const rightRef = useRef(null)
   const botRef = useRef(null)
   const target = useRef({ x: 0, y: 0 })
   const current = useRef({ x: 0, y: 0 })
@@ -24,6 +26,8 @@ export default function Discs() {
       const { x, y } = current.current
       if (topRef.current)
         topRef.current.style.transform = `translate(${x * 22}px, ${y * 22}px)`
+      if (rightRef.current)
+        rightRef.current.style.transform = `translate(${x * 28}px, ${y * 28}px)`
       if (botRef.current)
         botRef.current.style.transform = `translate(${x * -34}px, ${y * -34}px)`
       raf = requestAnimationFrame(tick)
@@ -40,6 +44,9 @@ export default function Discs() {
     <>
       <div className="disc-wrap disc-wrap-top" ref={topRef}>
         <img src={discTop} alt="" className="disc-img disc-float-a" />
+      </div>
+      <div className="disc-wrap disc-wrap-right" ref={rightRef}>
+        <img src={discRight} alt="" className="disc-img disc-float-c" />
       </div>
       <div className="disc-wrap disc-wrap-bottom" ref={botRef}>
         <img src={discBottom} alt="" className="disc-img disc-float-b" />
