@@ -23,18 +23,28 @@ export default function AgentProfile() {
       <header className="embed-bar">
         <button className="embed-back" onClick={() => navigate('/')}>← Back</button>
         <div className="embed-id"></div>
-        <a className="embed-open" href={app.url} target="_blank" rel="noopener noreferrer">
-          Open in new tab ↗
-        </a>
+        {app.url && (
+          <a className="embed-open" href={app.url} target="_blank" rel="noopener noreferrer">
+            Open in new tab ↗
+          </a>
+        )}
       </header>
 
-      <iframe
-        className="embed-frame"
-        src={app.url}
-        title={`${app.name} — live app`}
-        allow="clipboard-write; microphone; camera"
-        sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-downloads allow-modals"
-      />
+      {app.url ? (
+        <iframe
+          className="embed-frame"
+          src={app.url}
+          title={`${app.name} — live app`}
+          allow="clipboard-write; microphone; camera"
+          sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-downloads allow-modals"
+        />
+      ) : (
+        <div className="embed-soon">
+          <span className="embed-soon-icon">{app.icon}</span>
+          <h1 className="embed-soon-title">{app.name}</h1>
+          <p className="embed-soon-tagline">{app.tagline}</p>
+        </div>
+      )}
     </div>
   )
 }

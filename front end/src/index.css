@@ -111,6 +111,30 @@ body {
   border: 0;
   background: #fff;
 }
+.embed-soon {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  text-align: center;
+  padding: 2rem 1.5rem;
+}
+.embed-soon-icon {
+  font-size: 56px;
+  line-height: 1;
+}
+.embed-soon-title {
+  margin: 0;
+  font-size: 2rem;
+  color: #fff;
+}
+.embed-soon-tagline {
+  margin: 0;
+  max-width: 32rem;
+  color: rgba(255, 255, 255, 0.6);
+}
 
 /* ---------- Scroll-driven disc sequence (fixed background) ---------- */
 .sd-layer {
@@ -482,11 +506,24 @@ body {
 }
 
 .apps-grid {
-  margin-top: 52px;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
+  margin: 52px auto 0;
+  max-width: 1000px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: stretch;
   gap: 22px;
+}
+@media (max-width: 900px) {
+  .apps-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    max-width: 660px;
+  }
+}
+@media (max-width: 560px) {
+  .apps-grid {
+    grid-template-columns: 1fr;
+    max-width: 340px;
+  }
 }
 
 /* ---- glass + spotlight card ---- */
@@ -499,8 +536,7 @@ body {
   flex-direction: column;
   text-align: left;
   cursor: pointer;
-  flex: 0 0 300px;
-  max-width: 300px;
+  width: 100%;
   padding: 26px 26px 22px;
   min-height: 230px;
   border-radius: 20px;
@@ -768,9 +804,6 @@ body {
   .logos {
     gap: 24px;
     font-size: 15px;
-  }
-  .app-card {
-    flex: 1 1 260px;
   }
   .detail-split {
     flex-direction: column;
