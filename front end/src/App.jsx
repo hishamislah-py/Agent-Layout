@@ -11,6 +11,11 @@ export default function App() {
     <div className="page">
       <ScrollDiscs />
 
+      {/* Brand logo — top-left */}
+      <a className="site-logo" href="/" aria-label="ART home">
+        <img src="/logo1%20(1).png" alt="ART" />
+      </a>
+
       {/* Hero */}
       <header className="hero">
         <div className="hero-inner">
@@ -20,9 +25,9 @@ export default function App() {
             that <span className="grad">work for you</span>
           </h1>
           <p className="sub">
-            Make the best models with the best data. Scale Data Engine leverages your enterprise data,
+            Smart AI agents that work alongside you, handling the busywork so your team can focus on what matters.
             <br />
-            and with Scale GenAI Platform, safely unlocks the value of AI.
+            Find the right one, put it to work, and watch it get things done.
           </p>
           <div className="hero-btns">
             <button className="btn btn-primary" onClick={scrollToMore}>
@@ -34,22 +39,6 @@ export default function App() {
 
       {/* Below the fold — revealed by "Show More" */}
       <AppCards />
-
-      <section className="more-section">
-        <p className="works-with">
-          Scale works with <a href="#">Generative AI Companies</a>, U.S. Government Agencies &amp; Enterprises
-        </p>
-
-        <div className="logos">
-          <span className="brand">⊞ Microsoft</span>
-          <span className="brand">∞ Meta</span>
-          <span className="brand">⊛ OpenAI</span>
-          <span className="brand">✿ cohere</span>
-          <span className="brand">◈ NVIDIA</span>
-          <span className="brand brand-bold">Adept</span>
-          <span className="brand brand-bold">character.ai</span>
-        </div>
-      </section>
     </div>
   )
 }

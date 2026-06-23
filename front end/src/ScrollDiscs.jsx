@@ -34,13 +34,19 @@ export default function ScrollDiscs() {
   const rightScale = useTransform(scrollY, [0, end], [1, 1.25])
   const rightOp = useTransform(scrollY, [end * 0.4, end * 0.72], [1, 0])
 
-  // --- bottom disc = the survivor: glides to the centre and grows ---
+  // --- bottom disc = the survivor: glides to the centre, grows, then blooms
+  //     into a full yellow background for the second section ---
   const b = G.bottom
   const bCx = b.left * vw + b.w / 2
   const bCy = b.top * vh + (b.w * b.ar) / 2
   const botX = useTransform(scrollY, [0, end], [0, vw * 0.5 - bCx])
   const botY = useTransform(scrollY, [0, end], [0, vh * 0.5 - bCy])
-  const botScale = useTransform(scrollY, [0, end * 0.55, end], [1, 1.05, 1.85])
+  const botScale = useTransform(scrollY, [0, end * 0.55, end], [1, 1.05, 2.4])
+  // the survivor fades as the yellow fill takes over (it "becomes" the background)
+  const botOp = useTransform(scrollY, [end * 0.5, end * 0.82], [1, 0])
+
+  // yellow grid fades in as the disc settles into the second section
+  const yOpacity = useTransform(scrollY, [end * 0.42, end * 0.78], [0, 1])
 
   return (
     <div className="sd-layer">
@@ -54,10 +60,13 @@ export default function ScrollDiscs() {
         <img className="disc-img disc-float-c" src={discRight} alt="" />
       </motion.div>
 
-      {/* survivor — keeps slowly spinning on its own (continuous) */}
-      <motion.div className="sd sd-bottom" style={{ x: botX, y: botY, scale: botScale }}>
+      {/* survivor — glides to centre, grows, then fades as the yellow fill blooms */}
+      <motion.div className="sd sd-bottom" style={{ x: botX, y: botY, scale: botScale, opacity: botOp }}>
         <img className="disc-img sd-spin" src={discBottom} alt="" />
       </motion.div>
+
+      {/* yellow grid that fades in for the second section (deep black shows through) */}
+      <motion.div className="sd-grid" style={{ opacity: yOpacity }} />
     </div>
   )
 }

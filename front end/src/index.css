@@ -25,6 +25,21 @@ body {
   overflow-x: hidden;
 }
 
+/* brand logo, fixed in the top-left corner */
+.site-logo {
+  position: fixed;
+  top: 22px;
+  left: 28px;
+  z-index: 60;
+  display: inline-flex;
+  line-height: 0;
+}
+.site-logo img {
+  height: 38px;
+  width: auto;
+  display: block;
+}
+
 /* ---------- Full-bleed embedded agent ---------- */
 .embed-page {
   position: fixed;
@@ -128,6 +143,18 @@ body {
     transform: scale(1.07);
     filter: brightness(1.12);
   }
+}
+/* deep-black second section with a uniform #F5C010 gold line-grid */
+.sd-grid {
+  position: absolute;
+  inset: 0;
+  will-change: opacity;
+  background-color: #050506;
+  background-image:
+    linear-gradient(rgba(245, 192, 16, 0.28) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(245, 192, 16, 0.28) 1px, transparent 1px);
+  background-size: 48px 48px, 48px 48px;
+  background-position: center center;
 }
 .sd {
   position: absolute;
@@ -477,11 +504,10 @@ body {
   padding: 26px 26px 22px;
   min-height: 230px;
   border-radius: 20px;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.012) 100%);
+  /* opaque deep-black cards */
+  background: #060608;
   border: 1px solid rgba(255, 255, 255, 0.09);
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06) inset, 0 10px 30px rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(12px);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06) inset, 0 10px 30px rgba(0, 0, 0, 0.55);
   text-decoration: none;
   color: #fff;
   overflow: hidden;
