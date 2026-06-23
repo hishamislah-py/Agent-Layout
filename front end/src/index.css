@@ -583,6 +583,7 @@ body {
   width: 46px;
   height: 46px;
   font-size: 22px;
+  color: var(--accent);
   border-radius: 12px;
   background:
     linear-gradient(180deg, color-mix(in srgb, var(--accent) 18%, transparent), transparent),
@@ -590,6 +591,11 @@ body {
   border: 1px solid color-mix(in srgb, var(--accent) 28%, rgba(255, 255, 255, 0.1));
   box-shadow: 0 6px 16px -8px color-mix(in srgb, var(--accent) 45%, transparent);
   transition: transform 0.3s ease;
+}
+.card-icon-img {
+  width: 26px;
+  height: 26px;
+  display: block;
 }
 .app-card:hover .card-icon {
   transform: scale(1.06);

@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { AGENTS } from './agents.js'
+import { CARD_ICONS } from './cardIcons.jsx'
 
 const APPS = AGENTS
 
@@ -43,7 +44,11 @@ function Card({ app, index }) {
     >
       <div className="card-head">
         <motion.span layoutId={`icon-${app.name}`} className="card-icon">
-          {app.icon}
+          {CARD_ICONS[app.slug] ? (
+            <img src={CARD_ICONS[app.slug]} alt="" className="card-icon-img" />
+          ) : (
+            app.icon
+          )}
         </motion.span>
         <motion.h3 layoutId={`name-${app.name}`} className="card-name">
           {app.name}
