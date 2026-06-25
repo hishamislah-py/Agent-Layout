@@ -257,7 +257,7 @@ export const AGENTS = [
     slug: 'kyc-kyb-onboarding',
     icon: '🪪',
     accent: '#F5C010',
-    url: '',
+    url: 'https://ai.arttechgroup.com:7777/kyc-kyb-onboarding/kyc',
     tag: 'Compliance',
     rating: 4.7,
     short: 'Screen, verify and onboard new clients.',
