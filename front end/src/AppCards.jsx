@@ -12,7 +12,7 @@ const CATEGORY_ORDER = [
   'HR',
   'Sales',
   'Customer Service',
-  'Banking & Insurance',
+  'Financial Services',
   'IT Ops & Security',
   'Research & Analysis',
 ]
