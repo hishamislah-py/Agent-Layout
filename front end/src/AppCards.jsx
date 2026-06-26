@@ -13,7 +13,9 @@ const CATEGORY_ORDER = [
   'Sales',
   'Customer Service',
   'Financial Services',
+  'Legal & Compliance',
   'IT Ops & Security',
+  'Developer Tools',
   'Research & Analysis',
 ]
 
