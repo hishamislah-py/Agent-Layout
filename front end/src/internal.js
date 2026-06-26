@@ -32,7 +32,7 @@ export const INTERNAL_AGENTS = [
     accent: '#F5C010',
     short: 'Placeholder — internal manager agent. Content to be added.',
     subAgents: [
-      { name: 'Planner', slug: 'planner', href: '/discovery-agent.html' },
+      { name: 'Discovery', slug: 'discovery', href: '/discovery-agent.html' },
       { name: 'Executor', slug: 'executor' },
       { name: 'Evaluator', slug: 'evaluator' },
     ],
