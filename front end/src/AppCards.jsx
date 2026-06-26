@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { AnimatePresence, motion } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { AGENTS } from './agents.js'
 import { CARD_ICONS } from './cardIcons.jsx'
 
@@ -45,7 +45,9 @@ function Tags({ tags }) {
   )
 }
 
-function Card({ app, index }) {
+// Plain card — hover/lift is handled in CSS, so there are no per-card layout
+// animations to fight with the grid when categories change.
+function Card({ app }) {
   const navigate = useNavigate()
 
   const onMove = (e) => {
@@ -55,9 +57,7 @@ function Card({ app, index }) {
   }
 
   return (
-    <motion.div
-      layout
-      layoutId={`card-${app.name}`}
+    <div
       className="app-card"
       style={{ '--accent': app.accent, cursor: 'pointer' }}
       role="link"
@@ -65,29 +65,22 @@ function Card({ app, index }) {
       onMouseMove={onMove}
       onClick={() => navigate(`/profile/${app.slug}`)}
       onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && navigate(`/profile/${app.slug}`)}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -8, scale: 0.98 }}
-      transition={{ duration: 0.4, delay: Math.min(index * 0.05, 0.3), ease: [0.22, 1, 0.36, 1] }}
-      whileHover={{ y: -8 }}
     >
       <div className="card-head">
-        <motion.span layoutId={`icon-${app.name}`} className="card-icon">
+        <span className="card-icon">
           {CARD_ICONS[app.slug] ? (
             <img src={CARD_ICONS[app.slug]} alt="" className="card-icon-img" />
           ) : (
             app.icon
           )}
-        </motion.span>
-        <motion.h3 layoutId={`name-${app.name}`} className="card-name">
-          {app.name}
-        </motion.h3>
+        </span>
+        <h3 className="card-name">{app.name}</h3>
       </div>
 
       <p className="card-desc">{app.short}</p>
 
       <Tags tags={app.tags} />
-    </motion.div>
+    </div>
   )
 }
 
@@ -123,12 +116,18 @@ export default function AppCards() {
           ))}
         </div>
 
-        <motion.div layout className="apps-grid">
-          <AnimatePresence mode="popLayout">
-            {visible.map((app, i) => (
-              <Card key={app.slug} app={app} index={i} />
-            ))}
-          </AnimatePresence>
+        {/* One cheap cross-fade per category switch (keyed remount), instead of
+            per-card FLIP/layout animations that distort cards in a CSS grid. */}
+        <motion.div
+          key={active}
+          className="apps-grid"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.26, ease: [0.22, 1, 0.36, 1] }}
+        >
+          {visible.map((app) => (
+            <Card key={app.slug} app={app} />
+          ))}
         </motion.div>
       </div>
     </section>

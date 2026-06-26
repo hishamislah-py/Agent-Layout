@@ -201,17 +201,17 @@ body {
 .sd-top {
   left: 33%;
   top: 5%;
-  width: 340px;
+  width: 300px;
 }
 .sd-right {
   left: 60%;
   top: 22%;
-  width: 380px;
+  width: 335px;
 }
 .sd-bottom {
   left: 14%;
   top: 30%;
-  width: 500px;
+  width: 440px;
 }
 
 /* ---------- Announcement bar ---------- */
