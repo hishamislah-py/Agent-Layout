@@ -148,7 +148,7 @@ export const AGENTS = [
   {
     name: 'FintechOps',
     slug: 'fintechops',
-    category: 'Banking & Insurance',
+    category: 'Financial Services',
     icon: '⚙️',
     accent: '#EAB308',
     url: 'https://fintechops-arttechgroup.pages.dev/',
@@ -177,7 +177,7 @@ export const AGENTS = [
   {
     name: 'Scheme Compliance Portal',
     slug: 'scheme-compliance-art',
-    category: 'Banking & Insurance',
+    category: 'Financial Services',
     icon: '🛡️',
     accent: '#D9A41A',
     url: 'https://ai.arttechgroup.com:7777/scheme-compliance-art/login',
@@ -206,7 +206,7 @@ export const AGENTS = [
   {
     name: 'Chargeback Management System',
     slug: 'chargeback-management-system',
-    category: 'Banking & Insurance',
+    category: 'Financial Services',
     icon: '💳',
     accent: '#F5C010',
     url: 'https://chargeback-management-system.pages.dev/',
@@ -264,7 +264,7 @@ export const AGENTS = [
   {
     name: 'KYC / KYB Client Onboarding Agent',
     slug: 'kyc-kyb-onboarding',
-    category: 'Banking & Insurance',
+    category: 'Financial Services',
     icon: '🪪',
     accent: '#F5C010',
     url: 'https://ai.arttechgroup.com:7777/kyc-kyb-onboarding/kyc',
@@ -293,7 +293,7 @@ export const AGENTS = [
   {
     name: 'Reconciliation Agent',
     slug: 'reconciliation-agent',
-    category: 'Banking & Insurance',
+    category: 'Financial Services',
     icon: '⚖️',
     accent: '#C8920A',
     url: 'https://reconciliation-agent-arttechgroup.pages.dev/',
@@ -322,7 +322,7 @@ export const AGENTS = [
   {
     name: 'Fraud Detection Agent',
     slug: 'fraud-detection',
-    category: 'Banking & Insurance',
+    category: 'Financial Services',
     icon: '🛑',
     accent: '#EAB308',
     url: '',
