@@ -101,7 +101,6 @@ export default function AppCards() {
       </h2>
       <p className="apps-sub">A unified suite of intelligent applications. Click any agent to learn more.</p>
 
-      {/* Browse by category — deep-black backdrop begins here */}
       <div className="cat-zone">
         <div className="cat-bar" role="tablist" aria-label="Browse agents by category">
           {categories.map((c) => (
@@ -118,8 +117,7 @@ export default function AppCards() {
           ))}
         </div>
 
-        {/* One cheap cross-fade per category switch (keyed remount), instead of
-            per-card FLIP/layout animations that distort cards in a CSS grid. */}
+        {/* One cheap cross-fade per category switch (keyed remount). */}
         <motion.div
           key={active}
           className="apps-grid"
