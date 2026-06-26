@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ART Technology — Popular Skills & MCP Server Toolkit</title>
+<style>
+:root{
+  --bg:#000; --panel:#050506; --gold:#f5c010; --gold2:#ffd43b;
+  --white:#fff; --muted:#cfcfd6; --dim:#9a9aa3;
+  --bdr:rgba(255,255,255,.12); --bdr-soft:rgba(255,255,255,.09);
+  --card:#060608;
+  --font:'Inter','Segoe UI',system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:
+    linear-gradient(rgba(245,192,16,.06) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(245,192,16,.06) 1px,transparent 1px),
+    var(--bg);
+  background-size:52px 52px,52px 52px,auto;
+  color:var(--white);font-family:var(--font);line-height:1.5;-webkit-font-smoothing:antialiased}
+
+/* TOPBAR */
+.topbar{background:#000;height:56px;display:flex;align-items:center;padding:0 24px;border-bottom:1px solid var(--bdr-soft);position:sticky;top:0;z-index:60}
+.topbar-inner{max-width:1200px;margin:0 auto;width:100%;display:flex;align-items:center;justify-content:space-between}
+.tb-logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+.tb-logo img{height:34px;width:auto;display:block}
+.tb-mark{width:30px;height:30px;background:var(--gold);border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.tb-mark svg{width:16px;height:16px}
+.tb-name{font-size:13px;font-weight:800;color:var(--white);letter-spacing:-.01em}
+.tb-tag{font-size:10px;color:rgba(255,255,255,.4);margin-top:1px}
+.tb-back{font-size:13px;font-weight:600;color:var(--white);background:rgba(255,255,255,.06);border:1px solid var(--bdr);border-radius:9px;padding:7px 14px;text-decoration:none;transition:.15s}
+.tb-back:hover{background:rgba(255,255,255,.13)}
+
+/* HERO */
+.hero{position:relative;overflow:hidden;padding:60px 24px 54px;background:var(--panel)}
+.hero::before{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(245,192,16,.1) 1px,transparent 1px),linear-gradient(90deg,rgba(245,192,16,.1) 1px,transparent 1px);background-size:52px 52px;-webkit-mask-image:linear-gradient(to bottom,#000,transparent 90%);mask-image:linear-gradient(to bottom,#000,transparent 90%);pointer-events:none}
+.hero::after{content:"";position:absolute;top:-35%;right:4%;width:620px;height:620px;background:radial-gradient(circle,rgba(245,192,16,.16),transparent 60%);pointer-events:none}
+.hero-inner{max-width:1200px;margin:0 auto;position:relative;z-index:1;text-align:center}
+.eyebrow{font-size:12px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);font-weight:600;margin-bottom:14px}
+.hero h1{font-size:clamp(30px,4.6vw,52px);font-weight:700;line-height:1.05;letter-spacing:-1px;max-width:720px;margin:0 auto 16px}
+.hero h1 em{font-style:normal;background:linear-gradient(90deg,#fbd75b,#f5c010,#fce9a8);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.hero-sub{font-size:16px;color:var(--muted);max-width:600px;line-height:1.65;margin:0 auto}
+.hero-back{display:inline-block;margin-top:26px;font-size:13px;font-weight:600;color:var(--white);background:rgba(255,255,255,.06);border:1px solid var(--bdr);border-radius:9px;padding:10px 18px;text-decoration:none;transition:.15s}
+.hero-back:hover{background:rgba(255,255,255,.13)}
+
+/* CONTROLS */
+.controls{position:sticky;top:0;z-index:40;background:rgba(5,5,6,.88);backdrop-filter:blur(12px);border-bottom:1px solid var(--bdr-soft);padding:14px 24px}
+.ctrl-inner{max-width:1200px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:13px}
+.search-wrap{position:relative;width:100%;max-width:560px}
+.search-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);opacity:.5;pointer-events:none}
+.search{width:100%;padding:11px 14px 11px 40px;font-size:14px;background:rgba(255,255,255,.04);color:var(--white);border:1px solid var(--bdr);border-radius:10px;outline:none;transition:border-color .15s}
+.search::placeholder{color:var(--dim)}
+.search:focus{border-color:var(--gold)}
+.chips{display:flex;flex-wrap:wrap;justify-content:center;gap:10px}
+.chip{cursor:pointer;user-select:none;display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:600;padding:8px 15px;border-radius:999px;border:1px solid var(--bdr);background:rgba(255,255,255,.04);color:var(--muted);transition:color .2s,background .2s,border-color .2s,transform .2s;white-space:nowrap}
+.chip:hover{color:var(--white);border-color:rgba(245,192,16,.45);transform:translateY(-1px)}
+.chip.active{background:var(--gold);border-color:var(--gold);color:#0b0b0d;box-shadow:0 8px 22px -10px rgba(245,192,16,.7)}
+.chip .c{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:18px;padding:0 6px;border-radius:999px;font-size:11px;font-weight:700;color:var(--gold);background:rgba(245,192,16,.16)}
+.chip.active .c{color:#0b0b0d;background:rgba(0,0,0,.18)}
+.meta{font-size:12px;color:var(--dim);text-align:center}
+
+/* BODY */
+.body{max-width:1200px;margin:0 auto;padding:34px 24px 90px}
+.empty{text-align:center;padding:60px 20px;color:var(--dim);display:none;font-size:14px}
+
+/* FOOTER */
+.footer{background:var(--panel);border-top:1px solid var(--bdr-soft);color:var(--dim);font-size:12px;padding:30px 24px;text-align:center;line-height:1.9}
+.footer strong{color:var(--muted)}
+.footer a{color:var(--gold);text-decoration:none}
+mark{background:rgba(245,192,16,.3);color:#fff;border-radius:3px;padding:0 2px}
+
+/* SINGLE 3-COL GRID (mirrors home .apps-grid) */
+.apps-grid{margin:6px auto 0;max-width:1200px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;align-items:stretch}
+@media(max-width:900px){.apps-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.apps-grid{grid-template-columns:1fr}}
+
+/* GLASS SPOTLIGHT CARD (mirrors home .app-card) */
+.app-card{--mx:50%;--my:50%;--accent:#f5c010;position:relative;display:flex;flex-direction:column;text-align:left;cursor:pointer;width:100%;padding:24px 24px 20px;min-height:214px;border-radius:20px;background:#060608;border:1px solid rgba(255,255,255,.09);box-shadow:0 1px 0 rgba(255,255,255,.06) inset,0 10px 30px rgba(0,0,0,.55);text-decoration:none;color:#fff;overflow:hidden;transition:transform .3s cubic-bezier(.22,1,.36,1),border-color .3s,box-shadow .3s}
+.app-card::before{content:"";position:absolute;inset:0;background:radial-gradient(420px circle at var(--mx) var(--my),rgba(245,192,16,.13),transparent 42%);opacity:0;transition:opacity .3s;pointer-events:none}
+.app-card:hover{transform:translateY(-6px);border-color:rgba(245,192,16,.4);box-shadow:0 20px 46px rgba(0,0,0,.62)}
+.app-card:hover::before{opacity:1}
+.app-card:focus-visible{outline:2px solid #f5c010;outline-offset:3px}
+.ac-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px;position:relative;z-index:1}
+.ac-icon{font-size:30px;line-height:1;color:var(--gold);display:inline-flex}
+.ac-badge{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:4px 9px;border-radius:6px}
+.ac-badge.mcp{color:#46c8d4;background:rgba(70,200,212,.12);border:1px solid rgba(70,200,212,.3)}
+.ac-badge.skill{color:#f5c010;background:rgba(245,192,16,.14);border:1px solid rgba(245,192,16,.32)}
+.ac-name{font-size:17px;font-weight:700;letter-spacing:-.3px;color:#fff;line-height:1.25;position:relative;z-index:1;word-break:break-word}
+.ac-sub{margin-top:5px;font-size:11.5px;font-weight:600;color:#f5c010;position:relative;z-index:1}
+.ac-off{color:#5fd29a;font-weight:700}
+.ac-desc{margin-top:11px;font-size:13px;color:#cfcfd6;line-height:1.55;flex:1;position:relative;z-index:1}
+.ac-meta{margin-top:16px;display:flex;align-items:center;flex-wrap:wrap;gap:12px;position:relative;z-index:1}
+.ac-stat{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;color:#9a9aa3}
+.ac-stat .stars-n{color:#fff;font-weight:700}
+.ac-star{color:#f5c010}
+.ac-src{margin-left:auto;font-size:10.5px;color:#76767e;transition:color .15s}
+.app-card:hover .ac-src{color:#f5c010}
+.ldot{width:8px;height:8px;border-radius:50%;flex-shrink:0}.ldot.ts{background:#3178C6}.ldot.go{background:#00ADD8}.ldot.py{background:#3572A5}.ldot.js{background:#F0C200}.ldot.sh{background:#89E051}.ldot.java{background:#B07219}.ldot.html{background:#E34C26}.ldot.md{background:#083FA1}.ldot.other{background:#AAA}
+@media(max-width:640px){
+  .hero{padding:44px 16px 40px}.body{padding:24px 16px 60px}.controls{padding:12px 16px}
+}
+</style>
+</head>
+<body>
+
+<section class="hero">
+  <div class="hero-inner">
+    <div class="eyebrow">ART · External Agents</div>
+    <h1>Popular Skills &amp;<br><em>MCP Server Toolkit</em></h1>
+    <p class="hero-sub">A curated catalog of Agent Skills and MCP servers used across ART's engineering teams. All open source, all production tested.</p>
+    <a class="hero-back" href="/">← Back to site</a>
+  </div>
+</section>
+
+<div class="controls">
+  <div class="ctrl-inner">
+    <div class="search-wrap">
+      <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6B8085" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input class="search" id="search" type="text" placeholder="Search skills — try 'kafka', 'kubernetes', 'stripe', 'postgres'…"/>
+    </div>
+    <div class="chips" id="chips"></div>
+    <div class="meta" id="meta"></div>
+  </div>
+</div>
+
+<main class="body">
+  <div id="cats"></div>
+  <div class="empty" id="empty">No skills match your search or filters.</div>
+</main>
+
+<footer class="footer">
+  <strong>ART Technology &amp; Software</strong> — Horizontal Engineering for Logistics, Fintech &amp; SaaS<br>
+  GitHub star counts fetched live · Data as of <strong>2026-06-26 08:56 UTC</strong> ·
+  Verify license, maintenance status, and security before adopting any dependency.<br>
+  Skills sourced from: Anthropic · AWS Labs · HashiCorp · Trail of Bits · Stripe · GitHub · Grafana · Datadog · community
+</footer>
+
+<script>
+const GH = {
+  "CircleCI-Public/mcp-server-circleci":{"s": 86, "l": "TypeScript", "lic": "NOASSERTION", "p": "2026-06", "f": 61, "i": 27},
+  "ClickHouse/mcp-clickhouse":{"s": 811, "l": "Python", "lic": "Apache-2.0", "p": "2026-06", "f": 192, "i": 61},
+  "ComposioHQ/awesome-claude-skills":{"s": 65971, "l": "Python", "lic": "", "p": "2026-05", "f": 7327, "i": 870},
+  "Flux159/mcp-server-kubernetes":{"s": 1443, "l": "TypeScript", "lic": "MIT", "p": "2026-06", "f": 254, "i": 11},
+  "PipedreamHQ/pipedream":{"s": 11507, "l": "JavaScript", "lic": "NOASSERTION", "p": "2026-06", "f": 5710, "i": 4416},
+  "QuantGeekDev/docker-mcp":{"s": 485, "l": "Python", "lic": "MIT", "p": "2024-12", "f": 60, "i": 15},
+  "SonarSource/sonarqube-mcp-server":{"s": 584, "l": "Java", "lic": "NOASSERTION", "p": "2026-06", "f": 91, "i": 8},
+  "acryldata/mcp-server-datahub":{"s": 75, "l": "Python", "lic": "Apache-2.0", "p": "2026-05", "f": 50, "i": 43},
+  "alirezarezvani/claude-skills":{"s": 19097, "l": "Python", "lic": "MIT", "p": "2026-06", "f": 2633, "i": 12},
+  "anthropics/skills":{"s": 155367, "l": "Python", "lic": "", "p": "2026-06", "f": 18289, "i": 982},
+  "awslabs/mcp":{"s": 9342, "l": "Python", "lic": "Apache-2.0", "p": "2026-06", "f": 1602, "i": 851},
+  "buildkite/buildkite-mcp-server":{"s": 50, "l": "Go", "lic": "MIT", "p": "2026-06", "f": 32, "i": 16},
+  "confluentinc/mcp-confluent":{"s": 160, "l": "TypeScript", "lic": "MIT", "p": "2026-06", "f": 54, "i": 45},
+  "cr7258/elasticsearch-mcp-server":{"s": 290, "l": "Python", "lic": "Apache-2.0", "p": "2026-05", "f": 62, "i": 9},
+  "crystaldba/postgres-mcp":{"s": 2972, "l": "Python", "lic": "MIT", "p": "2026-01", "f": 327, "i": 64},
+  "datadog-labs/mcp-server":{"s": 42, "l": "", "lic": "MIT", "p": "2026-06", "f": 2, "i": 0},
+  "dbt-labs/dbt-mcp":{"s": 584, "l": "Python", "lic": "Apache-2.0", "p": "2026-06", "f": 124, "i": 33},
+  "figma/mcp-server-figma":{"s": 5600, "l": "TypeScript", "lic": "MIT", "p": "2026-06", "f": 310, "i": 28},
+  "firecrawl/firecrawl-mcp-server":{"s": 6694, "l": "JavaScript", "lic": "MIT", "p": "2026-06", "f": 781, "i": 130},
+  "foxj77/claude-code-skills":{"s": 14, "l": "", "lic": "MIT", "p": "2026-02", "f": 1, "i": 0},
+  "getsentry/sentry-mcp":{"s": 743, "l": "TypeScript", "lic": "NOASSERTION", "p": "2026-06", "f": 121, "i": 107},
+  "github/github-mcp-server":{"s": 30981, "l": "Go", "lic": "MIT", "p": "2026-06", "f": 4445, "i": 329},
+  "grafana/mcp-grafana":{"s": 3189, "l": "Go", "lic": "Apache-2.0", "p": "2026-06", "f": 386, "i": 94},
+  "hashicorp/terraform-mcp-server":{"s": 1446, "l": "Go", "lic": "MPL-2.0", "p": "2026-06", "f": 173, "i": 50},
+  "korotovsky/slack-mcp-server":{"s": 1686, "l": "Go", "lic": "MIT", "p": "2026-06", "f": 330, "i": 38},
+  "makenotion/notion-mcp-server":{"s": 4461, "l": "TypeScript", "lic": "MIT", "p": "2026-06", "f": 586, "i": 176},
+  "mhattingpete/claude-skills-marketplace":{"s": 625, "l": "HTML", "lic": "Apache-2.0", "p": "2026-03", "f": 86, "i": 17},
+  "microsoft/playwright-mcp":{"s": 34377, "l": "TypeScript", "lic": "Apache-2.0", "p": "2026-06", "f": 2852, "i": 0},
+  "modelcontextprotocol/servers":{"s": 87724, "l": "TypeScript", "lic": "NOASSERTION", "p": "2026-06", "f": 11081, "i": 605},
+  "mongodb-labs/atlas-mcp-server":{"s": 1067, "l": "TypeScript", "lic": "Apache-2.0", "p": "2026-06", "f": 268, "i": 39},
+  "newrelic/mcp-server":{"s": 7, "l": "", "lic": "", "p": "2025-10", "f": 0, "i": 4},
+  "nimrodfisher/data-analytics-skills":{"s": 192, "l": "Python", "lic": "", "p": "2026-04", "f": 35, "i": 0},
+  "obra/superpowers":{"s": 239037, "l": "Shell", "lic": "MIT", "p": "2026-06", "f": 21206, "i": 285},
+  "pulumi/mcp-server":{"s": 680, "l": "Go", "lic": "Apache-2.0", "p": "2026-06", "f": 42, "i": 12},
+  "redis/mcp-redis":{"s": 539, "l": "Python", "lic": "MIT", "p": "2026-06", "f": 100, "i": 13},
+  "semgrep/mcp":{"s": 673, "l": "Python", "lic": "MIT", "p": "2025-10", "f": 56, "i": 28},
+  "sooperset/mcp-atlassian":{"s": 5469, "l": "Python", "lic": "MIT", "p": "2026-06", "f": 1243, "i": 311},
+  "square/square-mcp-server":{"s": 101, "l": "TypeScript", "lic": "Apache-2.0", "p": "2026-04", "f": 25, "i": 13},
+  "stripe/agent-toolkit":{"s": 1634, "l": "TypeScript", "lic": "MIT", "p": "2026-06", "f": 288, "i": 66},
+  "supabase-community/supabase-mcp":{"s": 2761, "l": "TypeScript", "lic": "Apache-2.0", "p": "2026-06", "f": 369, "i": 98},
+  "tacticlaunch/mcp-linear":{"s": 139, "l": "TypeScript", "lic": "MIT", "p": "2026-06", "f": 33, "i": 1},
+  "trailofbits/skills":{"s": 5868, "l": "Python", "lic": "CC-BY-SA-4.0", "p": "2026-06", "f": 515, "i": 27},
+  "upstash/context7-mcp":{"s": 58101, "l": "TypeScript", "lic": "MIT", "p": "2026-06", "f": 2727, "i": 16},
+  "zxkane/aws-skills":{"s": 323, "l": "Python", "lic": "MIT", "p": "2026-06", "f": 35, "i": 0}
+};
+
+
+function fmt(n){if(n>=1000)return(n/1000).toFixed(n>=10000?0:1)+"k";return String(n)}
+function lc(l){const m={"TypeScript":"ts","Go":"go","Python":"py","JavaScript":"js","Shell":"sh","Java":"java","HTML":"html","Markdown":"md"};return m[l]||"other"}
+function ghOf(url){const m=url.match(/github\.com\/([^/]+\/[^/]+)/);if(!m)return null;const k=m[1].split("/").slice(0,2).join("/");return GH[k]||null}
+function repoOf(url){const m=url.match(/github\.com\/([^/]+\/[^/]+)/);return m?m[1].split("/").slice(0,2).join("/"):""}
+function ownerOf(url){const m=url.match(/github\.com\/([^/]+)/);return m?m[1]:""}
+
+
+// --- DATA: 44 items, MIT or Apache-2.0 only ---
+const DATA = {
+  "Software Development": {
+    icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="width:1.05em;height:1.05em;vertical-align:-0.18em;display:inline-block"><path d="M8.5 8.5 5 12l3.5 3.5M15.5 8.5 19 12l-3.5 3.5M13.2 5.5l-2.4 13"/></svg>',
+    desc:"Code review, security scanning, testing, debugging, and developer tooling for engineering teams.",
+    items:[
+      {n:"GitHub",t:"MCP",s:"Git / VCS",u:"https://github.com/github/github-mcp-server",d:"Official GitHub MCP for repos, issues, pull requests, and code search. The backbone of any modern engineering workflow.",o:true},
+      {n:"Playwright MCP",t:"MCP",s:"Testing",u:"https://github.com/microsoft/playwright-mcp",d:"Official Microsoft browser automation with accessibility snapshots. End-to-end testing for web portals and APIs.",o:true},
+      {n:"Semgrep",t:"MCP",s:"Security",u:"https://github.com/semgrep/mcp",d:"Official Semgrep. AI-driven security scanning for OWASP vulnerabilities, custom rules, and compliance patterns.",o:true},
+      {n:"Context7",t:"MCP",s:"Dev Tools",u:"https://github.com/upstash/context7-mcp",d:"Up-to-date library documentation injected into prompts. Eliminates hallucinated APIs across NestJS, Node, and cloud SDKs.",o:false},
+      {n:"test-driven-development",t:"Skill",s:"Testing",u:"https://github.com/obra/superpowers",d:"Apply TDD rigorously before writing implementation code. A signal of engineering maturity where correctness matters.",o:false},
+      {n:"systematic-debugging",t:"Skill",s:"Debugging",u:"https://github.com/obra/superpowers/tree/main/skills/systematic-debugging",d:"Four-phase root cause analysis. Structured approach to debugging that reduces MTTR in production incidents.",o:false},
+      {n:"code-auditor",t:"Skill",s:"Code Review",u:"https://github.com/mhattingpete/claude-skills-marketplace",d:"Deep codebase analysis covering architecture, quality, security, and performance. Practical for onboarding onto legacy codebases.",o:false},
+      {n:"codebase-documenter",t:"Skill",s:"Docs",u:"https://github.com/mhattingpete/claude-skills-marketplace",d:"Generate documentation explaining how a codebase works. Essential for legacy modernisation engagements.",o:false},
+      {n:"writing-plans",t:"Skill",s:"Planning",u:"https://github.com/obra/superpowers/tree/main/skills/writing-plans",d:"Detailed implementation planning methodology. Structures complex feature work before a line of code is written.",o:false},
+    ]
+  },
+  "Project Management": {
+    icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="width:1.05em;height:1.05em;vertical-align:-0.18em;display:inline-block"><rect x="4.5" y="4.5" width="15" height="16" rx="2"/><path d="M9 4.5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v1.4a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1z"/><path d="M8.2 11.4l1.3 1.3 2.2-2.4M8.2 16.2l1.3 1.3 2.2-2.4M14.4 11.6h2.4M14.4 16.4h2.4"/></svg>',
+    desc:"Issue tracking, wikis, communication, and documentation workflows for distributed engineering teams.",
+    items:[
+      {n:"Atlassian",t:"MCP",s:"Jira / Confluence",u:"https://github.com/sooperset/mcp-atlassian",d:"Most-starred community Atlassian MCP. Jira + Confluence in one server — the standard issue tracking and wiki stack.",o:false},
+      {n:"Notion MCP",t:"MCP",s:"Docs / Wiki",u:"https://github.com/makenotion/notion-mcp-server",d:"Official Notion server for pages, databases, blocks, and search. Widely used for engineering runbooks and ADRs.",o:true},
+      {n:"Slack",t:"MCP",s:"Communication",u:"https://github.com/korotovsky/slack-mcp-server",d:"Most feature-complete community Slack MCP. DMs, channels, thread history, and smart search.",o:false},
+      {n:"Linear",t:"MCP",s:"Issue Tracking",u:"https://github.com/tacticlaunch/mcp-linear",d:"AI-driven interaction with Linear — the modern issue tracker of choice for engineering-led product teams.",o:false},
+      {n:"Jira Expert",t:"Skill",s:"Jira / Confluence",u:"https://github.com/alirezarezvani/claude-skills",d:"Manage Jira issues, sprints, and JQL automation. Practical daily-use skill for delivery managers and engineering leads.",o:false},
+      {n:"confluence-expert",t:"Skill",s:"Jira / Confluence",u:"https://github.com/alirezarezvani/claude-skills",d:"Build and structure Confluence knowledge-base pages and spaces. Standard documentation tool across enterprise clients.",o:false},
+      {n:"feature-planning",t:"Skill",s:"Planning",u:"https://github.com/mhattingpete/claude-skills-marketplace",d:"Break feature requests into implementable engineering task plans. Bridges product specs and engineering execution.",o:false},
+    ]
+  },
+  "Deployment & DevOps": {
+    icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="width:1.05em;height:1.05em;vertical-align:-0.18em;display:inline-block"><path d="M14.8 4.4C11.4 5.7 8.3 8.8 7.2 13l3.8 3.8c4.2-1.1 7.3-4.2 8.6-7.6.5-1.3.6-2.7.5-4-1.3-.1-2.7 0-4 .5z"/><circle cx="14.5" cy="9.5" r="1.7"/><path d="M7.2 13 4.6 13.7l1.7 1.7M11 16.8l.7 2.6 1.7-1.7"/><path d="M5 16.5c-1 1-1.3 3.4-1.3 3.4s2.4-.3 3.4-1.3"/></svg>',
+    desc:"AWS, Kubernetes, IaC, CI/CD pipelines, and observability for cloud-native infrastructure.",
+    items:[
+      {n:"AWS CDK",t:"MCP",s:"IaC / AWS",u:"https://github.com/awslabs/mcp/tree/main/src/cdk-mcp-server",d:"Official AWS Labs. CDK guidance, best practices, and rule explanations. Modern standard for infrastructure-as-code on AWS.",o:true},
+      {n:"Amazon EKS",t:"MCP",s:"Kubernetes",u:"https://github.com/awslabs/mcp/tree/main/src/eks-mcp-server",d:"Official AWS Labs. Kubernetes cluster management and deployment on EKS — standard container orchestration.",o:true},
+      {n:"Amazon CloudWatch",t:"MCP",s:"Observability",u:"https://github.com/awslabs/mcp/tree/main/src/cloudwatch-mcp-server",d:"Official AWS Labs. Metrics, alarms, and log queries for troubleshooting. Primary observability layer for AWS-hosted services.",o:true},
+      {n:"Grafana",t:"MCP",s:"Observability",u:"https://github.com/grafana/mcp-grafana",d:"Official Grafana Labs. Search dashboards, investigate incidents, and query datasources. Standard observability UI.",o:true},
+      {n:"mcp-server-kubernetes",t:"MCP",s:"Kubernetes",u:"https://github.com/Flux159/mcp-server-kubernetes",d:"Popular community K8s MCP. Manage pods, deployments, and services across clusters. Daily-use tool for DevOps engineers.",o:false},
+      {n:"docker-mcp",t:"MCP",s:"Containers",u:"https://github.com/QuantGeekDev/docker-mcp",d:"Run and manage Docker containers, compose stacks, and logs. The foundational container runtime beneath every K8s cluster.",o:false},
+      {n:"Buildkite",t:"MCP",s:"CI/CD",u:"https://github.com/buildkite/buildkite-mcp-server",d:"Official Buildkite. Manage pipelines, builds, and agents. Enterprise-grade CI/CD with strong engineering team adoption.",o:true},
+      {n:"Pulumi",t:"MCP",s:"IaC",u:"https://github.com/pulumi/mcp-server",d:"Official Pulumi. IaC preview, deploy, and stack management in familiar languages. Well-backed Terraform alternative.",o:true},
+      {n:"AWS Lambda Tool",t:"MCP",s:"Cloud / AWS",u:"https://github.com/awslabs/mcp/tree/main/src/lambda-tool-mcp-server",d:"Official AWS Labs. Execute Lambda functions as AI tools. Serverless function invocation in event-driven architectures.",o:true},
+      {n:"AWS Serverless",t:"MCP",s:"Cloud / AWS",u:"https://github.com/awslabs/mcp/tree/main/src/aws-serverless-mcp-server",d:"Official AWS Labs. Serverless application lifecycle management with SAM CLI. Event-driven API patterns.",o:true},
+      {n:"AWS Documentation",t:"MCP",s:"Cloud / AWS",u:"https://github.com/awslabs/mcp/tree/main/src/aws-documentation-mcp-server",d:"Official AWS Labs. Fetch and search official AWS documentation inline. Eliminates context-switching during infra work.",o:true},
+      {n:"AWS Bedrock KB",t:"MCP",s:"Cloud / AWS",u:"https://github.com/awslabs/mcp/tree/main/src/bedrock-kb-retrieval-mcp-server",d:"Official AWS Labs. Query Amazon Bedrock Knowledge Bases. Relevant for RAG-powered AI features and agent pipelines.",o:true},
+      {n:"Datadog",t:"MCP",s:"Observability",u:"https://github.com/datadog-labs/mcp-server",d:"Official Datadog. Logs, metrics, traces, and incident management. Most widely used APM platform in production environments.",o:true},
+      {n:"k8s-platform-operations",t:"Skill",s:"Kubernetes",u:"https://github.com/foxj77/claude-code-skills",d:"Kubernetes day-2 operations and incident response playbook. Where most teams struggle — beyond initial cluster setup.",o:false},
+      {n:"aws-skills",t:"Skill",s:"Cloud / AWS",u:"https://github.com/zxkane/aws-skills",d:"AWS development with CDK best practices and serverless patterns. Directly relevant to AWS-heavy delivery stacks.",o:false},
+    ]
+  },
+  "Data & Databases": {
+    icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="width:1.05em;height:1.05em;vertical-align:-0.18em;display:inline-block"><ellipse cx="12" cy="5.8" rx="7" ry="2.8"/><path d="M5 5.8v6.1c0 1.55 3.13 2.8 7 2.8s7-1.25 7-2.8V5.8"/><path d="M5 11.9v6.3c0 1.55 3.13 2.8 7 2.8s7-1.25 7-2.8v-6.3"/></svg>',
+    desc:"Postgres, Redis, Kafka, dbt, and data tooling for event-driven and analytics-heavy platforms.",
+    items:[
+      {n:"postgres-mcp",t:"MCP",s:"PostgreSQL",u:"https://github.com/crystaldba/postgres-mcp",d:"All-in-one Postgres MCP with query analysis, index tuning, and health checks. Definitive tool for Postgres in production.",o:false},
+      {n:"Confluent (Kafka)",t:"MCP",s:"Event Streaming",u:"https://github.com/confluentinc/mcp-confluent",d:"Official Confluent. Interact with Kafka topics, schemas, and Cloud REST API. Backbone of event-driven architectures.",o:true},
+      {n:"redis/mcp-redis",t:"MCP",s:"Redis",u:"https://github.com/redis/mcp-redis",d:"Official Redis MCP. Manage and search Redis data. Caching, session storage, and rate limiting standard in API layers.",o:true},
+      {n:"ClickHouse",t:"MCP",s:"Analytics DB",u:"https://github.com/ClickHouse/mcp-clickhouse",d:"Official ClickHouse. Schema inspection and real-time queries. Growing fast for fraud detection and transaction analytics.",o:true},
+      {n:"MongoDB Atlas",t:"MCP",s:"NoSQL",u:"https://github.com/mongodb-labs/atlas-mcp-server",d:"Official MongoDB Labs. Interact with Atlas clusters. Standard managed MongoDB for document-heavy services.",o:true},
+      {n:"Supabase",t:"MCP",s:"PostgreSQL",u:"https://github.com/supabase-community/supabase-mcp",d:"Official Supabase community MCP. Table management and querying for teams using Supabase as their Postgres backend.",o:true},
+      {n:"Elasticsearch",t:"MCP",s:"Search",u:"https://github.com/cr7258/elasticsearch-mcp-server",d:"Elasticsearch queries and index management. Widely used for full-text transaction search and audit log querying.",o:false},
+      {n:"DataHub",t:"MCP",s:"Data Governance",u:"https://github.com/acryldata/mcp-server-datahub",d:"Metadata and lineage queries via DataHub. Data governance increasingly required in regulated environments.",o:false},
+      {n:"dbt",t:"MCP",s:"Data / ETL",u:"https://github.com/dbt-labs/dbt-mcp",d:"Official dbt Labs. Core and Cloud CLI integration. dbt is the standard transformation layer in modern data stacks.",o:true},
+    ]
+  },
+  "Productivity & Automation": {
+    icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="width:1.05em;height:1.05em;vertical-align:-0.18em;display:inline-block"><circle cx="12" cy="12" r="2.7"/><path d="M19.3 13.1a7.6 7.6 0 0 0 0-2.2l1.9-1.5-1.9-3.3-2.25 1a7.4 7.4 0 0 0-1.9-1.1L14.7 3.5h-3.4l-.45 2.5a7.4 7.4 0 0 0-1.9 1.1l-2.25-1L4.8 9.4l1.9 1.5a7.6 7.6 0 0 0 0 2.2l-1.9 1.5 1.9 3.3 2.25-1a7.4 7.4 0 0 0 1.9 1.1l.45 2.5h3.4l.45-2.5a7.4 7.4 0 0 0 1.9-1.1l2.25 1 1.9-3.3z"/></svg>',
+    desc:"Document generation, payments, browser automation, and workflow tooling used across delivery teams.",
+    items:[
+      {n:"Stripe Agent Toolkit",t:"MCP",s:"Payments",u:"https://github.com/stripe/agent-toolkit",d:"Official Stripe. Payments, invoices, subscriptions, and dispute management. The most widely integrated payments API.",o:true},
+      {n:"Square",t:"MCP",s:"Payments",u:"https://github.com/square/square-mcp-server",d:"Official Square. Payment platform MCP for merchants, point-of-sale, and embedded finance. Complements Stripe.",o:true},
+      {n:"Figma",t:"MCP",s:"Design",u:"https://github.com/figma/mcp-server-figma",d:"Official Figma. Design collaboration, component access, and design-to-code workflows. Standard in product teams.",o:true},
+      {n:"Firecrawl",t:"MCP",s:"Web",u:"https://github.com/firecrawl/firecrawl-mcp-server",d:"Official Firecrawl. Web scraping, content extraction, and site search. Useful for regulatory page monitoring.",o:true},
+      {n:"frontend-design",t:"Skill",s:"Code Gen",u:"https://github.com/anthropics/skills/tree/main/skills/frontend-design",d:"Official Anthropic. Distinctive frontend UI/UX in React and Tailwind. Avoids generic templated aesthetics in portals and dashboards.",o:true},
+      {n:"skill-creator",t:"Skill",s:"Dev Tools",u:"https://github.com/anthropics/skills",d:"Official Anthropic. Create, edit, and optimise Claude Agent Skills. Shows the team builds and maintains its own AI tooling.",o:true},
+      {n:"doc-coauthoring",t:"Skill",s:"Docs",u:"https://github.com/anthropics/skills/tree/main/skills/doc-coauthoring",d:"Official Anthropic. Structured workflow for co-authoring specs, RFP responses, and technical proposals.",o:true},
+      {n:"xlsx",t:"Skill",s:"Documents",u:"https://github.com/anthropics/skills/tree/main/skills/xlsx",d:"Official Anthropic. Create, read, and edit Excel files with formulas and charts. Finance and ops teams live in spreadsheets.",o:true},
+      {n:"docx",t:"Skill",s:"Documents",u:"https://github.com/anthropics/skills/tree/main/skills/docx",d:"Official Anthropic. Create and edit Word documents with tracked changes. Proposals, SOWs, and specs still delivered as .docx.",o:true},
+      {n:"pdf",t:"Skill",s:"Documents",u:"https://github.com/anthropics/skills/tree/main/skills/pdf",d:"Official Anthropic. Read, create, merge, and fill PDFs. Contracts, regulatory submissions, and compliance reports.",o:true},
+      {n:"pptx",t:"Skill",s:"Documents",u:"https://github.com/anthropics/skills/tree/main/skills/pptx",d:"Official Anthropic. Create and edit PowerPoint presentations. Architecture walkthroughs, investor decks, and proposals.",o:true},
+      {n:"mcp-builder",t:"Skill",s:"Dev Tools",u:"https://github.com/anthropics/skills/tree/main/skills/mcp-builder",d:"Official Anthropic. Guide for building MCP servers integrating external APIs. Shows the team builds its own AI tooling.",o:true},
+      {n:"webapp-testing",t:"Skill",s:"Testing",u:"https://github.com/anthropics/skills/tree/main/skills/webapp-testing",d:"Official Anthropic. Tests local web applications using Playwright. Pairs directly with the Playwright MCP.",o:true},
+      {n:"web-artifacts-builder",t:"Skill",s:"Code Gen",u:"https://github.com/anthropics/skills/tree/main/skills/web-artifacts-builder",d:"Official Anthropic. Build multi-component web artifacts with React, Tailwind, and shadcn/ui for demos and dashboards.",o:true},
+    ]
+  }
+};
+
+
+// --- BOOT ---
+let total=0,mcp=0,skl=0,off=0;
+const cats=Object.keys(DATA);
+cats.forEach(c=>DATA[c].items.forEach(i=>{total++;i.t==="MCP"?mcp++:skl++;if(i.o)off++}));
+
+// --- CHIPS ---
+const chEl=document.getElementById("chips");
+let activeCat="All",query="";
+function mkChip(lbl,cnt,val){
+  const el=document.createElement("span");
+  el.className="chip"+(val===activeCat?" active":"");
+  el.dataset.cat=val;
+  el.innerHTML=`${lbl} <span class="c">${cnt}</span>`;
+  return el;
+}
+chEl.appendChild(mkChip("All",total,"All"));
+cats.forEach(c=>chEl.appendChild(mkChip(DATA[c].icon+" "+c,DATA[c].items.length,c)));
+chEl.addEventListener("click",e=>{
+  const ch=e.target.closest(".chip");if(!ch)return;
+  activeCat=ch.dataset.cat||"All";
+  [...chEl.querySelectorAll(".chip")].forEach(c=>c.classList.toggle("active",c.dataset.cat===activeCat));
+  render();
+});
+document.getElementById("search").addEventListener("input",e=>{query=e.target.value.toLowerCase().trim();render()});
+
+// --- HELPERS ---
+function esc(s){return s.replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
+function hl(s){if(!query)return esc(s);const i=s.toLowerCase().indexOf(query);if(i<0)return esc(s);return esc(s.slice(0,i))+"<mark>"+esc(s.slice(i,i+query.length))+"</mark>"+esc(s.slice(i+query.length))}
+function match(it){if(query){const h=(it.n+" "+it.s+" "+it.d+" "+it.t).toLowerCase();if(!h.includes(query))return false}return true}
+
+// Cards are native <a> links — navigation is handled by the browser.
+
+// --- RENDER (single grid, mirrors home page) ---
+const catsEl=document.getElementById("cats");
+catsEl.addEventListener("pointermove",e=>{
+  const c=e.target.closest(".app-card");if(!c)return;
+  const r=c.getBoundingClientRect();
+  c.style.setProperty("--mx",(e.clientX-r.left)+"px");
+  c.style.setProperty("--my",(e.clientY-r.top)+"px");
+});
+function render(){
+  const container=document.getElementById("cats");
+  container.innerHTML="";
+  const list=activeCat==="All"?cats:[activeCat];
+  const flat=[];
+  list.forEach(c=>{DATA[c].items.filter(match).forEach(it=>flat.push({it,icon:DATA[c].icon}));});
+  const shown=flat.length;
+  if(shown){
+    const grid=document.createElement("div");
+    grid.className="apps-grid";
+    flat.forEach(({it,icon})=>{
+      const gh=ghOf(it.u);
+      const stars=gh?fmt(gh.s):"—";
+      const lang=gh?gh.l:"";
+      const owner=ownerOf(it.u);
+      const langCls=lc(lang);
+      const a=document.createElement("a");
+      a.className="app-card";
+      a.href=it.u; a.target="_blank"; a.rel="noopener noreferrer";
+      a.innerHTML=`
+        <div class="ac-top">
+          <span class="ac-icon">${icon}</span>
+          <span class="ac-badge ${it.t==="MCP"?"mcp":"skill"}">${it.t}</span>
+        </div>
+        <div class="ac-name">${hl(it.n)}</div>
+        <div class="ac-sub">${hl(it.s)}${it.o?' · <span class="ac-off">official</span>':""}</div>
+        <div class="ac-desc">${hl(it.d)}</div>
+        <div class="ac-meta">
+          <span class="ac-stat"><span class="ac-star">★</span> <span class="stars-n">${stars}</span></span>
+          ${lang?`<span class="ac-stat"><span class="ldot ${langCls}"></span>${lang}</span>`:""}
+          <span class="ac-src">↗ ${esc(owner)}</span>
+        </div>`;
+      grid.appendChild(a);
+    });
+    container.appendChild(grid);
+  }
+  document.getElementById("empty").style.display=shown===0?"block":"none";
+  const parts=[`${shown} skill${shown!==1?"s":""}`];
+  if(activeCat!=="All")parts.push("in "+activeCat);
+  if(query)parts.push(`matching "${query}"`);
+  document.getElementById("meta").textContent="Showing "+parts.join(" · ");
+}
+render();
+</script>
+</body>
+</html>

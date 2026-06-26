@@ -1,0 +1,540 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Discovery Agent — Migration Pipeline</title>
+<meta name="description" content="Stage 01 of the migration pipeline: scans legacy code and catalogs every business rule, dependency, and ambiguity into the Migration Knowledge Base.">
+
+<style>
+  :root {
+    --ink:        #0B0B0D;
+    --ink-2:      #111218;
+    --surface:    #15171F;
+    --surface-2:  #1B1E27;
+    --line:       #2B2E38;
+    --line-soft:  #20222B;
+    --text:       #E7E3D6;
+    --muted:      #A6A296;
+    --faint:      #6E6A5E;
+    --accent:     #F5C010;
+    --accent-2:   #FFD43B;
+    --accent-dim: rgba(245,192,16,.13);
+    --accent-line:rgba(245,192,16,.30);
+
+    --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+    --font-mono: ui-monospace, "SF Mono", "JetBrains Mono", "Menlo", "Consolas", monospace;
+
+    --maxw: 1060px;
+    --step: clamp(2.4rem, 6vw, 4.5rem);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background:
+      radial-gradient(120% 80% at 80% -10%, rgba(245,192,16,.07), transparent 55%),
+      var(--ink);
+    color: var(--text);
+    font-family: var(--font-sans);
+    font-size: 17px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection { background: var(--accent-dim); color: var(--accent-2); }
+
+  .wrap {
+    max-width: var(--maxw);
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  a { color: var(--accent-2); text-decoration: none; }
+  a:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+  /* ---- shared typographic atoms ---- */
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: .72rem;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0;
+  }
+  .label {
+    font-family: var(--font-mono);
+    font-size: .68rem;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--faint);
+  }
+  h1, h2, h3 { text-wrap: balance; font-weight: 650; letter-spacing: -.02em; line-height: 1.08; }
+  .mono { font-family: var(--font-mono); }
+  .num  { font-family: var(--font-mono); font-variant-numeric: tabular-nums; color: var(--accent); }
+
+  /* ===== top bar ===== */
+  .topbar {
+    border-bottom: 1px solid var(--line-soft);
+    position: sticky; top: 0; z-index: 20;
+    background: rgba(11,11,13,.78);
+    backdrop-filter: blur(10px);
+  }
+  .topbar .wrap {
+    display: flex; align-items: center; justify-content: space-between;
+    height: 56px;
+  }
+  .brand { display: flex; align-items: center; gap: 10px; font-family: var(--font-mono); font-size: .8rem; letter-spacing: .04em; color: var(--muted); }
+  .brand b { color: var(--text); font-weight: 600; }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 10px var(--accent); }
+  .topbar nav { display: flex; gap: 22px; }
+  .topbar nav a { color: var(--muted); font-family: var(--font-mono); font-size: .74rem; letter-spacing: .04em; }
+  .topbar nav a:hover { color: var(--text); text-decoration: none; }
+  @media (max-width: 680px){ .topbar nav { display: none; } }
+
+  /* ===== pipeline strip ===== */
+  .pipeline {
+    border-bottom: 1px solid var(--line-soft);
+    background: var(--ink-2);
+  }
+  .pipeline .wrap {
+    display: flex; align-items: center; gap: 6px;
+    overflow-x: auto; padding-top: 14px; padding-bottom: 14px;
+    scrollbar-width: none;
+  }
+  .pipeline .wrap::-webkit-scrollbar { display: none; }
+  .stage {
+    display: inline-flex; align-items: baseline; gap: 9px;
+    white-space: nowrap;
+    font-family: var(--font-mono); font-size: .78rem;
+    color: var(--faint);
+    padding: 5px 12px; border-radius: 999px;
+    border: 1px solid transparent;
+  }
+  .stage .s-n { font-size: .68rem; opacity: .8; }
+  .stage.active { color: var(--text); border-color: var(--accent-line); background: var(--accent-dim); }
+  .stage.active .s-n { color: var(--accent); opacity: 1; }
+  .stage.done { color: var(--muted); }
+  .arr { color: var(--line); font-family: var(--font-mono); }
+
+  /* ===== hero ===== */
+  .hero { padding: var(--step) 0 calc(var(--step) * .7); }
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1.05fr .95fr;
+    gap: 48px;
+    align-items: center;
+  }
+  @media (max-width: 880px){ .hero-grid { grid-template-columns: 1fr; gap: 36px; } }
+
+  .hero h1 {
+    font-size: clamp(2.6rem, 6.4vw, 4.2rem);
+    margin: 18px 0 0;
+  }
+  .hero .lede {
+    color: var(--muted);
+    font-size: 1.12rem;
+    max-width: 46ch;
+    margin: 20px 0 0;
+  }
+  .hero-meta {
+    display: flex; flex-wrap: wrap; gap: 10px 26px; margin-top: 28px;
+    font-family: var(--font-mono); font-size: .76rem; color: var(--muted);
+  }
+  .hero-meta span b { color: var(--text); font-weight: 600; }
+
+  /* ---- scanner specimen card ---- */
+  .scanner {
+    position: relative;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: linear-gradient(180deg, var(--surface), var(--ink-2));
+    overflow: hidden;
+    box-shadow: 0 24px 60px -30px rgba(0,0,0,.8);
+  }
+  .scanner-head {
+    display: flex; align-items: center; gap: 8px;
+    padding: 11px 14px; border-bottom: 1px solid var(--line-soft);
+    font-family: var(--font-mono); font-size: .72rem; color: var(--faint);
+  }
+  .tl { display: flex; gap: 6px; margin-right: 6px; }
+  .tl i { width: 9px; height: 9px; border-radius: 50%; background: var(--line); display: block; }
+  .scan-body { position: relative; }
+  pre.code {
+    margin: 0; padding: 18px 18px 20px;
+    font-family: var(--font-mono); font-size: .78rem; line-height: 1.75;
+    color: #aeb9c5; overflow-x: auto; tab-size: 2;
+  }
+  pre.code .k { color: #ffcf6a; }
+  pre.code .s { color: #88c9a1; }
+  pre.code .c { color: #56616e; font-style: italic; }
+  pre.code .f { color: #e4d290; }
+  pre.code .n { color: #d8a0d8; }
+
+  .scanline {
+    position: absolute; left: 0; right: 0; top: 0; height: 38px;
+    background: linear-gradient(180deg, transparent, rgba(245,192,16,.16) 70%, var(--accent-line));
+    border-bottom: 1px solid var(--accent);
+    box-shadow: 0 0 22px 2px rgba(245,192,16,.25);
+    pointer-events: none;
+    animation: sweep 5.4s cubic-bezier(.6,0,.4,1) infinite;
+  }
+  @keyframes sweep {
+    0%   { transform: translateY(-40px); opacity: 0; }
+    8%   { opacity: 1; }
+    72%  { opacity: 1; }
+    85%  { transform: translateY(330px); opacity: 0; }
+    100% { transform: translateY(330px); opacity: 0; }
+  }
+
+  .findings {
+    border-top: 1px solid var(--line-soft);
+    padding: 14px; display: flex; flex-direction: column; gap: 8px;
+    background: var(--ink-2);
+  }
+  .finding {
+    display: flex; align-items: center; gap: 10px;
+    font-family: var(--font-mono); font-size: .73rem;
+    padding: 8px 11px; border-radius: 7px;
+    border: 1px solid var(--line-soft); background: var(--surface);
+    opacity: 0; transform: translateX(8px);
+    animation: pop .5s ease forwards;
+  }
+  .finding .tag {
+    font-size: .62rem; letter-spacing: .1em; text-transform: uppercase;
+    padding: 2px 7px; border-radius: 4px; color: var(--ink);
+    background: var(--accent); font-weight: 700; flex-shrink: 0;
+  }
+  .finding .tag.alt { background: transparent; color: var(--accent); border: 1px solid var(--accent-line); }
+  .finding .txt { color: var(--text); }
+  .finding .meta { margin-left: auto; color: var(--faint); flex-shrink: 0; }
+  .finding:nth-child(1){ animation-delay: 1.1s; }
+  .finding:nth-child(2){ animation-delay: 1.7s; }
+  .finding:nth-child(3){ animation-delay: 2.3s; }
+  .finding:nth-child(4){ animation-delay: 2.9s; }
+  @keyframes pop { to { opacity: 1; transform: translateX(0); } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .scanline { animation: none; opacity: .9; top: 120px; }
+    .finding { animation: none; opacity: 1; transform: none; }
+  }
+
+  /* ===== generic section ===== */
+  .section { padding: calc(var(--step) * .72) 0; border-top: 1px solid var(--line-soft); }
+  .section-head { max-width: 56ch; margin-bottom: 38px; }
+  .section-head h2 { font-size: clamp(1.7rem, 3.4vw, 2.4rem); margin: 12px 0 0; }
+  .section-head p { color: var(--muted); margin: 14px 0 0; }
+
+  /* prose */
+  .prose p { color: var(--muted); max-width: 64ch; margin: 0 0 16px; }
+  .prose strong { color: var(--text); font-weight: 600; }
+
+  /* ===== capability grid ===== */
+  .cap-grid {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px;
+    background: var(--line-soft);
+    border: 1px solid var(--line-soft); border-radius: 12px; overflow: hidden;
+  }
+  @media (max-width: 720px){ .cap-grid { grid-template-columns: 1fr; } }
+  .cap {
+    background: var(--surface); padding: 22px 22px 24px;
+    display: flex; flex-direction: column; gap: 9px;
+    transition: background .18s ease;
+  }
+  .cap:hover { background: var(--surface-2); }
+  .cap .cap-id { font-family: var(--font-mono); font-size: .7rem; color: var(--accent); letter-spacing: .1em; }
+  .cap h3 { font-size: 1.06rem; margin: 0; }
+  .cap p { margin: 0; color: var(--muted); font-size: .92rem; line-height: 1.55; }
+
+  /* ===== steps ===== */
+  .steps { display: flex; flex-direction: column; gap: 0; }
+  .step {
+    display: grid; grid-template-columns: 64px 1fr; gap: 20px;
+    padding: 22px 0; border-top: 1px solid var(--line-soft);
+  }
+  .step:first-child { border-top: none; }
+  .step .st-n {
+    font-family: var(--font-mono); font-size: 1.5rem; color: var(--accent);
+    font-variant-numeric: tabular-nums; line-height: 1; padding-top: 2px;
+  }
+  .step h3 { font-size: 1.1rem; margin: 0 0 6px; }
+  .step p { margin: 0; color: var(--muted); font-size: .95rem; max-width: 60ch; }
+
+  /* ===== output schema ===== */
+  .schema {
+    display: grid; grid-template-columns: repeat(2,1fr); gap: 10px;
+  }
+  @media (max-width: 720px){ .schema { grid-template-columns: 1fr; } }
+  .field {
+    border: 1px solid var(--line-soft); border-radius: 9px;
+    padding: 15px 16px; background: var(--surface);
+    display: flex; flex-direction: column; gap: 5px;
+  }
+  .field .fname { font-family: var(--font-mono); font-size: .85rem; color: var(--text); }
+  .field .fname .br { color: var(--accent); }
+  .field .fdesc { font-size: .85rem; color: var(--muted); }
+
+  .conf {
+    margin-top: 26px; border: 1px solid var(--accent-line); border-radius: 10px;
+    background: var(--accent-dim); padding: 18px 20px;
+    display: flex; align-items: center; gap: 18px; flex-wrap: wrap;
+  }
+  .conf .meter { display: flex; gap: 4px; }
+  .conf .seg { width: 26px; height: 10px; border-radius: 2px; background: var(--line); }
+  .conf .seg.on { background: var(--accent); }
+  .conf .conf-txt { font-family: var(--font-mono); font-size: .8rem; color: var(--muted); }
+  .conf .conf-txt b { color: var(--text); }
+
+  /* ===== principles ===== */
+  .principles { display: grid; grid-template-columns: repeat(3,1fr); gap: 18px; }
+  @media (max-width: 720px){ .principles { grid-template-columns: 1fr; } }
+  .principle {
+    border-top: 2px solid var(--accent); padding-top: 16px;
+  }
+  .principle h3 { font-size: 1.02rem; margin: 0 0 7px; }
+  .principle p { margin: 0; color: var(--muted); font-size: .9rem; }
+
+  /* ===== spec table ===== */
+  .specs { border: 1px solid var(--line-soft); border-radius: 12px; overflow: hidden; }
+  .spec-row {
+    display: grid; grid-template-columns: 220px 1fr;
+    border-top: 1px solid var(--line-soft);
+  }
+  .spec-row:first-child { border-top: none; }
+  .spec-row dt {
+    padding: 14px 18px; background: var(--ink-2);
+    font-family: var(--font-mono); font-size: .76rem; letter-spacing: .04em;
+    color: var(--muted);
+  }
+  .spec-row dd {
+    margin: 0; padding: 14px 18px; color: var(--text);
+    font-family: var(--font-mono); font-size: .82rem;
+  }
+  @media (max-width: 560px){ .spec-row { grid-template-columns: 1fr; } .spec-row dd { padding-top: 0; } }
+
+  /* ===== footer / next ===== */
+  .next {
+    border-top: 1px solid var(--line-soft);
+    padding: var(--step) 0;
+  }
+  .next-card {
+    display: flex; align-items: center; justify-content: space-between; gap: 20px;
+    border: 1px solid var(--line); border-radius: 12px;
+    padding: 24px 26px; background: var(--surface);
+    flex-wrap: wrap;
+  }
+  .next-card .nx-l .label { display: block; margin-bottom: 6px; }
+  .next-card h3 { font-size: 1.35rem; margin: 0; }
+  .next-card a.go {
+    font-family: var(--font-mono); font-size: .82rem; color: var(--accent);
+    border: 1px solid var(--accent-line); border-radius: 8px; padding: 11px 18px;
+    background: var(--accent-dim);
+  }
+  .next-card a.go:hover { background: rgba(245,192,16,.2); text-decoration: none; }
+
+  footer.foot {
+    border-top: 1px solid var(--line-soft); padding: 28px 0 48px;
+    color: var(--faint); font-family: var(--font-mono); font-size: .72rem;
+    display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap">
+    <div class="brand"><span class="dot"></span> Migration&nbsp;<b>Orchestrator</b></div>
+    <nav>
+      <a href="/toolkit">Back to Internal Agents</a>
+      <a href="#what">Overview</a>
+      <a href="#caps">Capabilities</a>
+      <a href="#how">How it works</a>
+      <a href="#output">Output</a>
+      <a href="#specs">Specs</a>
+    </nav>
+  </div>
+</header>
+
+<div class="pipeline">
+  <div class="wrap">
+    <span class="stage active"><span class="s-n">01</span> Discovery</span>
+    <span class="arr">→</span>
+    <span class="stage"><span class="s-n">02</span> Comprehension</span>
+    <span class="arr">→</span>
+    <span class="stage"><span class="s-n">03</span> Architecture</span>
+    <span class="arr">→</span>
+    <span class="stage"><span class="s-n">04</span> Validation</span>
+  </div>
+</div>
+
+<main>
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <p class="eyebrow">Pipeline Stage 01 · Inventory &amp; Catalog</p>
+        <h1>Discovery Agent</h1>
+        <p class="lede">It reads legacy source the way a senior engineer does on day one — cataloging every function, surfacing the business rules buried in the code, and flagging every ambiguity that still needs a human answer.</p>
+        <div class="hero-meta">
+          <span>Engine&nbsp; <b>claude --print</b></span>
+          <span>Model&nbsp; <b>Sonnet 4.6</b></span>
+          <span>Output&nbsp; <b>MKB entry (JSON)</b></span>
+        </div>
+      </div>
+
+      <div class="scanner" aria-hidden="true">
+        <div class="scanner-head">
+          <span class="tl"><i></i><i></i><i></i></span>
+          legacy/billing/payout.py
+        </div>
+        <div class="scan-body">
+          <div class="scanline"></div>
+<pre class="code"><span class="k">def</span> <span class="f">calculate_payout</span>(amount, tier, region):
+    <span class="c"># legacy rule — origin unknown</span>
+    fee = amount * <span class="n">0.029</span> + <span class="n">0.30</span>
+    <span class="k">if</span> tier == <span class="s">"gold"</span>:
+        fee = fee * <span class="n">0.5</span>
+    <span class="k">if</span> region <span class="k">in</span> (<span class="s">"EU"</span>, <span class="s">"UK"</span>):
+        fee += amount * <span class="n">0.004</span>   <span class="c"># ??? undocumented</span>
+    payout = amount - fee
+    <span class="k">return</span> round(payout, <span class="n">2</span>)</pre>
+        </div>
+        <div class="findings">
+          <div class="finding"><span class="tag">Rule</span><span class="txt">BR-BILLIN-001 · Processing fee</span><span class="meta">HIGH</span></div>
+          <div class="finding"><span class="tag">Rule</span><span class="txt">BR-BILLIN-002 · Gold tier discount</span><span class="meta">HIGH</span></div>
+          <div class="finding"><span class="tag alt">Flag</span><span class="txt">EU/UK surcharge — undocumented</span><span class="meta">AMBIG.</span></div>
+          <div class="finding"><span class="tag alt">Dep</span><span class="txt">internal · none external</span><span class="meta">LOW</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="what">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">Overview</p>
+        <h2>What it does</h2>
+      </div>
+      <div class="prose">
+        <p>Point it at a legacy codebase and the Discovery Agent works through it one file at a time, producing a structured inventory entry for the <strong>Migration Knowledge Base</strong>. It separates real domain logic — validations, calculations, decisions, workflows — from framework plumbing like logging and error handling.</p>
+        <p>Its governing rule is restraint: <strong>extract only what is actually in the code</strong>. Where the code is unclear, it never quietly guesses — it records the ambiguity, its best interpretation, and exactly what input from a subject-matter expert would resolve it.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="caps">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">Capabilities</p>
+        <h2>What it extracts from every file</h2>
+      </div>
+      <div class="cap-grid">
+        <div class="cap"><span class="cap-id">/ inventory</span><h3>Code inventory</h3><p>Every function, class, and method — with line ranges, a one-line purpose, and a complexity estimate.</p></div>
+        <div class="cap"><span class="cap-id">/ business_rules</span><h3>Business-rule extraction</h3><p>Domain logic captured as plain-English rules with traceable IDs, pseudocode, inputs, outputs, and edge cases.</p></div>
+        <div class="cap"><span class="cap-id">/ dependencies</span><h3>Dependency mapping</h3><p>Classifies internal, external, infrastructure, and library dependencies and how each is used.</p></div>
+        <div class="cap"><span class="cap-id">/ data_structures</span><h3>Data-structure analysis</h3><p>Captures fields and the relationships between the structures a file defines or touches.</p></div>
+        <div class="cap"><span class="cap-id">/ complexity · dead_code</span><h3>Risk flagging</h3><p>Surfaces complexity hotspots and suspected dead code with severity ratings and supporting evidence.</p></div>
+        <div class="cap"><span class="cap-id">/ ambiguities</span><h3>Ambiguity detection</h3><p>Documents each uncertainty with a best-guess reading and the exact SME input needed to resolve it.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="how">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">Mechanics</p>
+        <h2>How it works</h2>
+        <p>A single file passes through five steps, from raw source to a validated knowledge-base entry.</p>
+      </div>
+      <div class="steps">
+        <div class="step"><div class="st-n">01</div><div><h3>Language detection</h3><p>Infers the language from the file extension — Python, JS/TS, Java, C#, Go, Ruby, SQL, YAML, JSON, XML, Bash, TOML.</p></div></div>
+        <div class="step"><div class="st-n">02</div><div><h3>Adaptive model selection</h3><p>Routes high-complexity files to a stronger model tier and standard files to the default, balancing depth against cost and speed.</p></div></div>
+        <div class="step"><div class="st-n">03</div><div><h3>Smart truncation</h3><p>Caps very large files at 800 lines to stay within prompt limits without timing out, noting what was trimmed.</p></div></div>
+        <div class="step"><div class="st-n">04</div><div><h3>Context-aware prompting</h3><p>Includes the application, module, and summaries of related already-analyzed files so findings stay coherent across the codebase.</p></div></div>
+        <div class="step"><div class="st-n">05</div><div><h3>Structured output</h3><p>Returns strict JSON validated into a discovery record. Unparseable responses degrade to a flagged, zero-confidence entry — never a crash.</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="output">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">Deliverable</p>
+        <h2>The knowledge-base entry</h2>
+        <p>Each file produces one structured record, written into the Migration Knowledge Base.</p>
+      </div>
+      <div class="schema">
+        <div class="field"><span class="fname">inventory</span><span class="fdesc">Functions, classes &amp; methods with line ranges and complexity.</span></div>
+        <div class="field"><span class="fname"><span class="br">business_rules</span></span><span class="fdesc">Domain logic with BR-{module}-{seq} IDs, pseudocode &amp; edge cases.</span></div>
+        <div class="field"><span class="fname">dependencies</span><span class="fdesc">Internal / external / infrastructure / library, with usage notes.</span></div>
+        <div class="field"><span class="fname">data_structures</span><span class="fdesc">Fields and the relationships between them.</span></div>
+        <div class="field"><span class="fname">complexity_flags</span><span class="fdesc">Hotspots with location and severity.</span></div>
+        <div class="field"><span class="fname">dead_code</span><span class="fdesc">Suspected unused code with evidence and confidence.</span></div>
+        <div class="field"><span class="fname"><span class="br">ambiguities</span></span><span class="fdesc">Each with a best interpretation and the SME input that resolves it.</span></div>
+        <div class="field"><span class="fname">overall_confidence</span><span class="fdesc">A 0–1 score for the whole file's analysis.</span></div>
+      </div>
+      <div class="conf">
+        <div class="meter">
+          <span class="seg on"></span><span class="seg on"></span><span class="seg on"></span>
+          <span class="seg on"></span><span class="seg on"></span><span class="seg on"></span>
+          <span class="seg"></span><span class="seg"></span><span class="seg"></span><span class="seg"></span>
+        </div>
+        <span class="conf-txt">Quality gate &mdash; entries scoring below <b>0.60</b> are flagged for SME review before the pipeline advances.</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">Operating principles</p>
+        <h2>The rules it works by</h2>
+      </div>
+      <div class="principles">
+        <div class="principle"><h3>No hallucination</h3><p>Extract only what is present in the code. Nothing is invented to fill a gap.</p></div>
+        <div class="principle"><h3>Business vs. technical</h3><p>Logic a stakeholder would recognize is kept separate from framework plumbing.</p></div>
+        <div class="principle"><h3>Surface every ambiguity</h3><p>Uncertainty is documented explicitly and routed for resolution — never resolved silently.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="specs">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">Technical specifications</p>
+        <h2>At a glance</h2>
+      </div>
+      <dl class="specs">
+        <div class="spec-row"><dt>Pipeline stage</dt><dd>01 — Discovery</dd></div>
+        <div class="spec-row"><dt>Engine</dt><dd>Claude Code CLI &middot; claude --print</dd></div>
+        <div class="spec-row"><dt>Default model</dt><dd>claude-sonnet-4-6 (standard &amp; high-complexity)</dd></div>
+        <div class="spec-row"><dt>Max file size</dt><dd>800 lines &middot; auto-truncated</dd></div>
+        <div class="spec-row"><dt>Output format</dt><dd>Structured JSON — Migration Knowledge Base</dd></div>
+        <div class="spec-row"><dt>Review threshold</dt><dd>confidence &lt; 0.60 — flagged for SME</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="next">
+    <div class="wrap">
+      <div class="next-card">
+        <div class="nx-l">
+          <span class="label">Next in the pipeline</span>
+          <h3>Comprehension Agent →</h3>
+        </div>
+        <a class="go" href="#">Stage 02</a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <div class="wrap" style="display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;width:100%;padding:0 24px;">
+      <span>Migration Orchestrator · Agent Catalog</span>
+      <span>Discovery Agent · Stage 01 / 04</span>
+    </div>
+  </footer>
+</main>
+
+</body>
+</html>
