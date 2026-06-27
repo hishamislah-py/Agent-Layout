@@ -70,7 +70,7 @@ export default function ToolkitHub() {
           >
             <div className="int-group">
               <div className="int-group-head">
-                <h3>Internal Agents</h3>
+                <h3>Engineering Agents</h3>
                 <span className="cat-count">{INTERNAL_AGENTS.length}</span>
               </div>
               <div className="apps-grid int-grid">
