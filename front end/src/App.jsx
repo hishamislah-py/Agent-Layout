@@ -65,7 +65,7 @@ export default function App() {
             </button>
             <button className="gw-card" style={{ '--accent': '#E0A40C' }} onMouseMove={onMove} onClick={() => { window.location.href = '/external-agents.html' }}>
               <span className="gw-icon"><img src="/gateway/external-skills.png" alt="" /></span>
-              <h3 className="gw-title">External Skills</h3>
+              <h3 className="gw-title">Skill Library</h3>
               <p className="gw-desc">A curated catalog of open-source Agent Skills and MCP servers.</p>
               <span className="gw-cta">View catalog</span>
             </button>

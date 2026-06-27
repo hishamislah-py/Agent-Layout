@@ -10,7 +10,7 @@
 // overview page instead. So this is drop-in: just set `href` later.
 
 // Display name + route for this section (the "Toolkit" page).
-export const HUB_NAME = 'Internal Agents'
+export const HUB_NAME = 'Engineering Agents'
 export const HUB_PATH = '/toolkit'
 
 // Open an internal item: external href → new tab, bundled href → full page,
