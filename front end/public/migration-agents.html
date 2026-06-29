@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/png" href="/Logo%20(2).png" />
 <title>Send2 Migration · Agent Catalog</title>
 <meta name="description" content="Detailed reference for every agent in the Send2 equivalence-first migration pipeline — 26 specialized agents across 8 phases.">
 <style>
@@ -101,7 +102,9 @@
   .prose strong { color: var(--text); font-weight: 600; }
 
   /* ===== agent index ===== */
-  .idx-phase { margin-top: 26px; }
+  .idx-phase { margin-top: 26px; scroll-margin-top: 130px; }
+  /* isolated-agent view: one agent section visible at a time */
+  [data-hidden] { display: none !important; }
   .idx-phase > .label { display: block; margin-bottom: 12px; padding-left: 2px; }
   .idx-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--line-soft); border: 1px solid var(--line-soft); border-radius: 12px; overflow: hidden; }
   @media (max-width: 760px){ .idx-grid { grid-template-columns: repeat(2,1fr); } }
@@ -172,15 +175,18 @@
 
   footer.foot { border-top: 1px solid var(--line-soft); padding: 28px 0 48px; color: var(--faint); font-family: var(--font-mono); font-size: .72rem; }
   footer.foot .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+  h1,h2,h3,h4{-webkit-user-select:none;user-select:none;cursor:default}
 </style>
 </head>
 <body>
 
 <header class="topbar">
   <div class="wrap">
-    <div class="brand"><span class="dot"></span> Migration&nbsp;<b>Orchestrator</b></div>
+    <div class="bar-left" style="display:flex;align-items:center;gap:18px">
+      <a href="/toolkit" style="display:inline-flex;align-items:center;gap:6px;padding:7px 15px;border-radius:9px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:.8rem;font-weight:600;text-decoration:none;white-space:nowrap">← Back</a>
+      <div class="brand"><span class="dot"></span> Migration&nbsp;<b>Orchestrator</b></div>
+    </div>
     <nav>
-      <a href="/toolkit">Back to Engineering Agents</a>
       <a href="#overview">Overview</a>
       <a href="#index">Agents</a>
       <a href="#principles">Principles</a>
@@ -189,33 +195,29 @@
   </div>
 </header>
 
-<div class="pipeline">
-  <div class="wrap">
-    <a class="stage" href="#p0"><span class="s-n">00</span> Pre-analysis</a><span class="arr">→</span>
-    <a class="stage" href="#p1"><span class="s-n">01</span> Discovery</a><span class="arr">→</span>
-    <a class="stage" href="#p2"><span class="s-n">02</span> Architecture</a><span class="arr">→</span>
-    <a class="stage" href="#p3"><span class="s-n">03</span> Generation</a><span class="arr">→</span>
-    <a class="stage" href="#p4"><span class="s-n">04</span> UI</a><span class="arr">→</span>
-    <a class="stage" href="#p5"><span class="s-n">05</span> Equivalence</a><span class="arr">→</span>
-    <a class="stage" href="#p6"><span class="s-n">06</span> Validation</a><span class="arr">→</span>
-    <a class="stage" href="#p7"><span class="s-n">07</span> Rollout</a>
-  </div>
-</div>
-
 <main>
 
   <!-- HERO -->
   <section class="hero">
-    <div class="wrap hero-grid">
-      <div>
-        <p class="eyebrow">Agent Catalog · 26 agents · 8 phases</p>
-        <h1>The agents that migrated Send2</h1>
-        <p class="lede">An equivalence-first swarm that reads a legacy Kotlin/XML Android app, extracts its exact behavior, regenerates it as Jetpack Compose + MVVM, and then proves — screen by screen — that nothing changed.</p>
-        <div class="hero-meta">
-          <span>Engine&nbsp; <b>Claude Code CLI</b></span>
-          <span>Pipeline&nbsp; <b>32 stages</b></span>
-          <span>Shared state&nbsp; <b>Migration Knowledge Base</b></span>
-        </div>
+    <div class="wrap">
+      <p class="eyebrow">Agent Catalog · 26 agents · 8 phases</p>
+      <h1>The agents that migrated Send2</h1>
+      <p class="lede">An equivalence-first swarm that reads a legacy Kotlin/XML Android app, extracts its exact behavior, regenerates it as Jetpack Compose + MVVM, and then proves — screen by screen — that nothing changed.</p>
+      <div class="hero-meta">
+        <span>Engine&nbsp; <b>Claude Code CLI</b></span>
+        <span>Pipeline&nbsp; <b>32 stages</b></span>
+        <span>Shared state&nbsp; <b>Migration Knowledge Base</b></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- SPECIMEN -->
+  <section class="section" id="specimen">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">Legacy specimen</p>
+        <h2>What the swarm reads</h2>
+        <p>Every agent starts from the legacy source — the exact behavior that must survive the migration untouched.</p>
       </div>
       <div class="scanner" aria-hidden="true">
         <div class="scanner-head"><span class="tl"><i></i><i></i><i></i></span> legacy/feature/provider/ProviderDetailFragment.kt</div>
@@ -260,13 +262,13 @@
         <p>Grouped by pipeline phase. Jump to any agent for its golden rule, inputs, outputs, and mechanics.</p>
       </div>
 
-      <div class="idx-phase">
+      <div class="idx-phase" id="ph0">
         <span class="label">Phase 00 · Pre-analysis</span>
         <div class="idx-grid">
           <a class="idx-card" href="#a01"><span class="ic-n">01</span><span class="ic-name">Code Analysis</span><span class="ic-stage">code_analysis</span></a>
         </div>
       </div>
-      <div class="idx-phase">
+      <div class="idx-phase" id="ph1">
         <span class="label">Phase 01 · Discovery &amp; Comprehension</span>
         <div class="idx-grid">
           <a class="idx-card" href="#a02"><span class="ic-n">02</span><span class="ic-name">Discovery</span><span class="ic-stage">discovery</span></a>
@@ -274,7 +276,7 @@
           <a class="idx-card" href="#a04"><span class="ic-n">04</span><span class="ic-name">Rules</span><span class="ic-stage">rules</span></a>
         </div>
       </div>
-      <div class="idx-phase">
+      <div class="idx-phase" id="ph2">
         <span class="label">Phase 02 · Architecture &amp; Planning</span>
         <div class="idx-grid">
           <a class="idx-card" href="#a05"><span class="ic-n">05</span><span class="ic-name">Architecture</span><span class="ic-stage">architecture</span></a>
@@ -283,7 +285,7 @@
           <a class="idx-card" href="#a08"><span class="ic-n">08</span><span class="ic-name">MWU Planning</span><span class="ic-stage">mwu_planner</span></a>
         </div>
       </div>
-      <div class="idx-phase">
+      <div class="idx-phase" id="ph3">
         <span class="label">Phase 03 · Code &amp; Test Generation</span>
         <div class="idx-grid">
           <a class="idx-card" href="#a09"><span class="ic-n">09</span><span class="ic-name">Code Generation</span><span class="ic-stage">code_generation · codegen.*</span></a>
@@ -292,14 +294,14 @@
           <a class="idx-card" href="#a12"><span class="ic-n">12</span><span class="ic-name">Test Generation</span><span class="ic-stage">test_generation</span></a>
         </div>
       </div>
-      <div class="idx-phase">
+      <div class="idx-phase" id="ph4">
         <span class="label">Phase 04 · UI Migration</span>
         <div class="idx-grid">
           <a class="idx-card" href="#a13"><span class="ic-n">13</span><span class="ic-name">UI Migration</span><span class="ic-stage">ui_migration</span></a>
           <a class="idx-card" href="#a14"><span class="ic-n">14</span><span class="ic-name">UI Spec</span><span class="ic-stage">ui.spec</span></a>
         </div>
       </div>
-      <div class="idx-phase">
+      <div class="idx-phase" id="ph5">
         <span class="label">Phase 05 · Equivalence Enforcement</span>
         <div class="idx-grid">
           <a class="idx-card" href="#a15"><span class="ic-n">15</span><span class="ic-name">Equivalence Audit</span><span class="ic-stage">equivalence.audit</span></a>
@@ -307,7 +309,7 @@
           <a class="idx-card" href="#a17"><span class="ic-n">17</span><span class="ic-name">UI Layout Match</span><span class="ic-stage">ui.layout.match</span></a>
         </div>
       </div>
-      <div class="idx-phase">
+      <div class="idx-phase" id="ph6">
         <span class="label">Phase 06 · Validation</span>
         <div class="idx-grid">
           <a class="idx-card" href="#a18"><span class="ic-n">18</span><span class="ic-name">Dual-Run Planning</span><span class="ic-stage">dualrun.plan</span></a>
@@ -315,7 +317,7 @@
           <a class="idx-card" href="#a20"><span class="ic-n">20</span><span class="ic-name">5-Layer Validation</span><span class="ic-stage">validation.5layer</span></a>
         </div>
       </div>
-      <div class="idx-phase">
+      <div class="idx-phase" id="ph7">
         <span class="label">Phase 07 · Rollout &amp; Delivery</span>
         <div class="idx-grid">
           <a class="idx-card" href="#a21"><span class="ic-n">21</span><span class="ic-name">Documentation</span><span class="ic-stage">documentation</span></a>
@@ -335,7 +337,7 @@
   <section class="section agent-sec" id="a01">
     <div class="wrap">
       <div class="agent-head">
-        <p class="eyebrow">Stage 01 · Phase 00 — Pre-analysis</p>
+        <p class="eyebrow">Migration Pipeline · Stage 01 — Pre-analysis</p>
         <h2>Code Analysis Agent</h2>
         <div class="tagrow"><span class="pill">tooling wrapper</span><span class="pill plan">seeds discovery</span></div>
         <p class="gr"><span class="label">Golden rule</span><span class="t">Read the legacy source mechanically and faithfully — produce raw signal, not interpretation.</span></p>
@@ -369,7 +371,7 @@
   <section class="section agent-sec" id="a02">
     <div class="wrap">
       <div class="agent-head">
-        <p class="eyebrow">Stage 02 · Phase 01 — Discovery</p>
+        <p class="eyebrow">Migration Pipeline · Stage 02 — Discovery</p>
         <h2>Discovery Agent</h2>
         <div class="tagrow"><span class="pill core">core agent</span></div>
         <p class="gr"><span class="label">Golden rule</span><span class="t">Preserve exact business behavior before enhancement.</span></p>
@@ -399,7 +401,7 @@
   <section class="section agent-sec" id="a03">
     <div class="wrap">
       <div class="agent-head">
-        <p class="eyebrow">Stage 03 · Phase 01 — Comprehension</p>
+        <p class="eyebrow">Migration Pipeline · Stage 03 — Comprehension</p>
         <h2>Comprehension Agent</h2>
         <div class="tagrow"><span class="pill core">core agent</span></div>
         <p class="gr"><span class="label">Golden rule</span><span class="t">Decode business logic exactly as implemented in legacy behavior.</span></p>
@@ -428,7 +430,7 @@
   <section class="section agent-sec" id="a04">
     <div class="wrap">
       <div class="agent-head">
-        <p class="eyebrow">Stage 04 · Phase 01 — Rules</p>
+        <p class="eyebrow">Migration Pipeline · Stage 04 — Rules</p>
         <h2>Rules Agent</h2>
         <div class="tagrow"><span class="pill plan">planning mode</span></div>
         <p class="gr"><span class="label">Golden rule</span><span class="t">Preserve exact behavior and express it as verifiable rules.</span></p>
@@ -461,7 +463,7 @@
   <section class="section agent-sec" id="a05">
     <div class="wrap">
       <div class="agent-head">
-        <p class="eyebrow">Stage 05 · Phase 02 — Architecture</p>
+        <p class="eyebrow">Migration Pipeline · Stage 05 — Architecture</p>
         <h2>Architecture Agent</h2>
         <div class="tagrow"><span class="pill core">core agent</span></div>
         <p class="gr"><span class="label">Golden rule</span><span class="t">Target architecture must preserve discovered behavior.</span></p>
@@ -491,7 +493,7 @@
   <section class="section agent-sec" id="a06">
     <div class="wrap">
       <div class="agent-head">
-        <p class="eyebrow">Stage 06 · Phase 02 — Integration</p>
+        <p class="eyebrow">Migration Pipeline · Stage 06 — Integration</p>
         <h2>Integration Migration Agent</h2>
         <div class="tagrow"><span class="pill">specialized</span><span class="pill plan">inline context · no tools</span></div>
         <p class="gr"><span class="label">Golden rule</span><span class="t">Preserve integration behavior while enabling phased coexistence.</span></p>
@@ -521,7 +523,7 @@
   <section class="section agent-sec" id="a07">
     <div class="wrap">
       <div class="agent-head">
-        <p class="eyebrow">Stage 07 · Phase 02 — Decomposition</p>
+        <p class="eyebrow">Migration Pipeline · Stage 07 — Decomposition</p>
         <h2>Decomposition Agent</h2>
         <div class="tagrow"><span class="pill core">core agent</span></div>
         <p class="gr"><span class="label">Golden rule</span><span class="t">Break migration into independently testable MWUs.</span></p>
@@ -551,7 +553,7 @@
   <section class="section agent-sec" id="a08">
     <div class="wrap">
       <div class="agent-head">
-        <p class="eyebrow">Stage 08 · Phase 02 — Planning</p>
+        <p class="eyebrow">Migration Pipeline · Stage 08 — Planning</p>
         <h2>MWU Planning Agent</h2>
         <div class="tagrow"><span class="pill plan">planning mode</span></div>
         <p class="gr"><span class="label">Golden rule</span><span class="t">Break migration into independently testable work units while preserving behavior.</span></p>
@@ -582,7 +584,7 @@
   <section class="section agent-sec" id="a09">
     <div class="wrap">
       <div class="agent-head">
-        <p class="eyebrow">Stage 09 · Phase 03 — Generation</p>
+        <p class="eyebrow">Migration Pipeline · Stage 09 — Generation</p>
         <h2>Code Generation Agent</h2>
         <div class="tagrow"><span class="pill core">core agent</span><span class="pill">12 codegen stages</span></div>
         <p class="gr"><span class="label">Golden rule</span><span class="t">Generate target-state code and unit tests without behavior drift.</span></p>
@@ -612,7 +614,7 @@
   <section class="section agent-sec" id="a10">
     <div class="wrap">
       <div class="agent-head">
-        <p class="eyebrow">Stage 10 · Phase 03 — Review</p>
+        <p class="eyebrow">Migration Pipeline · Stage 10 — Review</p>
         <h2>Code Review Agent</h2>
         <div class="tagrow"><span class="pill">specialized</span></div>
         <p class="gr"><span class="label">Golden rule</span><span class="t">Ensure generated code meets migration quality and equivalence constraints.</span></p>
@@ -640,7 +642,7 @@
   <section class="section agent-sec" id="a11">
     <div class="wrap">
       <div class="agent-head">
-        <p class="eyebrow">Stage 11 · Phase 03 — Data</p>
+        <p class="eyebrow">Migration Pipeline · Stage 11 — Data</p>
         <h2>Data Migration Agent</h2>
         <div class="tagrow"><span class="pill core">core agent</span></div>
         <p class="gr"><span class="label">Golden rule</span><span class="t">Preserve data semantics and integrity during migration.</span></p>
@@ -668,7 +670,7 @@
   <section class="section agent-sec" id="a12">
     <div class="wrap">
       <div class="agent-head">
-        <p class="eyebrow">Stage 12 · Phase 03 — Test</p>
+        <p class="eyebrow">Migration Pipeline · Stage 12 — Test</p>
         <h2>Test Generation Agent</h2>
         <div class="tagrow"><span class="pill core">core agent</span><span class="pill">codegen.tests</span></div>
         <p class="gr"><span class="label">Golden rule</span><span class="t">Generate tests that prove equivalence and guard regressions.</span></p>
@@ -699,7 +701,7 @@
   <section class="section agent-sec" id="a13">
     <div class="wrap">
       <div class="agent-head">
-        <p class="eyebrow">Stage 13 · Phase 04 — UI</p>
+        <p class="eyebrow">Migration Pipeline · Stage 13 — UI</p>
         <h2>UI Migration Agent</h2>
         <div class="tagrow"><span class="pill">specialized</span></div>
         <p class="gr"><span class="label">Golden rule</span><span class="t">Preserve user-facing behavior while modernizing UI implementation safely.</span></p>
@@ -727,7 +729,7 @@
   <section class="section agent-sec" id="a14">
     <div class="wrap">
       <div class="agent-head">
-        <p class="eyebrow">Stage 14 · Phase 04 — UI Spec</p>
+        <p class="eyebrow">Migration Pipeline · Stage 14 — UI Spec</p>
         <h2>UI Spec Agent</h2>
         <div class="tagrow"><span class="pill">specialized</span><span class="pill plan">per feature module</span></div>
         <p class="gr"><span class="label">Golden rule</span><span class="t">Extract a faithful, structured spec from the legacy layout — invent nothing.</span></p>
@@ -758,7 +760,7 @@
   <section class="section agent-sec" id="a15">
     <div class="wrap">
       <div class="agent-head">
-        <p class="eyebrow">Stage 15 · Phase 05 — Equivalence</p>
+        <p class="eyebrow">Migration Pipeline · Stage 15 — Equivalence</p>
         <h2>Equivalence Audit Agent</h2>
         <div class="tagrow"><span class="pill gate">equivalence gate</span></div>
         <p class="gr"><span class="label">Golden rule</span><span class="t">Find every functional mismatch between the legacy app and the generated app.</span></p>
@@ -789,7 +791,7 @@
   <section class="section agent-sec" id="a16">
     <div class="wrap">
       <div class="agent-head">
-        <p class="eyebrow">Stage 16 · Phase 05 — Equivalence</p>
+        <p class="eyebrow">Migration Pipeline · Stage 16 — Equivalence</p>
         <h2>Equivalence Fix Agent</h2>
         <div class="tagrow"><span class="pill gate">equivalence gate</span><span class="pill">writes files</span></div>
         <p class="gr"><span class="label">Golden rule</span><span class="t">Fix ONLY what the audit identified. Do not change anything else.</span></p>
@@ -819,7 +821,7 @@
   <section class="section agent-sec" id="a17">
     <div class="wrap">
       <div class="agent-head">
-        <p class="eyebrow">Stage 17 · Phase 05 — Equivalence</p>
+        <p class="eyebrow">Migration Pipeline · Stage 17 — Equivalence</p>
         <h2>UI Layout Match Agent</h2>
         <div class="tagrow"><span class="pill gate">equivalence gate</span><span class="pill">writes files</span></div>
         <p class="gr"><span class="label">Golden rule</span><span class="t">The legacy XML layout is the single source of truth for visual structure.</span></p>
@@ -851,7 +853,7 @@
   <section class="section agent-sec" id="a18">
     <div class="wrap">
       <div class="agent-head">
-        <p class="eyebrow">Stage 18 · Phase 06 — Validation</p>
+        <p class="eyebrow">Migration Pipeline · Stage 18 — Validation</p>
         <h2>Dual-Run Planning Agent</h2>
         <div class="tagrow"><span class="pill">specialized</span></div>
         <p class="gr"><span class="label">Golden rule</span><span class="t">Compare legacy and modern outputs with identical inputs to prove equivalence.</span></p>
@@ -879,7 +881,7 @@
   <section class="section agent-sec" id="a19">
     <div class="wrap">
       <div class="agent-head">
-        <p class="eyebrow">Stage 19 · Phase 06 — Validation</p>
+        <p class="eyebrow">Migration Pipeline · Stage 19 — Validation</p>
         <h2>Validation Agent</h2>
         <div class="tagrow"><span class="pill core">core agent</span></div>
         <p class="gr"><span class="label">Golden rule</span><span class="t">Prove equivalence before enhancement.</span></p>
@@ -907,7 +909,7 @@
   <section class="section agent-sec" id="a20">
     <div class="wrap">
       <div class="agent-head">
-        <p class="eyebrow">Stage 20 · Phase 06 — Validation</p>
+        <p class="eyebrow">Migration Pipeline · Stage 20 — Validation</p>
         <h2>5-Layer Validation Agent</h2>
         <div class="tagrow"><span class="pill">specialized</span></div>
         <p class="gr"><span class="label">Golden rule</span><span class="t">Prove equivalence using layered evidence.</span></p>
@@ -939,7 +941,7 @@
   <section class="section agent-sec" id="a21">
     <div class="wrap">
       <div class="agent-head">
-        <p class="eyebrow">Stage 21 · Phase 07 — Rollout</p>
+        <p class="eyebrow">Migration Pipeline · Stage 21 — Rollout</p>
         <h2>Documentation Agent</h2>
         <div class="tagrow"><span class="pill core">core agent</span></div>
         <p class="gr"><span class="label">Golden rule</span><span class="t">Produce complete migration and operational documentation for traceability.</span></p>
@@ -967,7 +969,7 @@
   <section class="section agent-sec" id="a22">
     <div class="wrap">
       <div class="agent-head">
-        <p class="eyebrow">Stage 22 · Phase 07 — Rollout</p>
+        <p class="eyebrow">Migration Pipeline · Stage 22 — Rollout</p>
         <h2>Orchestrator Agent</h2>
         <div class="tagrow"><span class="pill core">core agent</span></div>
         <p class="gr"><span class="label">Golden rule</span><span class="t">Coordinate agents, manage context passing, and report workflow state.</span></p>
@@ -995,7 +997,7 @@
   <section class="section agent-sec" id="a23">
     <div class="wrap">
       <div class="agent-head">
-        <p class="eyebrow">Stage 23 · Phase 07 — Rollout</p>
+        <p class="eyebrow">Migration Pipeline · Stage 23 — Rollout</p>
         <h2>Feedback Loop Resolution Agent</h2>
         <div class="tagrow"><span class="pill">specialized</span></div>
         <p class="gr"><span class="label">Golden rule</span><span class="t">Resolve downstream ambiguity by routing issues to upstream knowledge owners.</span></p>
@@ -1023,7 +1025,7 @@
   <section class="section agent-sec" id="a24">
     <div class="wrap">
       <div class="agent-head">
-        <p class="eyebrow">Stage 24 · Phase 07 — Delivery</p>
+        <p class="eyebrow">Migration Pipeline · Stage 24 — Delivery</p>
         <h2>Delivery Pack Agent</h2>
         <div class="tagrow"><span class="pill plan">planning mode</span></div>
         <p class="gr"><span class="label">Golden rule</span><span class="t">Compile only equivalence-first deliverables without enhancement work.</span></p>
@@ -1050,7 +1052,7 @@
   <section class="section agent-sec" id="a25">
     <div class="wrap">
       <div class="agent-head">
-        <p class="eyebrow">Stage 25 · Phase 07 — Delivery</p>
+        <p class="eyebrow">Migration Pipeline · Stage 25 — Delivery</p>
         <h2>Implementation Tasks Agent</h2>
         <div class="tagrow"><span class="pill plan">planning mode</span></div>
         <p class="gr"><span class="label">Golden rule</span><span class="t">Produce concrete, file-level implementation tasks that preserve behavior exactly.</span></p>
@@ -1077,7 +1079,7 @@
   <section class="section agent-sec" id="a26">
     <div class="wrap">
       <div class="agent-head">
-        <p class="eyebrow">Stage 26 · Phase 07 — Delivery</p>
+        <p class="eyebrow">Migration Pipeline · Stage 26 — Delivery</p>
         <h2>Traceability Agent</h2>
         <div class="tagrow"><span class="pill plan">planning mode</span></div>
         <p class="gr"><span class="label">Golden rule</span><span class="t">Every explicit rule must map to implementation and tests.</span></p>
@@ -1145,5 +1147,47 @@
   </footer>
 
 </main>
+
+<script>
+/* Isolated-agent view: the directory is the hub; selecting an agent shows
+   only that agent. Any non-agent anchor (#index, #overview, #ph*, …) returns
+   to the directory. State lives entirely in location.hash, so deep links and
+   the browser back/forward buttons work. */
+(function () {
+  var DIRECTORY = ['.hero', '#specimen', '#overview', '#index', '#principles', '#runtime'];
+  var agents = Array.prototype.slice.call(document.querySelectorAll('.agent-sec'));
+
+  function dirEls() {
+    return DIRECTORY
+      .map(function (sel) { return document.querySelector(sel); })
+      .filter(Boolean);
+  }
+
+  function render() {
+    var id = location.hash.replace('#', '');
+    var isAgent = /^a\d+$/.test(id) && !!document.getElementById(id);
+
+    agents.forEach(function (sec) {
+      if (isAgent && sec.id === id) sec.removeAttribute('data-hidden');
+      else sec.setAttribute('data-hidden', '');
+    });
+    dirEls().forEach(function (el) {
+      if (isAgent) el.setAttribute('data-hidden', '');
+      else el.removeAttribute('data-hidden');
+    });
+
+    if (isAgent) {
+      window.scrollTo(0, 0);
+    } else if (id) {
+      // re-run the anchor jump now that the target is visible again
+      var target = document.getElementById(id);
+      if (target) target.scrollIntoView();
+    }
+  }
+
+  window.addEventListener('hashchange', render);
+  render();
+})();
+</script>
 </body>
 </html>

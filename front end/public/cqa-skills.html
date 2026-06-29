@@ -1,0 +1,432 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/png" href="/Logo%20(2).png" />
+<title>CQA Pipeline · Skills Catalog</title>
+<meta name="description" content="Reference for the 13 skills across the four cqa-final-* packages that make up the Code Quality Assessment pipeline — orchestration, tooling, debt detection and reverse engineering.">
+<style>
+  :root {
+    --ink:#0B0B0D; --ink-2:#111218; --surface:#15171F; --surface-2:#1B1E27;
+    --line:#2B2E38; --line-soft:#20222B; --text:#E7E3D6; --muted:#A6A296; --faint:#6E6A5E;
+    --accent:#F5C010; --accent-2:#FFD43B; --accent-dim:rgba(245,192,16,.13); --accent-line:rgba(245,192,16,.30);
+    --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+    --font-mono: ui-monospace, "SF Mono", "JetBrains Mono", "Menlo", "Consolas", monospace;
+    --maxw:1060px; --step:clamp(2.4rem, 6vw, 4.5rem);
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; background:radial-gradient(120% 80% at 80% -10%, rgba(245,192,16,.07), transparent 55%), var(--ink); color:var(--text); font-family:var(--font-sans); font-size:17px; line-height:1.6; -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility; }
+  ::selection { background:var(--accent-dim); color:var(--accent-2); }
+  .wrap { max-width:var(--maxw); margin:0 auto; padding:0 24px; }
+  a { color:var(--accent-2); text-decoration:none; }
+  a:hover { text-decoration:underline; text-underline-offset:3px; }
+  .eyebrow { font-family:var(--font-mono); font-size:.72rem; letter-spacing:.22em; text-transform:uppercase; color:var(--accent); margin:0; }
+  .label { font-family:var(--font-mono); font-size:.68rem; letter-spacing:.18em; text-transform:uppercase; color:var(--faint); }
+  h1,h2,h3 { text-wrap:balance; font-weight:650; letter-spacing:-.02em; line-height:1.1; }
+  h1,h2,h3,h4 { -webkit-user-select:none; user-select:none; cursor:default; }
+  .mono { font-family:var(--font-mono); }
+
+  .topbar { border-bottom:1px solid var(--line-soft); position:sticky; top:0; z-index:30; background:rgba(11,11,13,.82); backdrop-filter:blur(10px); }
+  .topbar .wrap { display:flex; align-items:center; justify-content:space-between; height:56px; }
+  .brand { display:flex; align-items:center; gap:10px; font-family:var(--font-mono); font-size:.8rem; letter-spacing:.04em; color:var(--muted); }
+  .brand b { color:var(--text); font-weight:600; }
+  .dot { width:7px; height:7px; border-radius:50%; background:var(--accent); box-shadow:0 0 10px var(--accent); }
+  .topbar nav { display:flex; gap:22px; }
+  .topbar nav a { color:var(--muted); font-family:var(--font-mono); font-size:.74rem; letter-spacing:.04em; }
+  .topbar nav a:hover { color:var(--text); text-decoration:none; }
+  @media (max-width:720px){ .topbar nav { display:none; } }
+
+  .hero { padding:var(--step) 0 calc(var(--step) * .65); }
+  .hero h1 { font-size:clamp(2.4rem, 6vw, 4rem); margin:16px 0 0; }
+  .hero .lede { color:var(--muted); font-size:1.1rem; max-width:54ch; margin:20px 0 0; }
+  .hero-meta { display:flex; flex-wrap:wrap; gap:10px 26px; margin-top:28px; font-family:var(--font-mono); font-size:.76rem; color:var(--muted); }
+  .hero-meta span b { color:var(--text); font-weight:600; }
+
+  .section { padding:calc(var(--step) * .7) 0; border-top:1px solid var(--line-soft); }
+  .section-head { max-width:58ch; margin-bottom:34px; }
+  .section-head h2 { font-size:clamp(1.6rem, 3.2vw, 2.2rem); margin:12px 0 0; }
+  .section-head p { color:var(--muted); margin:14px 0 0; }
+  .prose p { color:var(--muted); max-width:66ch; margin:0 0 16px; }
+  .prose strong { color:var(--text); font-weight:600; }
+
+  .idx-phase { margin-top:26px; }
+  .idx-phase > .label { display:block; margin-bottom:12px; padding-left:2px; }
+  .idx-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--line-soft); border:1px solid var(--line-soft); border-radius:12px; overflow:hidden; }
+  @media (max-width:760px){ .idx-grid { grid-template-columns:repeat(2,1fr); } }
+  @media (max-width:480px){ .idx-grid { grid-template-columns:1fr; } }
+  .idx-card { background:var(--surface); padding:16px 16px 18px; display:flex; flex-direction:column; gap:5px; transition:background .16s ease; }
+  .idx-card:hover { background:var(--surface-2); text-decoration:none; }
+  .idx-card .ic-n { font-family:var(--font-mono); font-size:.68rem; color:var(--accent); letter-spacing:.1em; }
+  .idx-card .ic-name { color:var(--text); font-weight:600; font-size:.98rem; }
+  .idx-card .ic-stage { font-family:var(--font-mono); font-size:.68rem; color:var(--faint); }
+  [data-hidden] { display:none !important; }
+
+  .agent-sec { scroll-margin-top:120px; }
+  .agent-head { max-width:70ch; }
+  .agent-head h2 { font-size:clamp(1.7rem, 3.6vw, 2.5rem); margin:12px 0 0; }
+  .agent-head .lede { color:var(--muted); margin:18px 0 0; max-width:66ch; }
+
+  .specs { border:1px solid var(--line-soft); border-radius:12px; overflow:hidden; margin-top:24px; }
+  .spec-row { display:grid; grid-template-columns:190px 1fr; border-top:1px solid var(--line-soft); }
+  .spec-row:first-child { border-top:none; }
+  .spec-row dt { padding:12px 16px; background:var(--ink-2); font-family:var(--font-mono); font-size:.72rem; letter-spacing:.04em; color:var(--muted); }
+  .spec-row dd { margin:0; padding:12px 16px; color:var(--text); font-family:var(--font-mono); font-size:.78rem; }
+  @media (max-width:560px){ .spec-row { grid-template-columns:1fr; } .spec-row dd { padding-top:0; } }
+
+  .tagrow { display:flex; flex-wrap:wrap; gap:7px; margin-top:14px; }
+  .pill { font-family:var(--font-mono); font-size:.64rem; letter-spacing:.08em; text-transform:uppercase; padding:3px 9px; border-radius:999px; border:1px solid var(--line); color:var(--muted); }
+  .pill.core { border-color:var(--accent-line); color:var(--accent); background:var(--accent-dim); }
+  .backtop { font-family:var(--font-mono); font-size:.7rem; color:var(--faint); margin-top:24px; display:inline-block; }
+
+  footer.foot { border-top:1px solid var(--line-soft); padding:28px 0 48px; color:var(--faint); font-family:var(--font-mono); font-size:.72rem; }
+  footer.foot .wrap { display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap; }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap">
+    <div class="bar-left" style="display:flex;align-items:center;gap:18px">
+      <a href="/internal-skills" style="display:inline-flex;align-items:center;gap:6px;padding:7px 15px;border-radius:9px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:.8rem;font-weight:600;text-decoration:none;white-space:nowrap">← Back</a>
+      <div class="brand"><span class="dot"></span> CQA&nbsp;Pipeline&nbsp;<b>· Skills Catalog</b></div>
+    </div>
+    <nav>
+      <a href="#overview">Overview</a>
+      <a href="#index">Skills</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="wrap">
+      <p class="eyebrow">Skills Catalog · 13 skills · 4 packages</p>
+      <h1>The skills that run the assessment</h1>
+      <p class="lede">The CQA pipeline is structured as four Claude skill packages. Each contains agent prompts, orchestration logic and scripts; skills invoke each other through the orchestrator, each running with <span class="mono">model: inherit</span>. Together they run the tools, normalise their output, recover structured evidence and build the report.</p>
+      <div class="hero-meta">
+        <span>Packages&nbsp; <b>cqa-final-core / -tooling / -debt / -reverse</b></span>
+        <span>Skills&nbsp; <b>13</b></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- OVERVIEW -->
+  <section class="section" id="overview">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">Overview</p>
+        <h2>How the packages fit together</h2>
+      </div>
+      <div class="prose">
+        <p><strong>cqa-final-core</strong> orchestrates the run, slices findings for each agent, gates tool failures and builds the final report. <strong>cqa-final-tooling</strong> dispatches the 20+ scanners, detects the tech stack and normalises every tool's output into one canonical schema. <strong>cqa-final-debt</strong> extracts accumulated technical-debt signals, and <strong>cqa-final-reverse</strong> produces the structured evidence files — DB analysis, user journeys, design recovery and deep coverage — that the dimension agents read alongside the raw findings.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- INDEX -->
+  <section class="section" id="index">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">Directory</p>
+        <h2>All 13 skills</h2>
+        <p>Grouped by package. Select any skill for what it does and what it produces.</p>
+      </div>
+      <div class="idx-phase">
+        <span class="label">cqa-final-core · orchestration &amp; report</span>
+        <div class="idx-grid">
+          <a class="idx-card" href="#s01"><span class="ic-n">01</span><span class="ic-name">CQA Orchestrator</span><span class="ic-stage">cqa-orchestrator</span></a>
+          <a class="idx-card" href="#s02"><span class="ic-n">02</span><span class="ic-name">Build Samples</span><span class="ic-stage">build_samples.py</span></a>
+          <a class="idx-card" href="#s03"><span class="ic-n">03</span><span class="ic-name">Preflight Gate</span><span class="ic-stage">preflight.py</span></a>
+          <a class="idx-card" href="#s04"><span class="ic-n">04</span><span class="ic-name">Report Builder</span><span class="ic-stage">build_docx.py</span></a>
+        </div>
+      </div>
+      <div class="idx-phase">
+        <span class="label">cqa-final-tooling · scan runner &amp; heavy tools</span>
+        <div class="idx-grid">
+          <a class="idx-card" href="#s05"><span class="ic-n">05</span><span class="ic-name">Scan Runner</span><span class="ic-stage">cqa-scan-runner</span></a>
+          <a class="idx-card" href="#s06"><span class="ic-n">06</span><span class="ic-name">Tech Stack Detector</span><span class="ic-stage">tech_stack_detector.py</span></a>
+          <a class="idx-card" href="#s07"><span class="ic-n">07</span><span class="ic-name">Tool Adapters</span><span class="ic-stage">adapters/</span></a>
+          <a class="idx-card" href="#s08"><span class="ic-n">08</span><span class="ic-name">Heavy Tool Runners</span><span class="ic-stage">runners/</span></a>
+        </div>
+      </div>
+      <div class="idx-phase">
+        <span class="label">cqa-final-debt · technical-debt detection</span>
+        <div class="idx-grid">
+          <a class="idx-card" href="#s09"><span class="ic-n">09</span><span class="ic-name">Debt Detector</span><span class="ic-stage">cqa-debt-detector</span></a>
+        </div>
+      </div>
+      <div class="idx-phase">
+        <span class="label">cqa-final-reverse · structured evidence</span>
+        <div class="idx-grid">
+          <a class="idx-card" href="#s10"><span class="ic-n">10</span><span class="ic-name">DB Analyser</span><span class="ic-stage">cqa-db-analyser</span></a>
+          <a class="idx-card" href="#s11"><span class="ic-n">11</span><span class="ic-name">Journey Mapper</span><span class="ic-stage">cqa-journey-mapper</span></a>
+          <a class="idx-card" href="#s12"><span class="ic-n">12</span><span class="ic-name">Design Recoverer</span><span class="ic-stage">cqa-design-recoverer</span></a>
+          <a class="idx-card" href="#s13"><span class="ic-n">13</span><span class="ic-name">Coverage Deepener</span><span class="ic-stage">cqa-coverage-deepener</span></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- s01 -->
+  <section class="section agent-sec" id="s01">
+    <div class="wrap">
+      <div class="agent-head">
+        <p class="eyebrow">cqa-final-core · 01</p>
+        <h2>CQA Orchestrator</h2>
+        <div class="tagrow"><span class="pill core">top-level skill</span><span class="pill">model: inherit</span></div>
+        <p class="lede">The top-level skill. It manages the full pipeline, spawns all seven dimension agents in parallel, merges their outputs into <span class="mono">assessment.json</span>, and drives the summary and top-priorities calculation.</p>
+      </div>
+      <dl class="specs">
+        <div class="spec-row"><dt>Package</dt><dd>cqa-final-core</dd></div>
+        <div class="spec-row"><dt>Role</dt><dd>Pipeline coordination &amp; output</dd></div>
+        <div class="spec-row"><dt>Produces</dt><dd>Canonical assessment.json · composite score · top_priorities</dd></div>
+      </dl>
+      <a class="backtop" href="#index">← back to directory</a>
+    </div>
+  </section>
+
+  <!-- s02 -->
+  <section class="section agent-sec" id="s02">
+    <div class="wrap">
+      <div class="agent-head">
+        <p class="eyebrow">cqa-final-core · 02</p>
+        <h2>Build Samples</h2>
+        <div class="tagrow"><span class="pill">script · build_samples.py</span></div>
+        <p class="lede">A pre-flight script that partitions the canonical findings into per-agent slices and writes a samples manifest of the source files each agent may read — run before any agent is spawned.</p>
+      </div>
+      <dl class="specs">
+        <div class="spec-row"><dt>Package</dt><dd>cqa-final-core</dd></div>
+        <div class="spec-row"><dt>Produces</dt><dd>Per-agent findings slices · samples manifests (≤ 50 files)</dd></div>
+      </dl>
+      <a class="backtop" href="#index">← back to directory</a>
+    </div>
+  </section>
+
+  <!-- s03 -->
+  <section class="section agent-sec" id="s03">
+    <div class="wrap">
+      <div class="agent-head">
+        <p class="eyebrow">cqa-final-core · 03</p>
+        <h2>Preflight Gate</h2>
+        <div class="tagrow"><span class="pill">script · preflight.py</span></div>
+        <p class="lede">The Phase 2.5 gate. It classifies every tool result as success, fixable, workaround or blocking, and decides proceed / downgrade / abort per dimension — so agents are never asked to score on absent evidence.</p>
+      </div>
+      <dl class="specs">
+        <div class="spec-row"><dt>Package</dt><dd>cqa-final-core</dd></div>
+        <div class="spec-row"><dt>Produces</dt><dd>Per-dimension proceed / downgrade / abort decisions</dd></div>
+      </dl>
+      <a class="backtop" href="#index">← back to directory</a>
+    </div>
+  </section>
+
+  <!-- s04 -->
+  <section class="section agent-sec" id="s04">
+    <div class="wrap">
+      <div class="agent-head">
+        <p class="eyebrow">cqa-final-core · 04</p>
+        <h2>Report Builder</h2>
+        <div class="tagrow"><span class="pill">script · build_docx.py</span></div>
+        <p class="lede">Renders <span class="mono">assessment.json</span> into a branded Word report — cover page, technology-stack section, per-dimension chapters with severity groupings and finding tables, and the prioritised executive summary.</p>
+      </div>
+      <dl class="specs">
+        <div class="spec-row"><dt>Package</dt><dd>cqa-final-core</dd></div>
+        <div class="spec-row"><dt>Produces</dt><dd>Branded .docx assessment report</dd></div>
+      </dl>
+      <a class="backtop" href="#index">← back to directory</a>
+    </div>
+  </section>
+
+  <!-- s05 -->
+  <section class="section agent-sec" id="s05">
+    <div class="wrap">
+      <div class="agent-head">
+        <p class="eyebrow">cqa-final-tooling · 05</p>
+        <h2>Scan Runner</h2>
+        <div class="tagrow"><span class="pill core">skill · cqa-scan-runner</span></div>
+        <p class="lede">Dispatches all 20+ static-analysis and security tools in parallel via <span class="mono">run_scanners.py</span>, managing timeouts, retries and partial-success handling.</p>
+      </div>
+      <dl class="specs">
+        <div class="spec-row"><dt>Package</dt><dd>cqa-final-tooling</dd></div>
+        <div class="spec-row"><dt>Produces</dt><dd>Raw tool output for the lite-scan phase</dd></div>
+      </dl>
+      <a class="backtop" href="#index">← back to directory</a>
+    </div>
+  </section>
+
+  <!-- s06 -->
+  <section class="section agent-sec" id="s06">
+    <div class="wrap">
+      <div class="agent-head">
+        <p class="eyebrow">cqa-final-tooling · 06</p>
+        <h2>Tech Stack Detector</h2>
+        <div class="tagrow"><span class="pill">script · tech_stack_detector.py</span></div>
+        <p class="lede">Reads manifest files to auto-detect language, framework, versions, test libraries and build tools. The result populates <span class="mono">repository.tech_stack</span> and activates framework-specific agent checklists.</p>
+      </div>
+      <dl class="specs">
+        <div class="spec-row"><dt>Package</dt><dd>cqa-final-tooling</dd></div>
+        <div class="spec-row"><dt>Produces</dt><dd>repository.tech_stack · precheck.json</dd></div>
+      </dl>
+      <a class="backtop" href="#index">← back to directory</a>
+    </div>
+  </section>
+
+  <!-- s07 -->
+  <section class="section agent-sec" id="s07">
+    <div class="wrap">
+      <div class="agent-head">
+        <p class="eyebrow">cqa-final-tooling · 07</p>
+        <h2>Tool Adapters</h2>
+        <div class="tagrow"><span class="pill">module · adapters/</span></div>
+        <p class="lede">Per-tool output parsers that normalise heterogeneous scanner output into the canonical finding schema, so every downstream agent reads findings in one consistent shape.</p>
+      </div>
+      <dl class="specs">
+        <div class="spec-row"><dt>Package</dt><dd>cqa-final-tooling</dd></div>
+        <div class="spec-row"><dt>Produces</dt><dd>Canonical-schema findings from each tool</dd></div>
+      </dl>
+      <a class="backtop" href="#index">← back to directory</a>
+    </div>
+  </section>
+
+  <!-- s08 -->
+  <section class="section agent-sec" id="s08">
+    <div class="wrap">
+      <div class="agent-head">
+        <p class="eyebrow">cqa-final-tooling · 08</p>
+        <h2>Heavy Tool Runners</h2>
+        <div class="tagrow"><span class="pill">module · runners/</span></div>
+        <p class="lede">The optional deep-analysis runners — unit test runner with coverage, mutation tester, static type checker and code-quality scanner — executed with extended timeouts and structured result capture.</p>
+      </div>
+      <dl class="specs">
+        <div class="spec-row"><dt>Package</dt><dd>cqa-final-tooling</dd></div>
+        <div class="spec-row"><dt>Produces</dt><dd>Coverage, mutation, type-check and quality evidence (Phase 3)</dd></div>
+      </dl>
+      <a class="backtop" href="#index">← back to directory</a>
+    </div>
+  </section>
+
+  <!-- s09 -->
+  <section class="section agent-sec" id="s09">
+    <div class="wrap">
+      <div class="agent-head">
+        <p class="eyebrow">cqa-final-debt · 09</p>
+        <h2>Debt Detector</h2>
+        <div class="tagrow"><span class="pill core">skill · cqa-debt-detector</span></div>
+        <p class="lede">Scans for accumulated debt signals — TODO/FIXME/HACK comment density, deprecated API usage, dead code, commented-out blocks and code-age indicators — and writes them as maintainability findings before that agent runs.</p>
+      </div>
+      <dl class="specs">
+        <div class="spec-row"><dt>Package</dt><dd>cqa-final-debt</dd></div>
+        <div class="spec-row"><dt>Produces</dt><dd>Debt findings (dimension = maintainability)</dd></div>
+      </dl>
+      <a class="backtop" href="#index">← back to directory</a>
+    </div>
+  </section>
+
+  <!-- s10 -->
+  <section class="section agent-sec" id="s10">
+    <div class="wrap">
+      <div class="agent-head">
+        <p class="eyebrow">cqa-final-reverse · 10</p>
+        <h2>DB Analyser</h2>
+        <div class="tagrow"><span class="pill core">skill · cqa-db-analyser</span></div>
+        <p class="lede">Introspects the database schema via a read-only connection and produces <span class="mono">db-analysis.json</span> — table and column map, missing-index candidates, god-table detection and migration-drift analysis.</p>
+      </div>
+      <dl class="specs">
+        <div class="spec-row"><dt>Package</dt><dd>cqa-final-reverse</dd></div>
+        <div class="spec-row"><dt>Produces</dt><dd>db-analysis.json</dd></div>
+      </dl>
+      <a class="backtop" href="#index">← back to directory</a>
+    </div>
+  </section>
+
+  <!-- s11 -->
+  <section class="section agent-sec" id="s11">
+    <div class="wrap">
+      <div class="agent-head">
+        <p class="eyebrow">cqa-final-reverse · 11</p>
+        <h2>Journey Mapper</h2>
+        <div class="tagrow"><span class="pill core">skill · cqa-journey-mapper</span></div>
+        <p class="lede">Parses route definitions and controller annotations to build <span class="mono">user-journeys.json</span>, mapping every endpoint to its middleware chain, validator rules and file:line anchors.</p>
+      </div>
+      <dl class="specs">
+        <div class="spec-row"><dt>Package</dt><dd>cqa-final-reverse</dd></div>
+        <div class="spec-row"><dt>Produces</dt><dd>user-journeys.json</dd></div>
+      </dl>
+      <a class="backtop" href="#index">← back to directory</a>
+    </div>
+  </section>
+
+  <!-- s12 -->
+  <section class="section agent-sec" id="s12">
+    <div class="wrap">
+      <div class="agent-head">
+        <p class="eyebrow">cqa-final-reverse · 12</p>
+        <h2>Design Recoverer</h2>
+        <div class="tagrow"><span class="pill core">skill · cqa-design-recoverer</span></div>
+        <p class="lede">Analyses import graphs and class relationships to produce <span class="mono">design-recovery.json</span> — a Mermaid C4 architecture diagram, a layer map and an outbound-integration catalogue.</p>
+      </div>
+      <dl class="specs">
+        <div class="spec-row"><dt>Package</dt><dd>cqa-final-reverse</dd></div>
+        <div class="spec-row"><dt>Produces</dt><dd>design-recovery.json</dd></div>
+      </dl>
+      <a class="backtop" href="#index">← back to directory</a>
+    </div>
+  </section>
+
+  <!-- s13 -->
+  <section class="section agent-sec" id="s13">
+    <div class="wrap">
+      <div class="agent-head">
+        <p class="eyebrow">cqa-final-reverse · 13</p>
+        <h2>Coverage Deepener</h2>
+        <div class="tagrow"><span class="pill core">skill · cqa-coverage-deepener</span></div>
+        <p class="lede">Enriches raw coverage data with test-quality heuristics — no-assertion tests, mock-only tests, snapshot-only tests and sleep/retry signals — to produce <span class="mono">test-coverage-deep.json</span>.</p>
+      </div>
+      <dl class="specs">
+        <div class="spec-row"><dt>Package</dt><dd>cqa-final-reverse</dd></div>
+        <div class="spec-row"><dt>Produces</dt><dd>test-coverage-deep.json</dd></div>
+      </dl>
+      <a class="backtop" href="#index">← back to directory</a>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <div class="wrap">
+      <span>CQA Pipeline · Skills Catalog · 13 skills / 4 packages</span>
+      <span>v1.3.3 · model: inherit</span>
+    </div>
+  </footer>
+
+</main>
+
+<script>
+/* Isolated-skill view: directory is the hub; selecting a skill (#s01…#s13) shows
+   only that skill. Non-skill anchors (#index, #overview) return to the directory. */
+(function () {
+  var DIRECTORY = ['.hero', '#overview', '#index'];
+  var skills = Array.prototype.slice.call(document.querySelectorAll('.agent-sec'));
+  function dirEls() {
+    return DIRECTORY.map(function (sel) { return document.querySelector(sel); }).filter(Boolean);
+  }
+  function render() {
+    var id = location.hash.replace('#', '');
+    var isSkill = /^s\d+$/.test(id) && !!document.getElementById(id);
+    skills.forEach(function (sec) {
+      if (isSkill && sec.id === id) sec.removeAttribute('data-hidden');
+      else sec.setAttribute('data-hidden', '');
+    });
+    dirEls().forEach(function (el) {
+      if (isSkill) el.setAttribute('data-hidden', '');
+      else el.removeAttribute('data-hidden');
+    });
+    if (isSkill) window.scrollTo(0, 0);
+    else if (id) { var t = document.getElementById(id); if (t) t.scrollIntoView(); }
+  }
+  window.addEventListener('hashchange', render);
+  render();
+})();
+</script>
+</body>
+</html>

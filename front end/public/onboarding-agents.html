@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/png" href="/Logo%20(2).png" />
 <title>Agent Catalog — Client Onboarding Portal</title>
 <meta name="description" content="The 11 specialist sub-agents of the Client Onboarding Portal AI pipeline — each with capabilities, mechanics, output envelope, escalation triggers, and specs.">
 
@@ -162,7 +163,7 @@
   }
 
   /* ===== section ===== */
-  .section { padding: calc(var(--step) * .72) 0; border-top: 1px solid var(--line-soft); }
+  .section { padding: calc(var(--step) * .72) 0; border-top: 1px solid var(--line-soft); scroll-margin-top: 72px; }
   .section-head { max-width: 56ch; margin-bottom: 34px; }
   .section-head h2 { font-size: clamp(1.6rem, 3.2vw, 2.3rem); margin: 12px 0 0; }
   .section-head p { color: var(--muted); margin: 14px 0 0; }
@@ -236,18 +237,35 @@
   footer.foot { border-top: 1px solid var(--line-soft); padding: 26px 0 48px; color: var(--faint); font-family: var(--font-mono); font-size: .72rem; }
   footer.foot .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
 
+  /* ===== directory / index grid (catalog hub) ===== */
+  .idx-phase { margin-top: 26px; }
+  .idx-phase > .label { display: block; margin-bottom: 12px; padding-left: 2px; }
+  .idx-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--line-soft); border: 1px solid var(--line-soft); border-radius: 12px; overflow: hidden; }
+  @media (max-width: 760px){ .idx-grid { grid-template-columns: repeat(2,1fr); } }
+  @media (max-width: 480px){ .idx-grid { grid-template-columns: 1fr; } }
+  .idx-card { background: var(--surface); padding: 16px 16px 18px; display: flex; flex-direction: column; gap: 5px; transition: background .16s ease; }
+  .idx-card:hover { background: var(--surface-2); text-decoration: none; }
+  .idx-card .ic-n { font-family: var(--font-mono); font-size: .68rem; color: var(--accent); letter-spacing: .1em; }
+  .idx-card .ic-name { color: var(--text); font-weight: 600; font-size: .98rem; }
+  .idx-card .ic-stage { font-family: var(--font-mono); font-size: .68rem; color: var(--faint); }
+  .backtop { font-family: var(--font-mono); font-size: .7rem; color: var(--faint); margin: 4px 0 44px; display: inline-block; }
+
   .fade { animation: fadein .35s ease; }
   @keyframes fadein { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  h1,h2,h3,h4{-webkit-user-select:none;user-select:none;cursor:default}
 </style>
 </head>
 <body>
 
 <header class="topbar">
   <div class="wrap">
-    <div class="brand"><span class="dot"></span> Onboarding&nbsp;Portal&nbsp;<b>· Agent Catalog</b></div>
+    <div class="bar-left" style="display:flex;align-items:center;gap:18px">
+      <a href="/toolkit" style="display:inline-flex;align-items:center;gap:6px;padding:7px 15px;border-radius:9px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:.8rem;font-weight:600;text-decoration:none;white-space:nowrap">← Back</a>
+      <div class="brand"><span class="dot"></span> Onboarding&nbsp;Portal&nbsp;<b>· Agent Catalog</b></div>
+    </div>
     <nav>
-      <a href="/toolkit">Back to Engineering Agents</a>
-      <a href="#what">Overview</a>
+      <a href="#index" id="nav-directory">Directory</a>
+      <a href="#what" id="nav-overview">Overview</a>
       <a href="#caps">Capabilities</a>
       <a href="#how">Mechanics</a>
       <a href="#output">Output</a>
@@ -255,8 +273,6 @@
     </nav>
   </div>
 </header>
-
-<div class="pipeline"><div class="wrap" id="switcher"></div></div>
 
 <main id="app"></main>
 
@@ -1060,20 +1076,46 @@ function applyAccent(cat){
   r.setProperty("--glow", rgba(c.accent, .06));
 }
 
-function buildSwitcher(active){
-  const el = document.getElementById("switcher");
-  const ai = ORDER.indexOf(active);
-  let html = "";
-  ORDER.forEach((slug, i) => {
-    const a = AGENTS[slug];
-    const cls = slug === active ? "stage active" : (i < ai ? "stage done" : "stage");
-    html += '<button class="' + cls + '" data-slug="' + slug + '">' +
-            '<span class="s-n">' + a.num + '</span> ' + a.short + '</button>';
-    if (i < ORDER.length - 1) html += '<span class="arr">▸</span>';
+function renderDirectory(){
+  const groups = {};
+  ORDER.forEach(slug => {
+    const cat = AGENTS[slug].cat;
+    (groups[cat] = groups[cat] || []).push(slug);
   });
-  el.innerHTML = html;
-  el.querySelectorAll(".stage").forEach(b =>
-    b.addEventListener("click", () => show(b.dataset.slug)));
+  let phases = "";
+  Object.keys(CATS).forEach(catKey => {
+    const slugs = groups[catKey];
+    if (!slugs || !slugs.length) return;
+    const cards = slugs.map(slug => {
+      const a = AGENTS[slug];
+      return '<a class="idx-card" href="#' + slug + '">' +
+             '<span class="ic-n">' + a.num + '</span>' +
+             '<span class="ic-name">' + a.name + '</span>' +
+             '<span class="ic-stage">' + slug + '</span></a>';
+    }).join("");
+    phases += '<div class="idx-phase"><span class="label">' + CATS[catKey].label +
+              '</span><div class="idx-grid">' + cards + '</div></div>';
+  });
+
+  document.getElementById("app").innerHTML =
+    '<section class="hero fade"><div class="wrap">' +
+      '<p class="eyebrow">Agent Catalog · 11 agents · 5 categories</p>' +
+      '<h1>The agents that onboard &amp; build the platform</h1>' +
+      '<p class="lede">Eleven single-purpose engineering agents — from architecture and governance ' +
+      'through implementation, verification, review, and documentation. Each runs in its own isolated ' +
+      'context and hands a structured result to the next. Select one to see its golden rule, ' +
+      'capabilities, mechanics, output schema, and guardrails.</p>' +
+    '</div></section>' +
+    '<section class="section" id="index"><div class="wrap">' +
+      '<div class="section-head"><p class="eyebrow">Directory</p><h2>All 11 agents</h2>' +
+      '<p>Grouped by role in the pipeline. Select any agent to view it in isolation.</p></div>' +
+      phases +
+    '</div></section>';
+  document.getElementById("foot-pos").textContent = "11 agents";
+  const navOverview = document.getElementById("nav-overview");
+  if (navOverview) navOverview.style.display = "none";
+  const navDirectory = document.getElementById("nav-directory");
+  if (navDirectory) navDirectory.style.display = "none";
 }
 
 function render(slug){
@@ -1084,7 +1126,12 @@ function render(slug){
   const findings = a.specimen.findings.map(f =>
     '<div class="finding"><span class="tag' + (f.alt ? ' alt' : '') + '">' + f.tag +
     '</span><span class="txt">' + f.txt + '</span><span class="meta">' + f.meta + '</span></div>').join("");
-  const overview = a.overview.map(p => '<p>' + p + '</p>').join("");
+  // The "What it does" overview section is only shown for the Architecture Agent.
+  const overviewSection = (slug === "architecture-agent")
+    ? '<section class="section" id="what"><div class="wrap">' +
+        '<div class="section-head"><p class="eyebrow">Overview</p><h2>What it does</h2></div>' +
+        '<div class="prose">' + a.overview.map(p => '<p>' + p + '</p>').join("") + '</div></div></section>'
+    : '';
   const caps = a.caps.map(c =>
     '<div class="cap"><span class="cap-id">/ ' + c[0] + '</span><h3>' + c[1] + '</h3><p>' + c[2] + '</p></div>').join("");
   const steps = a.steps.map((s, i) =>
@@ -1100,18 +1147,13 @@ function render(slug){
   const specs = a.specs.map(s =>
     '<div class="spec-row"><dt>' + s[0] + '</dt><dd>' + s[1] + '</dd></div>').join("");
 
-  const ni = (ORDER.indexOf(slug) + 1) % ORDER.length;
-  const nextSlug = ORDER[ni];
-  const next = AGENTS[nextSlug];
-  const nextLabel = ni === 0 ? "Back to start ▸" : "Next in the pipeline";
-
   const runtimePill = a.runtime
     ? '<span class="pill accent">runtime-wired</span>'
     : '<span class="pill">spec only</span>';
 
   document.getElementById("app").innerHTML =
   '<section class="hero fade"><div class="wrap hero-grid"><div>' +
-    '<p class="eyebrow">Pipeline Stage ' + a.num + ' · ' + cat.label + '</p>' +
+    '<p class="eyebrow">Onboarding Portal · Stage ' + a.num + ' · ' + cat.label + '</p>' +
     '<h1>' + a.name + '</h1>' +
     '<div class="hero-status"><span class="pill">draft</span>' + runtimePill +
       '<span class="pill accent">' + cat.label + '</span></div>' +
@@ -1125,9 +1167,7 @@ function render(slug){
     '</div>' +
   '</div></section>' +
 
-  '<section class="section" id="what"><div class="wrap">' +
-    '<div class="section-head"><p class="eyebrow">Overview</p><h2>What it does</h2></div>' +
-    '<div class="prose">' + overview + '</div></div></section>' +
+  overviewSection +
 
   '<section class="section" id="caps"><div class="wrap">' +
     '<div class="section-head"><p class="eyebrow">Capabilities</p><h2>What it produces</h2></div>' +
@@ -1164,29 +1204,41 @@ function render(slug){
 
   '<section class="section" id="specs"><div class="wrap">' +
     '<div class="section-head"><p class="eyebrow">Technical specifications</p><h2>At a glance</h2></div>' +
-    '<dl class="specs">' + specs + '</dl></div></section>' +
+    '<dl class="specs">' + specs + '</dl></div></section>';
 
-  '<section class="next"><div class="wrap"><div class="next-card">' +
-    '<div class="nx-l"><span class="label">' + nextLabel + '</span>' +
-    '<h3>' + next.name + ' →</h3></div>' +
-    '<button class="go" data-slug="' + nextSlug + '">Stage ' + next.num + '</button>' +
-  '</div></div></section>';
-
-  document.querySelector(".next-card .go").addEventListener("click", e => show(e.target.dataset.slug));
+  // The Overview and Directory nav links only apply to the Architecture Agent.
+  const isArch = (slug === "architecture-agent");
+  const navOverview = document.getElementById("nav-overview");
+  if (navOverview) navOverview.style.display = isArch ? "" : "none";
+  const navDirectory = document.getElementById("nav-directory");
+  if (navDirectory) navDirectory.style.display = isArch ? "" : "none";
   document.getElementById("foot-pos").textContent = "Agent " + a.num + " / 11";
 }
 
 function show(slug){
   if (!AGENTS[slug]) slug = ORDER[0];
   applyAccent(AGENTS[slug].cat);
-  buildSwitcher(slug);
   render(slug);
   if (location.hash.slice(1) !== slug) history.replaceState(null, "", "#" + slug);
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
-window.addEventListener("hashchange", () => show(location.hash.slice(1)));
-show(location.hash.slice(1) || ORDER[0]);
+function showDirectory(){
+  renderDirectory();
+  if (location.hash) history.replaceState(null, "", location.pathname + location.search);
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+// The directory grid is the hub. An agent slug in the hash opens that agent in
+// isolation; an empty/#index hash returns to the directory. Other in-page anchors
+// (#what, #caps, …) are left to scroll natively within the open agent.
+function route(){
+  const h = location.hash.slice(1);
+  if (AGENTS[h]) show(h);
+  else if (h === "" || h === "index" || h === "directory") showDirectory();
+}
+window.addEventListener("hashchange", route);
+route();
 </script>
 
 </body>

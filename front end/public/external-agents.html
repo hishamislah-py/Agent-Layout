@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<link rel="icon" type="image/png" href="/Logo%20(2).png" />
 <title>ART Technology — Popular Skills & MCP Server Toolkit</title>
 <style>
 :root{
@@ -43,8 +44,10 @@ body{
 .hero h1{font-size:clamp(30px,4.6vw,52px);font-weight:700;line-height:1.05;letter-spacing:-1px;max-width:720px;margin:0 auto 16px}
 .hero h1 em{font-style:normal;background:linear-gradient(90deg,#fbd75b,#f5c010,#fce9a8);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
 .hero-sub{font-size:16px;color:var(--muted);max-width:600px;line-height:1.65;margin:0 auto}
-.hero-back{display:inline-block;margin-top:26px;font-size:13px;font-weight:600;color:var(--white);background:rgba(255,255,255,.06);border:1px solid var(--bdr);border-radius:9px;padding:10px 18px;text-decoration:none;transition:.15s}
-.hero-back:hover{background:rgba(255,255,255,.13)}
+/* top-left back button — uniform with the in-app pages (.internal-back) */
+.skl-top{max-width:1200px;margin:0 auto;padding:52px 24px 0;text-align:left}
+.back-btn{display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:600;color:var(--white);background:rgba(255,255,255,.06);border:1px solid var(--bdr);border-radius:10px;padding:8px 14px;text-decoration:none;transition:background .2s ease,border-color .2s ease}
+.back-btn:hover{background:rgba(255,255,255,.1);border-color:rgba(245,192,16,.5)}
 
 /* CONTROLS */
 .controls{position:static;background:transparent;border-bottom:none;padding:28px 24px 4px}
@@ -102,16 +105,18 @@ mark{background:rgba(245,192,16,.3);color:#fff;border-radius:3px;padding:0 2px}
 @media(max-width:640px){
   .hero{padding:44px 16px 40px}.body{padding:24px 16px 60px}.controls{padding:12px 16px}
 }
+h1,h2,h3,h4{-webkit-user-select:none;user-select:none;cursor:default}
 </style>
 </head>
 <body>
+
+<div class="skl-top"><a class="back-btn" href="/">← Back</a></div>
 
 <section class="hero">
   <div class="hero-inner">
     <div class="eyebrow">ART · Skill Library</div>
     <h1>Popular Skills &amp;<br><em>MCP Server Toolkit</em></h1>
     <p class="hero-sub">A curated catalog of Agent Skills and MCP servers used across ART's engineering teams. All open source, all production tested.</p>
-    <a class="hero-back" href="/">← Back to site</a>
   </div>
 </section>
 

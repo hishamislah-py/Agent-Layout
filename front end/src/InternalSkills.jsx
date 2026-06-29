@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { INTERNAL_AGENTS, HUB_NAME } from './internal.js'
+import { INTERNAL_SKILLS } from './internal.js'
 import { CARD_ICONS } from './cardIcons.jsx'
 
 function spotlight(e) {
@@ -11,7 +11,7 @@ function spotlight(e) {
 }
 
 // Display order for the filter bar; unlisted categories follow in first-seen order.
-const CATEGORY_ORDER = ['Migration Pipeline', 'Onboarding Portal', 'Playwright QA']
+const CATEGORY_ORDER = ['Greenfield Skills', 'Testing Skills']
 
 function buildCategories(items) {
   const counts = new Map()
@@ -29,8 +29,8 @@ function buildCategories(items) {
   ]
 }
 
-// Card for an engineering agent — opens its collection's catalog at the anchor.
-function ToolkitCard({ item }) {
+// Skill card — opens the standalone catalog page at the skill's anchor.
+function SkillCard({ item }) {
   const open = () => {
     if (!item.href) return
     if (/^https?:/i.test(item.href)) window.open(item.href, '_blank', 'noopener,noreferrer')
@@ -62,14 +62,14 @@ function matchesQuery(item, q) {
   return `${item.name} ${item.short || ''} ${item.category || ''}`.toLowerCase().includes(q)
 }
 
-export default function ToolkitHub() {
+export default function InternalSkills() {
   const navigate = useNavigate()
   const [active, setActive] = useState('All')
   const [query, setQuery] = useState('')
-  const categories = useMemo(() => buildCategories(INTERNAL_AGENTS), [])
+  const categories = useMemo(() => buildCategories(INTERNAL_SKILLS), [])
   const visible = useMemo(() => {
     const q = query.trim().toLowerCase()
-    return INTERNAL_AGENTS.filter((a) => (active === 'All' || a.category === active) && matchesQuery(a, q))
+    return INTERNAL_SKILLS.filter((s) => (active === 'All' || s.category === active) && matchesQuery(s, q))
   }, [active, query])
 
   return (
@@ -84,9 +84,9 @@ export default function ToolkitHub() {
         </div>
 
         <h2 className="apps-title">
-          Explore our <span className="grad">{HUB_NAME}</span>
+          Explore our <span className="grad">Internal Skills Catalog</span>
         </h2>
-        <p className="apps-sub">Internal agents that power the platform.</p>
+        <p className="apps-sub">Reusable capabilities the engineering agents build on.</p>
 
         <div className="cat-zone">
           <div className="search-wrap">
@@ -99,12 +99,12 @@ export default function ToolkitHub() {
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search agents — try 'migration', 'review', 'audit'…"
-              aria-label="Search agents"
+              placeholder="Search skills — try 'backend', 'rbac', 'docs'…"
+              aria-label="Search skills"
             />
           </div>
 
-          <div className="cat-bar" role="tablist" aria-label="Browse agents by collection">
+          <div className="cat-bar" role="tablist" aria-label="Browse skills by category">
             {categories.map((c) => (
               <button
                 key={c.label}
@@ -126,12 +126,12 @@ export default function ToolkitHub() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.26, ease: [0.22, 1, 0.36, 1] }}
           >
-            {visible.map((a) => (
-              <ToolkitCard key={a.slug} item={a} />
+            {visible.map((s) => (
+              <SkillCard key={s.slug} item={s} />
             ))}
           </motion.div>
 
-          {visible.length === 0 && <p className="cat-empty">No agents match your search.</p>}
+          {visible.length === 0 && <p className="cat-empty">No skills match your search.</p>}
         </div>
       </section>
     </div>
