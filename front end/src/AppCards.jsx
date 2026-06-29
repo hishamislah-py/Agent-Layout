@@ -86,13 +86,20 @@ function Card({ app }) {
   )
 }
 
+function matchesQuery(app, q) {
+  if (!q) return true
+  const hay = `${app.name} ${app.short || ''} ${app.category || ''} ${(app.tags || []).map((t) => t.label).join(' ')}`.toLowerCase()
+  return hay.includes(q)
+}
+
 export default function AppCards() {
   const [active, setActive] = useState('All')
+  const [query, setQuery] = useState('')
   const categories = useMemo(() => buildCategories(APPS), [])
-  const visible = useMemo(
-    () => (active === 'All' ? APPS : APPS.filter((a) => a.category === active)),
-    [active]
-  )
+  const visible = useMemo(() => {
+    const q = query.trim().toLowerCase()
+    return APPS.filter((a) => (active === 'All' || a.category === active) && matchesQuery(a, q))
+  }, [active, query])
 
   return (
     <section id="more" className="apps-section">
@@ -102,6 +109,21 @@ export default function AppCards() {
       <p className="apps-sub">A unified suite of intelligent applications. Click any agent to learn more.</p>
 
       <div className="cat-zone">
+        <div className="search-wrap">
+          <svg className="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6B8085" strokeWidth="2">
+            <circle cx="11" cy="11" r="8" />
+            <path d="m21 21-4.35-4.35" />
+          </svg>
+          <input
+            className="search"
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search agents — try 'fraud', 'HR', 'compliance'…"
+            aria-label="Search agents"
+          />
+        </div>
+
         <div className="cat-bar" role="tablist" aria-label="Browse agents by category">
           {categories.map((c) => (
             <button
@@ -129,6 +151,8 @@ export default function AppCards() {
             <Card key={app.slug} app={app} />
           ))}
         </motion.div>
+
+        {visible.length === 0 && <p className="cat-empty">No agents match your search.</p>}
       </div>
     </section>
   )

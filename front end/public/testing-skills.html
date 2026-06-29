@@ -1,0 +1,1123 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/png" href="/Logo%20(2).png" />
+<title>Security &amp; Vulnerability Testing · Skills Catalog</title>
+<meta name="description" content="Reference for the two-skill security testing pipeline — an API Security Skill that finds auth and config flaws in live endpoints, and a Static Analysis Skill that scans source code for vulnerabilities. Includes every skill both draw on.">
+<style>
+  :root {
+    --ink:        #0B0B0D;
+    --ink-2:      #111218;
+    --surface:    #15171F;
+    --surface-2:  #1B1E27;
+    --line:       #2B2E38;
+    --line-soft:  #20222B;
+    --text:       #E7E3D6;
+    --muted:      #A6A296;
+    --faint:      #6E6A5E;
+    --accent:     #F2C94C;
+    --accent-2:   #F7DC84;
+    --accent-dim: rgba(242,201,76,.13);
+    --accent-line:rgba(242,201,76,.30);
+    --green:      #88c9a1;
+    --green-dim:  rgba(136,201,161,.12);
+    --green-line: rgba(136,201,161,.30);
+    --red:        #f28b82;
+    --red-dim:    rgba(242,139,130,.12);
+    --red-line:   rgba(242,139,130,.30);
+
+    --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+    --font-mono: ui-monospace, "SF Mono", "JetBrains Mono", "Menlo", "Consolas", monospace;
+
+    --maxw: 1060px;
+    --step: clamp(2.4rem, 6vw, 4.5rem);
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce){ html { scroll-behavior: auto; } }
+  body {
+    margin: 0;
+    background:
+      radial-gradient(120% 80% at 80% -10%, rgba(242,201,76,.07), transparent 55%),
+      var(--ink);
+    color: var(--text);
+    font-family: var(--font-sans);
+    font-size: 17px; line-height: 1.6;
+    -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
+  }
+  ::selection { background: var(--accent-dim); color: var(--accent-2); }
+  .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 24px; }
+  a { color: var(--accent-2); text-decoration: none; }
+  a:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+  .eyebrow { font-family: var(--font-mono); font-size: .72rem; letter-spacing: .22em; text-transform: uppercase; color: var(--accent); margin: 0; }
+  .label   { font-family: var(--font-mono); font-size: .68rem; letter-spacing: .18em; text-transform: uppercase; color: var(--faint); }
+  h1, h2, h3 { text-wrap: balance; font-weight: 650; letter-spacing: -.02em; line-height: 1.1; }
+  h1, h2, h3, h4 { -webkit-user-select: none; user-select: none; cursor: default; }
+  .mono { font-family: var(--font-mono); }
+
+  /* ===== top bar ===== */
+  .topbar { border-bottom: 1px solid var(--line-soft); position: sticky; top: 0; z-index: 30; background: rgba(11,11,13,.82); backdrop-filter: blur(10px); }
+  .topbar .wrap { display: flex; align-items: center; justify-content: space-between; height: 56px; }
+  .brand { display: flex; align-items: center; gap: 10px; font-family: var(--font-mono); font-size: .8rem; letter-spacing: .04em; color: var(--muted); }
+  .brand:hover { text-decoration: none; color: var(--muted); }
+  .brand b { color: var(--text); font-weight: 600; }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 10px var(--accent); }
+  .topbar nav { display: flex; gap: 22px; }
+  .topbar nav a { color: var(--muted); font-family: var(--font-mono); font-size: .74rem; letter-spacing: .04em; }
+  .topbar nav a:hover { color: var(--text); text-decoration: none; }
+  @media (max-width: 820px){ .topbar nav { display: none; } }
+
+  /* ===== pipeline strip ===== */
+  .pipeline { border-bottom: 1px solid var(--line-soft); background: var(--ink-2); position: sticky; top: 56px; z-index: 25; }
+  .pipeline .wrap { display: flex; align-items: center; gap: 6px; overflow-x: auto; padding-top: 12px; padding-bottom: 12px; scrollbar-width: none; }
+  .pipeline .wrap::-webkit-scrollbar { display: none; }
+  .stage { display: inline-flex; align-items: baseline; gap: 8px; white-space: nowrap; font-family: var(--font-mono); font-size: .76rem; color: var(--faint); padding: 5px 11px; border-radius: 999px; border: 1px solid transparent; }
+  .stage .s-n { font-size: .66rem; opacity: .8; }
+  .stage:hover { color: var(--text); border-color: var(--accent-line); background: var(--accent-dim); }
+  .stage:hover .s-n { color: var(--accent); opacity: 1; }
+  .arr { color: var(--line); font-family: var(--font-mono); }
+
+  /* ===== hero ===== */
+  .hero { padding: var(--step) 0 calc(var(--step) * .65); }
+  .hero-grid { display: grid; grid-template-columns: 1.05fr .95fr; gap: 48px; align-items: center; }
+  @media (max-width: 880px){ .hero-grid { grid-template-columns: 1fr; gap: 36px; } }
+  .hero h1 { font-size: clamp(2.4rem, 6vw, 4rem); margin: 16px 0 0; }
+  .hero .lede { color: var(--muted); font-size: 1.1rem; max-width: 48ch; margin: 20px 0 0; }
+  .hero-meta { display: flex; flex-wrap: wrap; gap: 10px 26px; margin-top: 28px; font-family: var(--font-mono); font-size: .76rem; color: var(--muted); }
+  .hero-meta span b { color: var(--text); font-weight: 600; }
+
+  .scanner { position: relative; border: 1px solid var(--line); border-radius: 10px; background: linear-gradient(180deg, var(--surface), var(--ink-2)); overflow: hidden; box-shadow: 0 24px 60px -30px rgba(0,0,0,.8); }
+  .scanner-head { display: flex; align-items: center; gap: 8px; padding: 11px 14px; border-bottom: 1px solid var(--line-soft); font-family: var(--font-mono); font-size: .72rem; color: var(--faint); }
+  .tl { display: flex; gap: 6px; margin-right: 6px; }
+  .tl i { width: 9px; height: 9px; border-radius: 50%; background: var(--line); display: block; }
+  .scan-body { position: relative; }
+  pre.code { margin: 0; padding: 18px; font-family: var(--font-mono); font-size: .76rem; line-height: 1.7; color: #aeb9c5; overflow-x: auto; tab-size: 2; }
+  pre.code .k  { color: #ffd86b; }
+  pre.code .s  { color: #88c9a1; }
+  pre.code .c  { color: #56616e; font-style: italic; }
+  pre.code .f  { color: #e4d290; }
+  pre.code .n  { color: #d8a0d8; }
+  pre.code .r  { color: #f28b82; }
+  .scanline { position: absolute; left: 0; right: 0; top: 0; height: 38px; background: linear-gradient(180deg, transparent, rgba(242,201,76,.16) 70%, var(--accent-line)); border-bottom: 1px solid var(--accent); box-shadow: 0 0 22px 2px rgba(242,201,76,.25); pointer-events: none; animation: sweep 5.4s cubic-bezier(.6,0,.4,1) infinite; }
+  @keyframes sweep { 0%{transform:translateY(-40px);opacity:0;} 8%{opacity:1;} 72%{opacity:1;} 85%{transform:translateY(300px);opacity:0;} 100%{transform:translateY(300px);opacity:0;} }
+  @media (prefers-reduced-motion: reduce){ .scanline{ animation:none; opacity:.9; top:110px; } }
+
+  /* ===== generic section ===== */
+  .section { padding: calc(var(--step) * .7) 0; border-top: 1px solid var(--line-soft); scroll-margin-top: 120px; }
+  .section-head { max-width: 58ch; margin-bottom: 34px; }
+  .section-head h2 { font-size: clamp(1.6rem, 3.2vw, 2.2rem); margin: 12px 0 0; }
+  .section-head p { color: var(--muted); margin: 14px 0 0; }
+  .prose p { color: var(--muted); max-width: 66ch; margin: 0 0 16px; }
+  .prose strong { color: var(--text); font-weight: 600; }
+
+  /* ===== index ===== */
+  .idx-phase { margin-top: 26px; }
+  .idx-phase > .label { display: block; margin-bottom: 12px; padding-left: 2px; }
+  .idx-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: var(--line-soft); border: 1px solid var(--line-soft); border-radius: 12px; overflow: hidden; }
+  @media (max-width: 480px){ .idx-grid { grid-template-columns: 1fr; } }
+  .idx-card { background: var(--surface); padding: 16px 16px 18px; display: flex; flex-direction: column; gap: 5px; transition: background .16s ease; }
+  .idx-card:hover { background: var(--surface-2); text-decoration: none; }
+  .idx-card .ic-n    { font-family: var(--font-mono); font-size: .68rem; color: var(--accent); letter-spacing: .1em; }
+  .idx-card .ic-name { color: var(--text); font-weight: 600; font-size: .98rem; }
+  .idx-card .ic-stage{ font-family: var(--font-mono); font-size: .68rem; color: var(--faint); }
+
+  /* ===== skill section ===== */
+  .skill-sec { scroll-margin-top: 120px; }
+  .skill-head { max-width: 70ch; }
+  .skill-head h2 { font-size: clamp(1.7rem, 3.6vw, 2.5rem); margin: 12px 0 0; }
+  .gr { margin: 18px 0 0; border-left: 2px solid var(--accent); background: var(--accent-dim); padding: 12px 16px; border-radius: 0 8px 8px 0; }
+  .gr .label { display: block; margin-bottom: 3px; color: var(--accent); }
+  .gr span.t { color: var(--text); font-style: italic; }
+  .skill-head .lede { color: var(--muted); margin: 18px 0 0; max-width: 64ch; }
+
+  /* I/O flow */
+  .io-flow { display: grid; grid-template-columns: 1fr 40px 1fr; gap: 0; align-items: stretch; margin: 28px 0 6px; border: 1px solid var(--line-soft); border-radius: 12px; overflow: hidden; }
+  @media (max-width: 640px){ .io-flow { grid-template-columns: 1fr; } }
+  .io-col { background: var(--surface); padding: 16px 18px; }
+  .io-col.out { background: var(--ink-2); }
+  .io-col .label { display: block; margin-bottom: 9px; }
+  .io-col.out .label { color: var(--accent); }
+  .io-col ul { margin: 0; padding-left: 0; list-style: none; display: flex; flex-direction: column; gap: 6px; }
+  .io-col li { font-family: var(--font-mono); font-size: .76rem; color: var(--muted); padding-left: 14px; position: relative; }
+  .io-col li::before { content: "▸"; position: absolute; left: 0; color: var(--faint); }
+  .io-col.out li { color: var(--text); }
+  .io-col.out li::before { color: var(--accent); }
+  .io-mid { display: flex; align-items: center; justify-content: center; background: var(--surface-2); color: var(--accent); font-family: var(--font-mono); font-size: 1.1rem; }
+  @media (max-width: 640px){ .io-mid { padding: 6px; } }
+
+  .sub { font-size: 1.05rem; margin: 30px 0 14px; color: var(--text); }
+
+  /* capability grid */
+  .cap-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: var(--line-soft); border: 1px solid var(--line-soft); border-radius: 12px; overflow: hidden; }
+  @media (max-width: 640px){ .cap-grid { grid-template-columns: 1fr; } }
+  .cap { background: var(--surface); padding: 18px 18px 20px; display: flex; flex-direction: column; gap: 7px; transition: background .16s ease; }
+  .cap:hover { background: var(--surface-2); }
+  .cap .cap-id { font-family: var(--font-mono); font-size: .68rem; color: var(--accent); letter-spacing: .08em; }
+  .cap h4 { font-size: 1rem; margin: 0; font-weight: 600; }
+  .cap p  { margin: 0; color: var(--muted); font-size: .9rem; line-height: 1.5; }
+
+  /* workflow steps */
+  .flow { counter-reset: step; border: 1px solid var(--line-soft); border-radius: 12px; overflow: hidden; margin-top: 8px; }
+  .flow-step { display: grid; grid-template-columns: 54px 1fr; border-top: 1px solid var(--line-soft); background: var(--surface); transition: background .16s ease; }
+  .flow-step:first-child { border-top: none; }
+  .flow-step:hover { background: var(--surface-2); }
+  .flow-step .fs-n { counter-increment: step; font-family: var(--font-mono); font-size: .8rem; color: var(--accent); padding: 16px 0 16px 18px; }
+  .flow-step .fs-n::before { content: counter(step, decimal-leading-zero); }
+  .flow-step .fs-body { padding: 15px 18px 16px 6px; }
+  .flow-step h4 { margin: 0 0 4px; font-size: .98rem; font-weight: 600; }
+  .flow-step p  { margin: 0; color: var(--muted); font-size: .9rem; line-height: 1.5; }
+  .flow-step code { font-family: var(--font-mono); font-size: .82em; color: var(--accent-2); }
+
+  /* strengths / guardrail / usage / benefit lists */
+  .twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; margin-top: 8px; }
+  @media (max-width: 640px){ .twocol { grid-template-columns: 1fr; } }
+  .listcard { border: 1px solid var(--line-soft); border-radius: 12px; padding: 18px 20px 20px; background: var(--surface); }
+  .listcard.guard,   .listcard.benefit { border-left: 2px solid var(--green); }
+  .listcard.strength,.listcard.use     { border-left: 2px solid var(--accent); }
+  .listcard > .label { display: block; margin-bottom: 12px; }
+  .listcard.strength > .label, .listcard.use > .label  { color: var(--accent); }
+  .listcard.guard > .label,    .listcard.benefit > .label { color: var(--green); }
+  .listcard ul { margin: 0; padding-left: 0; list-style: none; display: flex; flex-direction: column; gap: 9px; }
+  .listcard li { font-size: .9rem; color: var(--muted); padding-left: 18px; position: relative; line-height: 1.5; }
+  .listcard li strong { color: var(--text); font-weight: 600; }
+  .listcard li code { font-family: var(--font-mono); font-size: .84em; color: var(--accent-2); }
+  .listcard.strength li::before, .listcard.use li::before { content: "+"; position: absolute; left: 0; color: var(--accent); font-family: var(--font-mono); }
+  .listcard.guard li::before,    .listcard.benefit li::before { content: "✓"; position: absolute; left: 1px; top: 1px; color: var(--green); font-size: .8rem; }
+
+  /* specs */
+  .specs { border: 1px solid var(--line-soft); border-radius: 12px; overflow: hidden; margin-top: 22px; }
+  .spec-row { display: grid; grid-template-columns: 190px 1fr; border-top: 1px solid var(--line-soft); }
+  .spec-row:first-child { border-top: none; }
+  .spec-row dt { padding: 12px 16px; background: var(--ink-2); font-family: var(--font-mono); font-size: .72rem; letter-spacing: .04em; color: var(--muted); }
+  .spec-row dd { margin: 0; padding: 12px 16px; color: var(--text); font-family: var(--font-mono); font-size: .78rem; }
+  @media (max-width: 560px){ .spec-row { grid-template-columns: 1fr; } .spec-row dd { padding-top: 0; } }
+
+  .tagrow { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 14px; }
+  .pill { font-family: var(--font-mono); font-size: .64rem; letter-spacing: .08em; text-transform: uppercase; padding: 3px 9px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); }
+  .pill.core { border-color: var(--accent-line); color: var(--accent); background: var(--accent-dim); }
+  .pill.gate { border-color: var(--green-line); color: var(--green); background: var(--green-dim); }
+  .pill.plan { border-color: var(--line); color: var(--faint); }
+  .pill.tob  { border-color: var(--red-line); color: var(--red); background: var(--red-dim); }
+
+  .backtop { font-family: var(--font-mono); font-size: .7rem; color: var(--faint); margin-top: 20px; display: inline-block; }
+
+  /* ===== skills ===== */
+  .skill { border: 1px solid var(--line-soft); border-radius: 14px; background: linear-gradient(180deg, var(--surface), var(--ink-2)); padding: 26px 26px 28px; margin-top: 22px; scroll-margin-top: 120px; }
+  @media (max-width: 560px){ .skill { padding: 20px 18px 22px; } }
+  .skill .skill-id { font-family: var(--font-mono); font-size: .72rem; color: var(--faint); letter-spacing: .04em; }
+  .skill h3 { font-size: clamp(1.35rem, 2.8vw, 1.8rem); margin: 8px 0 0; }
+  .skill .lede { color: var(--muted); margin: 16px 0 0; max-width: 66ch; }
+  .skill .lede code { font-family: var(--font-mono); font-size: .84em; color: var(--accent-2); }
+  .usedby { font-family: var(--font-mono); font-size: .7rem; color: var(--faint); margin-top: 14px; }
+  .usedby b { color: var(--text); font-weight: 600; }
+  .skills-subhead { margin-top: 46px; padding-top: 30px; border-top: 1px solid var(--line-soft); }
+  .skills-subhead .label { display: block; }
+  .skills-subhead p { color: var(--muted); margin: 12px 0 0; max-width: 66ch; font-size: .95rem; }
+  .skill.shared { border-left: 3px solid var(--green); }
+
+  /* source badge */
+  .source-badge { display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-mono); font-size: .68rem; letter-spacing: .06em; text-transform: uppercase; padding: 3px 10px; border-radius: 999px; margin-top: 10px; }
+  .source-badge.snyk { background: rgba(80,180,120,.12); color: #6fd4a0; border: 1px solid rgba(80,180,120,.3); }
+  .source-badge.tob  { background: var(--red-dim); color: var(--red); border: 1px solid var(--red-line); }
+  .source-badge.qa   { background: var(--accent-dim); color: var(--accent-2); border: 1px solid var(--accent-line); }
+
+  /* principles */
+  .principles { display: grid; grid-template-columns: repeat(3,1fr); gap: 18px; }
+  @media (max-width: 720px){ .principles { grid-template-columns: 1fr; } }
+  .principle { border-top: 2px solid var(--accent); padding-top: 16px; }
+  .principle h3 { font-size: 1.02rem; margin: 0 0 7px; }
+  .principle p  { margin: 0; color: var(--muted); font-size: .9rem; }
+
+  footer.foot { border-top: 1px solid var(--line-soft); padding: 28px 0 48px; color: var(--faint); font-family: var(--font-mono); font-size: .72rem; }
+  footer.foot .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+</style>
+</head>
+<body>
+<span id="top" aria-hidden="true"></span>
+
+<!-- ===== TOP BAR ===== -->
+<header class="topbar">
+  <div class="wrap">
+    <div class="bar-left" style="display:flex;align-items:center;gap:18px">
+      <a href="/internal-skills" style="display:inline-flex;align-items:center;gap:6px;padding:7px 15px;border-radius:9px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:.8rem;font-weight:600;text-decoration:none;white-space:nowrap">← Back</a>
+      <a class="brand" href="#top"><span class="dot"></span> Security&nbsp;<b>Testing Pipeline</b></a>
+    </div>
+    <nav>
+      <a href="#overview">Overview</a>
+      <a href="#index">Primary Skills</a>
+      <a href="#a01">API Security</a>
+      <a href="#a02">Static Analysis</a>
+      <a href="#skills">Skills</a>
+      <a href="#principles">Shared Rules</a>
+    </nav>
+  </div>
+</header>
+
+<!-- ===== PIPELINE STRIP ===== -->
+<div class="pipeline">
+  <div class="wrap">
+    <a class="stage" href="#a01"><span class="s-n">01</span> Black-Box API Testing</a><span class="arr">→</span>
+    <a class="stage" href="#a01"><span class="s-n">~</span> Findings logged to Jira</a><span class="arr">→</span>
+    <a class="stage" href="#a02"><span class="s-n">02</span> Static Code Analysis</a><span class="arr">→</span>
+    <a class="stage" href="#a02"><span class="s-n">~</span> SARIF merged &amp; reported</a>
+  </div>
+</div>
+
+<main>
+
+  <!-- ===== HERO ===== -->
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <p class="eyebrow">Skills Catalog · 2 primary skills · 10-skill library</p>
+        <h1>The skills that find &amp; report security vulnerabilities</h1>
+        <p class="lede">A two-stage security testing pipeline. The API Security Skill probes live API endpoints for authentication flaws, CORS misconfigurations, JWT issues, and rate-limiting bypasses. The Static Analysis Skill scans source code statically using Semgrep with third-party Trail of Bits rulesets — and merges findings into a verified SARIF report.</p>
+        <div class="hero-meta">
+          <span>Standard&nbsp; <b>OWASP Top 10:2025</b></span>
+          <span>Framework&nbsp; <b>ASVS 5.0</b></span>
+          <span>Output&nbsp; <b>Jira KAN + SARIF</b></span>
+        </div>
+      </div>
+      <div class="scanner" aria-hidden="true">
+        <div class="scanner-head"><span class="tl"><i></i><i></i><i></i></span> security-test · CORS check · evil.com origin</div>
+        <div class="scan-body">
+          <div class="scanline"></div>
+<pre class="code"><span class="c"># Step 2 — Credentialed POST from evil origin</span>
+<span class="k">curl</span> -s -v -X POST \
+  https://api.fraudbloqr.info:8080/auth/login \
+  -H <span class="s">"Origin: https://evil.com"</span> \
+  -H <span class="s">"Content-Type: application/json"</span> \
+  -d <span class="s">'{"email":"admin@fraudbloqr.com","password":"..."}'</span>
+
+<span class="c"># → Response headers received:</span>
+<span class="r">access-control-allow-credentials: true</span>
+<span class="r">access-control-expose-headers: *</span>
+<span class="c"># ACAO absent — browser blocks read</span>
+<span class="c"># But misconfiguration confirmed —</span></pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== OVERVIEW ===== -->
+  <section class="section" id="overview">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">Overview</p>
+        <h2>Two skills, one chain of evidence</h2>
+      </div>
+      <div class="prose">
+        <p>The pipeline runs in order. The <strong>API Security Skill</strong> takes a live endpoint URL and a set of OWASP-aligned test cases, drives real HTTP requests using curl, and records every finding — PASS, FAIL, or partial — with exact response evidence. Every confirmed vulnerability is structured as a Jira-ready finding report.</p>
+        <p>The <strong>Static Analysis Skill</strong> clones or reads the source codebase, detects languages, selects the matching official and third-party Semgrep rulesets (Trail of Bits, 0xdea, Decurity), and presents a scan plan for explicit approval before running. Findings are merged into a single SARIF file and filtered to security-relevant, medium-high confidence results. Both skills follow the same <strong>OWASP Top 10:2025 + ASVS 5.0</strong> classification framework so findings are consistent and Jira-traceable.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== INDEX ===== -->
+  <section class="section" id="index">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">Directory</p>
+        <h2>The two primary skills</h2>
+        <p>In execution order. Jump to either for its purpose, capabilities, tools, workflow, mapped skills, and guardrails.</p>
+      </div>
+      <div class="idx-phase">
+        <span class="label">Stage 01 · Black-Box Testing</span>
+        <div class="idx-grid">
+          <a class="idx-card" href="#a01"><span class="ic-n">01</span><span class="ic-name">API Security Skill</span><span class="ic-stage">s01 · s03 · s04 · s07</span></a>
+          <a class="idx-card" href="#a02"><span class="ic-n">02</span><span class="ic-name">Static Analysis Skill</span><span class="ic-stage">s02 · s03 · s05</span></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== PRIMARY SKILL · API SECURITY ===== -->
+  <section class="section skill-sec" id="a01">
+    <div class="wrap">
+      <div class="skill-head">
+        <p class="eyebrow">Stage 01 · Black-Box Testing — Live Endpoint to Verified Findings</p>
+        <h2>API Security Skill</h2>
+        <div class="tagrow">
+          <span class="pill core">evidence-first</span>
+          <span class="pill gate">live-verified</span>
+          <span class="pill plan">api-security-testing</span>
+          <span class="pill">Snyk / Community</span>
+        </div>
+        <p class="gr"><span class="label">Golden rule</span><span class="t">A finding is only a finding when you have the raw HTTP response to prove it — never from assumption.</span></p>
+        <p class="lede">A senior penetration tester that takes a live API endpoint and a set of OWASP-aligned test cases, executes each attack scenario via real HTTP requests, and produces structured finding reports with exact response evidence, reproduction steps, and Jira-ready severity ratings.</p>
+      </div>
+
+      <h3 class="sub">Purpose</h3>
+      <div class="prose">
+        <p>Given a base URL and an endpoint or set of endpoints, it executes a systematic black-box security assessment covering OWASP Top 10:2025 categories — authentication, authorization, injection, CORS, rate limiting, JWT, and information disclosure. Triggers on phrases like <em>"test this API for security issues," "run a security audit on this endpoint,"</em> or <em>"check for OWASP vulnerabilities."</em></p>
+      </div>
+
+      <div class="io-flow">
+        <div class="io-col"><span class="label">Inputs</span><ul>
+          <li>Target base URL + endpoint(s)</li>
+          <li>Valid credentials / JWT token</li>
+          <li>OWASP categories to test</li>
+          <li>Environment (staging / prod)</li>
+        </ul></div>
+        <div class="io-mid">→</div>
+        <div class="io-col out"><span class="label">Outputs</span><ul>
+          <li>PASS / FAIL per test case</li>
+          <li>Raw HTTP response evidence</li>
+          <li>Structured Jira finding reports</li>
+          <li>Severity &amp; OWASP classification</li>
+        </ul></div>
+      </div>
+
+      <h3 class="sub">Key capabilities</h3>
+      <div class="cap-grid">
+        <div class="cap"><span class="cap-id">/ auth</span><h4>Authentication &amp; JWT testing</h4><p>Brute force, account lockout, rate-limit bypass via email case rotation, JWT algorithm confusion (alg:none), PII in payload, token timing oracle.</p></div>
+        <div class="cap"><span class="cap-id">/ cors</span><h4>CORS &amp; header analysis</h4><p>Preflight and credentialed requests from evil.com and null origins, access-control header audit, server version disclosure.</p></div>
+        <div class="cap"><span class="cap-id">/ inject</span><h4>Injection testing</h4><p>SQL injection (classic, boolean, stacked, time-based), NoSQL injection, email normalization bypass, plus-addressing bypass via validation fields.</p></div>
+        <div class="cap"><span class="cap-id">/ report</span><h4>Structured finding reporting</h4><p>Each confirmed finding becomes a Jira-ready report: summary, description, test steps, expected vs actual, severity, OWASP category, CWE, and fix recommendation.</p></div>
+      </div>
+
+      <h3 class="sub">Mapped skills</h3>
+      <div class="cap-grid">
+        <div class="cap"><span class="cap-id">s01 · primary</span><h4><a href="#s01">api-security-testing</a></h4><p>Drives all black-box API tests, curl command templates, and report generation. <span class="mono">Snyk / Community</span></p></div>
+        <div class="cap"><span class="cap-id">s03 · shared</span><h4><a href="#s03">owasp-security</a></h4><p>Classifies every finding by OWASP Top 10:2025 category and sets severity. <span class="mono">Snyk / Community</span></p></div>
+        <div class="cap"><span class="cap-id">s04</span><h4><a href="#s04">web-app-security</a></h4><p>Invoked when scope expands to the frontend — localStorage, JWT cross-reference, Vite bundles. <span class="mono">Snyk / Community</span></p></div>
+        <div class="cap"><span class="cap-id">s07</span><h4><a href="#s07">password-attacks &amp; sec-fuzzing</a></h4><p>Supplies password lists for brute-force / rate-limit tests and SQLi payloads for injection tests. <span class="mono">Snyk / Community</span></p></div>
+      </div>
+      <div class="prose"><p>Upstream: <a href="#s06">threat-modeling</a> runs before this skill to define the attack surface and prioritize which endpoints to test first.</p></div>
+
+      <h3 class="sub">Workflow</h3>
+      <div class="flow">
+        <div class="flow-step"><span class="fs-n"></span><div class="fs-body"><h4>Scope &amp; recon</h4><p>Identifies target endpoints, required authentication, and applicable OWASP categories. Captures server headers, response shape, and token structure before any attack begins.</p></div></div>
+        <div class="flow-step"><span class="fs-n"></span><div class="fs-body"><h4>Token acquisition</h4><p>Obtains a valid JWT using provided credentials. Decodes payload (base64) to map claims — user_id, email, role, permissions — for later comparison.</p></div></div>
+        <div class="flow-step"><span class="fs-n"></span><div class="fs-body"><h4>Systematic test execution</h4><p>Runs each test case with real curl commands. Captures status codes, response headers, and body. Marks PASS or FAIL from what the server actually returns — never inferred.</p></div></div>
+        <div class="flow-step"><span class="fs-n"></span><div class="fs-body"><h4>Evidence capture &amp; triage</h4><p>For every FAIL, captures the exact response proving exploitability. Triages severity: Critical / High / Medium / Low with OWASP category and CWE reference.</p></div></div>
+        <div class="flow-step"><span class="fs-n"></span><div class="fs-body"><h4>Finding report generation</h4><p>Produces structured reports with: summary, description, steps to reproduce (with exact curl commands), expected result, actual result, fix recommendation, and OWASP / CWE references. Ready to paste into Jira.</p></div></div>
+        <div class="flow-step"><span class="fs-n"></span><div class="fs-body"><h4>Fix verification</h4><p>On re-test requests, re-runs the exact original test steps against the live endpoint and compares current response to the original finding. Reports FIXED or STILL OPEN with evidence.</p></div></div>
+      </div>
+
+      <h3 class="sub">Strengths &amp; guardrails</h3>
+      <div class="twocol">
+        <div class="listcard strength">
+          <span class="label">Strengths</span>
+          <ul>
+            <li><strong>Evidence-grounded</strong> — every finding backed by exact HTTP response output, never assumed.</li>
+            <li><strong>OWASP-classified</strong> — each finding mapped to Top 10:2025 category and CWE for Jira/compliance traceability.</li>
+            <li><strong>Fix-verifiable</strong> — re-runs original exact steps; PASS only when server response proves it.</li>
+            <li><strong>Dispute-ready</strong> — when a developer disputes a finding, re-tests and provides updated evidence to confirm or downgrade.</li>
+          </ul>
+        </div>
+        <div class="listcard guard">
+          <span class="label">Guardrails</span>
+          <ul>
+            <li>Authorized targets only — staging / test environments, never production without explicit approval.</li>
+            <li>Never exfiltrates real user data or credentials beyond what's needed to prove the finding.</li>
+            <li>Rate-limited test loops include delays to avoid accidental DoS on shared staging environments.</li>
+            <li>Disputed findings are re-tested, not argued — evidence decides, not interpretation.</li>
+          </ul>
+        </div>
+      </div>
+
+      <dl class="specs">
+        <div class="spec-row"><dt>Skill type</dt><dd>Composite — black-box API security testing</dd></div>
+        <div class="spec-row"><dt>Source</dt><dd>Snyk / Community</dd></div>
+        <div class="spec-row"><dt>Role</dt><dd>Primary — drives all black-box API tests, curl commands, and report generation</dd></div>
+        <div class="spec-row"><dt>Mapped skills</dt><dd>s01 · s03 (shared) · s04 · s07 — 4 total</dd></div>
+        <div class="spec-row"><dt>Framework</dt><dd>OWASP Top 10:2025 · ASVS 5.0</dd></div>
+        <div class="spec-row"><dt>Tools used</dt><dd>curl · python3 · bash · base64 decode</dd></div>
+        <div class="spec-row"><dt>Output</dt><dd>Structured finding reports · PASS/FAIL per test · raw HTTP evidence</dd></div>
+        <div class="spec-row"><dt>Jira output</dt><dd>KAN project · Issue type · Priority / Severity / Labels / OWASP / CWE</dd></div>
+      </dl>
+      <a class="backtop" href="#index">← back to directory</a>
+    </div>
+  </section>
+
+  <!-- ===== PRIMARY SKILL · STATIC ANALYSIS ===== -->
+  <section class="section skill-sec" id="a02">
+    <div class="wrap">
+      <div class="skill-head">
+        <p class="eyebrow">Stage 02 · Static Analysis — Source Code to SARIF Report</p>
+        <h2>Static Analysis Skill</h2>
+        <div class="tagrow">
+          <span class="pill core">approval-gated</span>
+          <span class="pill gate">sarif-verified</span>
+          <span class="pill plan">static-analysis:semgrep-scanner</span>
+          <span class="pill tob">Trail of Bits</span>
+        </div>
+        <p class="gr"><span class="label">Golden rule</span><span class="t">No scan runs without explicit user approval of rulesets — and no finding is reported without raw SARIF evidence.</span></p>
+        <p class="lede">A security engineer that scans source codebases for vulnerabilities using Semgrep with both official and third-party rulesets (Trail of Bits, 0xdea, Decurity). Detects languages automatically, presents a full scan plan for approval, runs parallel scanners, and delivers a merged, filtered SARIF report with structured findings.</p>
+      </div>
+
+      <h3 class="sub">Purpose</h3>
+      <div class="prose">
+        <p>Given one or more source directories, it detects languages, selects matching rulesets, and presents a detailed scan plan — rulesets, targets, engine, mode — for explicit user approval before any scan executes. Output is a merged <span class="mono">results.sarif</span> with per-scan raw files preserved. Triggers on phrases like <em>"scan the codebase for vulnerabilities," "run semgrep on this project,"</em> or <em>"use tob-semgrep."</em></p>
+      </div>
+
+      <div class="io-flow">
+        <div class="io-col"><span class="label">Inputs</span><ul>
+          <li>Source directory path(s)</li>
+          <li>Scan mode (run-all / important-only)</li>
+          <li>User approval of ruleset plan</li>
+          <li>Output directory (auto or specified)</li>
+        </ul></div>
+        <div class="io-mid">→</div>
+        <div class="io-col out"><span class="label">Outputs</span><ul>
+          <li>raw/ per-scan .sarif + .json files</li>
+          <li>results/results.sarif (merged)</li>
+          <li>rulesets.txt (approved list)</li>
+          <li>Structured findings report</li>
+        </ul></div>
+      </div>
+
+      <h3 class="sub">Key capabilities</h3>
+      <div class="cap-grid">
+        <div class="cap"><span class="cap-id">/ detect</span><h4>Language auto-detection</h4><p>Globs source files to identify languages (TypeScript, TSX, JavaScript, Python, Go, etc.) and selects matching official and third-party rulesets for each.</p></div>
+        <div class="cap"><span class="cap-id">/ parallel</span><h4>Parallel scan Tasks</h4><p>Spawns all scan Tasks in a single message for concurrent execution — one per language/codebase — dramatically reducing wall-clock scan time.</p></div>
+        <div class="cap"><span class="cap-id">/ filter</span><h4>Important-only mode</h4><p>Pre-filters by severity (WARNING/ERROR) and post-filters by metadata: <code>category=security</code>, <code>confidence ∈ {MEDIUM,HIGH}</code>, <code>impact ∈ {MEDIUM,HIGH}</code>. Raw results are always preserved.</p></div>
+        <div class="cap"><span class="cap-id">/ merge</span><h4>SARIF merge &amp; report</h4><p>Merges per-scan SARIF files into a single valid results.sarif, then generates a severity/category breakdown table with file:line references for all confirmed findings.</p></div>
+      </div>
+
+      <h3 class="sub">Mapped skills</h3>
+      <div class="cap-grid">
+        <div class="cap"><span class="cap-id">s02 · primary</span><h4><a href="#s02">tob-semgrep</a></h4><p>Drives the 5-step scan workflow, ruleset selection, parallel scan Tasks, and SARIF merge. <span class="mono">Trail of Bits</span></p></div>
+        <div class="cap"><span class="cap-id">s03 · shared</span><h4><a href="#s03">owasp-security</a></h4><p>Maps semgrep rule IDs to OWASP / CWE references in the findings report. <span class="mono">Snyk / Community</span></p></div>
+        <div class="cap"><span class="cap-id">s05</span><h4><a href="#s05">tob-insecure-defaults</a></h4><p>Runs alongside tob-semgrep to catch secrets and insecure configs not covered by logic-focused rules. <span class="mono">Trail of Bits</span></p></div>
+      </div>
+      <div class="prose"><p>Upstream: <a href="#s06">threat-modeling</a> runs before this skill to define the attack surface and prioritize what to scan first.</p></div>
+
+      <h3 class="sub">Workflow</h3>
+      <div class="flow">
+        <div class="flow-step"><span class="fs-n"></span><div class="fs-body"><h4>Resolve output directory</h4><p>Checks for existing <code>static_analysis_semgrep_N</code> directories and auto-increments. Creates <code>raw/</code> and <code>results/</code> subdirs before any file is written.</p></div></div>
+        <div class="flow-step"><span class="fs-n"></span><div class="fs-body"><h4>Detect languages &amp; check Pro</h4><p>Globs source paths for file extensions, tallies counts per language. Checks for Semgrep Pro availability (<code>semgrep --pro --validate</code>) to enable cross-file taint tracking.</p></div></div>
+        <div class="flow-step"><span class="fs-n"></span><div class="fs-body"><h4>Present plan — hard gate —</h4><p>Shows exact rulesets (official + third-party), targets, engine, and mode. Waits for explicit user approval. Never spawns scanners without a "yes." Logs approved rulesets to <code>rulesets.txt</code>.</p></div></div>
+        <div class="flow-step"><span class="fs-n"></span><div class="fs-body"><h4>Spawn parallel scan Tasks</h4><p>All scan Tasks are emitted in a single message. Each runs <code>semgrep --metrics=off</code> with approved rulesets and writes raw <code>.sarif</code> and <code>.json</code> to <code>raw/</code>.</p></div></div>
+        <div class="flow-step"><span class="fs-n"></span><div class="fs-body"><h4>Merge &amp; filter, then report</h4><p>Merges SARIF files; applies post-filter for important-only mode. Reports: finding count by severity, category breakdown, top findings with file:line, and any issues NOT caught by semgrep that were found manually.</p></div></div>
+      </div>
+
+      <h3 class="sub">Strengths &amp; guardrails</h3>
+      <div class="twocol">
+        <div class="listcard strength">
+          <span class="label">Strengths</span>
+          <ul>
+            <li><strong>Third-party rulesets mandatory</strong> — Trail of Bits rules catch vulnerabilities absent from the official Semgrep registry.</li>
+            <li><strong>No telemetry</strong> — <code>--metrics=off</code> on every command; no data leaves the machine.</li>
+            <li><strong>Parallel execution</strong> — all Tasks in one message; wall-clock = slowest single scan, not sum.</li>
+            <li><strong>Honest coverage</strong> — explicitly flags what semgrep missed that was found manually; never over-claims.</li>
+          </ul>
+        </div>
+        <div class="listcard guard">
+          <span class="label">Guardrails</span>
+          <ul>
+            <li><strong>Hard gate at Step 3</strong> — never runs a scan without explicit user approval of the ruleset list.</li>
+            <li>Never uses <code>--config auto</code> — sends telemetry and reduces ruleset control.</li>
+            <li>All commands use absolute paths — no ambiguity when running from parallel Tasks.</li>
+            <li>Raw per-scan outputs always preserved; post-filter never overwrites unfiltered data.</li>
+          </ul>
+        </div>
+      </div>
+
+      <dl class="specs">
+        <div class="spec-row"><dt>Skill type</dt><dd>Composite — static source-code analysis</dd></div>
+        <div class="spec-row"><dt>Source</dt><dd>Trail of Bits</dd></div>
+        <div class="spec-row"><dt>Role</dt><dd>Primary — drives the 5-step scan workflow, ruleset selection, parallel Tasks, and SARIF merge</dd></div>
+        <div class="spec-row"><dt>Mapped skills</dt><dd>s02 · s03 (shared) · s05 — 3 total</dd></div>
+        <div class="spec-row"><dt>Engine</dt><dd>Semgrep OSS · Semgrep Pro (if available)</dd></div>
+        <div class="spec-row"><dt>Rulesets</dt><dd>p/typescript · p/javascript · p/react · p/secrets · p/trailofbits · p/owasp-top-ten · p/security-audit</dd></div>
+        <div class="spec-row"><dt>Output</dt><dd>static_analysis_semgrep_N/raw/*.{sarif,json} · results/results.sarif</dd></div>
+        <div class="spec-row"><dt>Telemetry</dt><dd>--metrics=off enforced on every semgrep command</dd></div>
+        <div class="spec-row"><dt>Approval gate</dt><dd>Step 3 — hard gate — scan never starts without explicit "yes"</dd></div>
+      </dl>
+      <a class="backtop" href="#index">← back to directory</a>
+    </div>
+  </section>
+
+  <!-- ===== SKILLS ===== -->
+  <section class="section skill-sec" id="skills">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">Skills</p>
+        <h2>The skill library</h2>
+        <p>Reusable, codified standards installed from Snyk/Community and Trail of Bits skill collections. They are what keep both skills' findings consistent — classified the same way, reported in the same format, and verifiable by the same evidence standard.</p>
+      </div>
+
+      <!-- SKILL 01 -->
+      <div class="skill" id="s01">
+        <p class="skill-id">skill · 01 · primary</p>
+        <h3>API Security Testing</h3>
+        <div class="tagrow">
+          <span class="pill core">primary — API Security Skill</span>
+          <span class="pill gate">used by both skills</span>
+          <span class="pill plan">api-security-testing</span>
+        </div>
+        <div class="source-badge snyk">⬡ Snyk / Community</div>
+        <p class="gr"><span class="label">Principle</span><span class="t">Test REST and GraphQL APIs for authentication bypasses, authorization flaws, IDOR, mass assignment, injection attacks, and rate limiting issues.</span></p>
+        <p class="lede">The core black-box security skill. Drives real HTTP requests against live endpoints, applies OWASP Top 10:2025 attack patterns, and produces evidence-backed findings. Used as the primary skill for all API-layer vulnerability discovery in the FraudBloQR audit.</p>
+
+        <h3 class="sub">Test coverage</h3>
+        <div class="flow">
+          <div class="flow-step"><span class="fs-n"></span><div class="fs-body"><h4>Authentication &amp; brute force</h4><p>Rate limiting (5-attempt lockout), brute force with top-N password lists, account lockout bypass via email case rotation, plus-addressing bypass.</p></div></div>
+          <div class="flow-step"><span class="fs-n"></span><div class="fs-body"><h4>JWT security</h4><p>Algorithm confusion (<code>alg:none</code>), PII in payload (email, role, permissions), timing oracle (bcrypt skip for unknown users), token expiry enforcement.</p></div></div>
+          <div class="flow-step"><span class="fs-n"></span><div class="fs-body"><h4>CORS misconfiguration</h4><p>Preflight from evil.com and null origins with <code>Access-Control-Allow-Credentials: true</code>, credentialed POST across origins, ACAO header audit.</p></div></div>
+          <div class="flow-step"><span class="fs-n"></span><div class="fs-body"><h4>Injection &amp; enumeration</h4><p>SQL injection (classic, boolean-based, time-based, stacked), NoSQL injection, email normalization bypass, user enumeration via response delta.</p></div></div>
+          <div class="flow-step"><span class="fs-n"></span><div class="fs-body"><h4>Information disclosure</h4><p>Server version in headers (<code>Server: nginx/1.29.6</code>), verbose error messages, stack traces, path disclosure in 4xx responses.</p></div></div>
+        </div>
+
+        <div class="twocol">
+          <div class="listcard use">
+            <span class="label">How the skills use it</span>
+            <ul>
+              <li><strong>API Security Skill</strong> — primary attack framework; provides the test methodology, curl command templates, and classification criteria for every finding.</li>
+              <li><strong>Static Analysis Skill</strong> — uses it as reference for cross-validating semgrep findings against known exploitable API patterns.</li>
+            </ul>
+          </div>
+          <div class="listcard benefit">
+            <span class="label">Benefits</span>
+            <ul>
+              <li>Evidence-backed findings — every result tied to an exact HTTP response.</li>
+              <li>OWASP Top 10:2025 attack patterns applied consistently across endpoints.</li>
+              <li>Reproducible curl templates make each finding independently verifiable.</li>
+              <li>Drives the primary black-box discovery layer for the whole pipeline.</li>
+            </ul>
+          </div>
+        </div>
+
+        <dl class="specs">
+          <div class="spec-row"><dt>Source</dt><dd>Snyk / Community</dd></div>
+          <div class="spec-row"><dt>Scope</dt><dd>REST APIs · GraphQL · Authentication · Authorization · CORS · Injection · Rate limiting</dd></div>
+          <div class="spec-row"><dt>Framework</dt><dd>OWASP Top 10:2025 (A01–A10) · ASVS 5.0</dd></div>
+          <div class="spec-row"><dt>Output</dt><dd>PASS/FAIL per test · raw HTTP evidence · structured Jira finding reports</dd></div>
+          <div class="spec-row"><dt>Role</dt><dd>Primary — drives all black-box API tests, curl commands, and report generation</dd></div>
+        </dl>
+      </div>
+
+      <!-- SKILL 02 -->
+      <div class="skill" id="s02">
+        <p class="skill-id">skill · 02 · primary</p>
+        <h3>tob-semgrep — Static Code Analysis</h3>
+        <div class="tagrow">
+          <span class="pill core">primary — Static Analysis Skill</span>
+          <span class="pill gate">parallel scan tasks</span>
+          <span class="pill plan">tob-semgrep</span>
+          <span class="pill tob">Trail of Bits</span>
+        </div>
+        <div class="source-badge tob">⬡ Trail of Bits</div>
+        <p class="gr"><span class="label">Principle</span><span class="t">Third-party rulesets are required, not optional — Trail of Bits, 0xdea, and Decurity rules catch vulnerabilities absent from the official Semgrep registry.</span></p>
+        <p class="lede">The Trail of Bits Semgrep skill. Runs Semgrep static analysis with automatic language detection, parallel Task execution, and merged SARIF output. Requires <code>--metrics=off</code> on every command and explicit user approval (hard gate) of the ruleset plan before any scan executes.</p>
+
+        <h3 class="sub">5-step scan workflow</h3>
+        <div class="flow">
+          <div class="flow-step"><span class="fs-n"></span><div class="fs-body"><h4>Resolve output directory &amp; detect languages</h4><p>Auto-increments <code>static_analysis_semgrep_N</code>, creates <code>raw/</code> and <code>results/</code>. Globs source files for language counts. Checks Semgrep Pro availability.</p></div></div>
+          <div class="flow-step"><span class="fs-n"></span><div class="fs-body"><h4>Select scan mode &amp; rulesets</h4><p>Chooses between <em>Run all</em> (all severity levels) and <em>Important only</em> (pre-filter + post-filter: <code>category=security</code>, <code>confidence ∈ {MEDIUM,HIGH}</code>, <code>impact ∈ {MEDIUM,HIGH}</code>).</p></div></div>
+          <div class="flow-step"><span class="fs-n"></span><div class="fs-body"><h4>Present plan — hard gate —</h4><p>Shows exact rulesets, targets, engine, and mode. Uses <code>AskUserQuestion</code>. Proceeds only after explicit approval. Logs approved rulesets to <code>rulesets.txt</code>.</p></div></div>
+          <div class="flow-step"><span class="fs-n"></span><div class="fs-body"><h4>Spawn parallel scan Tasks</h4><p>All Tasks emitted in a single message with absolute target paths and <code>--metrics=off</code>. Each writes <code>.sarif</code> and <code>.json</code> to <code>raw/</code>.</p></div></div>
+          <div class="flow-step"><span class="fs-n"></span><div class="fs-body"><h4>Merge results &amp; report</h4><p>Merges SARIF files, applies post-filter, generates severity/category breakdown. Explicitly calls out what semgrep missed that was found by other means.</p></div></div>
+        </div>
+
+        <div class="twocol">
+          <div class="listcard use">
+            <span class="label">How the skills use it</span>
+            <ul>
+              <li><strong>Static Analysis Skill</strong> — primary execution framework; drives the 5-step workflow, selects rulesets, spawns Tasks, and merges output.</li>
+              <li><strong>API Security Skill</strong> — cross-references static findings to confirm API-layer issues have code-level root causes.</li>
+            </ul>
+          </div>
+          <div class="listcard benefit">
+            <span class="label">Benefits</span>
+            <ul>
+              <li>Third-party rulesets surface issues absent from the official registry.</li>
+              <li>Parallel Tasks keep wall-clock time to the slowest single scan.</li>
+              <li>Merged SARIF gives one consistent, tool-readable result set.</li>
+              <li>Honest coverage — flags what static analysis can't catch on its own.</li>
+            </ul>
+          </div>
+        </div>
+
+        <dl class="specs">
+          <div class="spec-row"><dt>Source</dt><dd>Trail of Bits</dd></div>
+          <div class="spec-row"><dt>Engine</dt><dd>Semgrep OSS (1.157.0) · Pro if available</dd></div>
+          <div class="spec-row"><dt>Required rulesets</dt><dd>p/typescript · p/javascript · p/react · p/secrets · p/trailofbits · p/owasp-top-ten · p/security-audit</dd></div>
+          <div class="spec-row"><dt>Telemetry</dt><dd>--metrics=off — mandatory on every semgrep command</dd></div>
+          <div class="spec-row"><dt>Output format</dt><dd>SARIF (merged) · JSON (per-scan) · severity/category report</dd></div>
+          <div class="spec-row"><dt>Hard rule</dt><dd>Step 3 is a hard gate — scan never runs without user approval</dd></div>
+          <div class="spec-row"><dt>Role</dt><dd>Primary — drives the 5-step scan workflow, ruleset selection, parallel Tasks, and SARIF merge</dd></div>
+        </dl>
+      </div>
+
+      <!-- SKILL 03 -->
+      <div class="skill shared" id="s03">
+        <p class="skill-id">skill · 03 · shared</p>
+        <h3>OWASP Security</h3>
+        <div class="tagrow">
+          <span class="pill core">shared framework</span>
+          <span class="pill gate">used by both skills</span>
+          <span class="pill plan">owasp-security</span>
+        </div>
+        <div class="source-badge snyk">⬡ Snyk / Community</div>
+        <p class="gr"><span class="label">Principle</span><span class="t">Every finding maps to an OWASP category and CWE — no unclassified vulnerabilities, no vague severity ratings.</span></p>
+        <p class="lede">The security classification and knowledge framework. Covers OWASP Top 10:2025, ASVS 5.0, LLM Top 10 (2025), and Agentic AI Security (2026). Used by both agents to consistently categorize, prioritize, and document findings for Jira and compliance purposes.</p>
+
+        <h3 class="sub">Coverage areas</h3>
+        <div class="cap-grid">
+          <div class="cap"><span class="cap-id">/ top10</span><h4>OWASP Top 10:2025</h4><p>A01–A10 classification. Used to tag every finding with its category: A01 Broken Access, A02 Cryptographic Failures, A05 Security Misconfiguration, A07 Auth Failures.</p></div>
+          <div class="cap"><span class="cap-id">/ asvs</span><h4>ASVS 5.0</h4><p>Application Security Verification Standard — provides specific, verifiable requirements used to define "Expected Result" in each test case and fix recommendations.</p></div>
+          <div class="cap"><span class="cap-id">/ cwe</span><h4>CWE mapping</h4><p>Common Weakness Enumeration reference for all static analysis findings: CWE-250 (root process), CWE-312 (cleartext storage), CWE-338 (weak RNG), CWE-20 (input validation).</p></div>
+          <div class="cap"><span class="cap-id">/ severity</span><h4>Severity &amp; priority rating</h4><p>Standardised Critical / High / Medium / Low severity with P0–P3 Jira priority mapping. Ensures consistent cross-finding comparison and triage decisions.</p></div>
+        </div>
+
+        <div class="twocol">
+          <div class="listcard use">
+            <span class="label">How the skills use it</span>
+            <ul>
+              <li><strong>API Security Skill</strong> — classifies every finding by OWASP category before writing the finding report. Determines severity and priority.</li>
+              <li><strong>Static Analysis Skill</strong> — maps semgrep rule IDs to OWASP/CWE references in the final findings report.</li>
+            </ul>
+          </div>
+          <div class="listcard benefit">
+            <span class="label">Benefits</span>
+            <ul>
+              <li>Consistent classification across all findings — no guessing at severity.</li>
+              <li>Compliance-ready output — OWASP + CWE references satisfy audit requirements.</li>
+              <li>Enables cross-session comparison — same framework across all audits.</li>
+              <li>Provides fix-recommendation vocabulary grounded in industry standards.</li>
+            </ul>
+          </div>
+        </div>
+
+        <dl class="specs">
+          <div class="spec-row"><dt>Source</dt><dd>Snyk / Community · agamm/claude-code-owasp</dd></div>
+          <div class="spec-row"><dt>Standards covered</dt><dd>OWASP Top 10:2025 · ASVS 5.0 · LLM Top 10 (2025) · Agentic AI Security (2026)</dd></div>
+          <div class="spec-row"><dt>Used for</dt><dd>Finding classification · severity rating · fix recommendations · Jira finding labels</dd></div>
+          <div class="spec-row"><dt>Role</dt><dd>Shared — the common classification layer across the whole pipeline; used by both skills</dd></div>
+        </dl>
+      </div>
+
+      <!-- SKILL 04 -->
+      <div class="skill" id="s04">
+        <p class="skill-id">skill · 04</p>
+        <h3>Web Application Security</h3>
+        <div class="tagrow">
+          <span class="pill core">UI layer</span>
+          <span class="pill gate">frontend testing</span>
+          <span class="pill plan">web-app-security</span>
+        </div>
+        <div class="source-badge snyk">⬡ Snyk / Community</div>
+        <p class="gr"><span class="label">Principle</span><span class="t">Test web applications for vulnerabilities including SQLi, XSS, command injection, JWT attacks, SSRF, file uploads, XXE, and API flaws.</span></p>
+        <p class="lede">Extends security testing to the frontend and browser layer. Used for identifying client-side issues such as XSS, localStorage session token theft, insecure frontend authentication (mock auth bypass), weak RNG in barcode generation, and credentials in browser bundles.</p>
+
+        <h3 class="sub">Frontend coverage</h3>
+        <div class="cap-grid">
+          <div class="cap"><span class="cap-id">/ xss</span><h4>XSS &amp; DOM injection</h4><p>Tests for reflected, stored, and DOM-based XSS vectors. Identifies <code>dangerouslySetInnerHTML</code> usage in React components and unescaped output in templates.</p></div>
+          <div class="cap"><span class="cap-id">/ storage</span><h4>Insecure storage</h4><p>Identifies session tokens, user objects, and role data stored in <code>localStorage</code> — accessible to any same-origin script and persistent beyond browser close.</p></div>
+          <div class="cap"><span class="cap-id">/ auth</span><h4>Client-side auth bypass</h4><p>Detects mock authentication in production code (hardcoded user lists, email-only login), role privilege escalation via localStorage tampering.</p></div>
+          <div class="cap"><span class="cap-id">/ secrets</span><h4>Exposed secrets in bundles</h4><p>Identifies API keys embedded in Vite <code>define</code> blocks or <code>VITE_</code> env vars — compiled into the browser bundle and readable from DevTools.</p></div>
+        </div>
+
+        <div class="twocol">
+          <div class="listcard use">
+            <span class="label">How the skills use it</span>
+            <ul>
+              <li><strong>API Security Skill</strong> — uses it when expanding scope beyond API endpoints to the frontend that consumes them (e.g., localStorage + JWT cross-reference).</li>
+              <li><strong>Static Analysis Skill</strong> — cross-validates semgrep findings against known frontend vulnerability patterns to assess real-world exploitability.</li>
+            </ul>
+          </div>
+          <div class="listcard benefit">
+            <span class="label">Benefits</span>
+            <ul>
+              <li>Extends coverage to the browser and frontend layer.</li>
+              <li>Catches client-side issues invisible to API-only testing.</li>
+              <li>Cross-references frontend state with API-layer findings.</li>
+              <li>Grounds frontend risk in real, same-origin exploitability.</li>
+            </ul>
+          </div>
+        </div>
+
+        <dl class="specs">
+          <div class="spec-row"><dt>Source</dt><dd>Snyk / Community</dd></div>
+          <div class="spec-row"><dt>Scope</dt><dd>XSS · CSRF · JWT · SSRF · File upload · XXE · API flaws · Frontend auth</dd></div>
+          <div class="spec-row"><dt>Targets</dt><dd>React/TypeScript SPAs · Vite builds · nginx · Docker</dd></div>
+          <div class="spec-row"><dt>Role</dt><dd>Invoked when scope expands to the frontend — localStorage, JWT cross-reference, Vite bundles</dd></div>
+        </dl>
+      </div>
+
+      <!-- SKILL 05 -->
+      <div class="skill" id="s05">
+        <p class="skill-id">skill · 05</p>
+        <h3>tob-insecure-defaults</h3>
+        <div class="tagrow">
+          <span class="pill core">secrets detection</span>
+          <span class="pill gate">hardcoded credential scan</span>
+          <span class="pill plan">tob-insecure-defaults</span>
+          <span class="pill tob">Trail of Bits</span>
+        </div>
+        <div class="source-badge tob">⬡ Trail of Bits</div>
+        <p class="gr"><span class="label">Principle</span><span class="t">Detect fail-open insecure defaults — hardcoded secrets, weak auth, and permissive configurations that ship safely in dev but become vulnerabilities in production.</span></p>
+        <p class="lede">The Trail of Bits insecure-defaults skill. Scans for hardcoded API keys, credentials, weak configurations, and permissive defaults that developers introduce during prototyping and forget to remove. Complements tob-semgrep with pattern-matching focused on configuration and secret exposure rather than code logic flaws.</p>
+
+        <h3 class="sub">Detection patterns</h3>
+        <div class="cap-grid">
+          <div class="cap"><span class="cap-id">/ keys</span><h4>Hardcoded API keys</h4><p>Detects API keys, tokens, and credentials committed to source files — including Vite <code>define</code> blocks, <code>.env</code> files, and configuration constants.</p></div>
+          <div class="cap"><span class="cap-id">/ auth</span><h4>Weak authentication defaults</h4><p>Identifies mock/demo authentication (hardcoded user arrays, email-only login, no password validation) left active in non-development code paths.</p></div>
+          <div class="cap"><span class="cap-id">/ config</span><h4>Permissive configurations</h4><p>Flags <code>host: "0.0.0.0"</code> in dev servers, overly permissive CORS configs, missing rate limits, and debug endpoints left open in production builds.</p></div>
+          <div class="cap"><span class="cap-id">/ cert</span><h4>Certificate &amp; key exposure</h4><p>Detects TLS private keys, certificates, and PEM files committed to version control or included in Docker build contexts.</p></div>
+        </div>
+
+        <div class="twocol">
+          <div class="listcard use">
+            <span class="label">How the skills use it</span>
+            <ul>
+              <li><strong>Static Analysis Skill</strong> — runs alongside tob-semgrep to catch secrets and insecure defaults not covered by logic-focused Semgrep rules.</li>
+              <li><strong>API Security Skill</strong> — references its patterns when manually reviewing config files and <code>.env</code> contents found in the codebase.</li>
+            </ul>
+          </div>
+          <div class="listcard benefit">
+            <span class="label">Benefits</span>
+            <ul>
+              <li>Catches secrets and credentials committed to source.</li>
+              <li>Flags permissive defaults that ship safely in dev but not in production.</li>
+              <li>Complements logic-flaw scanning with config and secret coverage.</li>
+              <li>Surfaces certificate and key exposure in Docker build contexts.</li>
+            </ul>
+          </div>
+        </div>
+
+        <dl class="specs">
+          <div class="spec-row"><dt>Source</dt><dd>Trail of Bits</dd></div>
+          <div class="spec-row"><dt>Focus</dt><dd>Hardcoded secrets · Weak auth · Permissive config · Certificate exposure</dd></div>
+          <div class="spec-row"><dt>Complements</dt><dd>tob-semgrep — adds secret/config coverage to logic-flaw scanning</dd></div>
+          <div class="spec-row"><dt>Role</dt><dd>Runs alongside tob-semgrep to catch secrets and insecure configs not covered by logic-focused rules</dd></div>
+        </dl>
+      </div>
+
+      <!-- Extended skills subhead -->
+      <div class="skills-subhead">
+        <span class="label">Supporting skills</span>
+        <p>These skills extend the pipeline to deeper threat analysis, password-based attacks, and payload-level fuzzing. Each is a specialist-practitioner pass invoked when the work reaches that stage of the assessment.</p>
+      </div>
+
+      <!-- SKILL 06 -->
+      <div class="skill" id="s06">
+        <p class="skill-id">skill · 06</p>
+        <h3>Threat Modeling</h3>
+        <div class="tagrow">
+          <span class="pill core">upstream</span>
+          <span class="pill gate">architecture review</span>
+          <span class="pill plan">threat-modeling</span>
+        </div>
+        <div class="source-badge snyk">⬡ Snyk / Community</div>
+        <p class="gr"><span class="label">Principle</span><span class="t">Identify what could go wrong before building a test plan — threats found at design time cost far less to fix than those found in production.</span></p>
+        <p class="lede">A senior security architect skill for identifying and analyzing threats against system designs. Applies STRIDE, PASTA, and attack tree methodologies to map assets, trust boundaries, data flows, and threat actors — producing a prioritized risk register to guide the API and static analysis test plans.</p>
+
+        <div class="twocol">
+          <div class="listcard use">
+            <span class="label">How the skills use it</span>
+            <ul>
+              <li>Runs <strong>upstream of both skills</strong> — defines which components to test and which threat categories are highest risk for this system.</li>
+              <li>Feeds the API Security Skill with a <strong>prioritized attack surface map</strong> so the most critical endpoints are tested first.</li>
+            </ul>
+          </div>
+          <div class="listcard benefit">
+            <span class="label">Benefits</span>
+            <ul>
+              <li>Identifies threats invisible to both black-box and static analysis.</li>
+              <li>Prioritizes test coverage by business risk, not just OWASP category.</li>
+              <li>Produces a risk register that connects technical findings to business impact.</li>
+              <li>Architecture-level findings (trust boundary violations) that no scanner catches.</li>
+            </ul>
+          </div>
+        </div>
+
+        <dl class="specs">
+          <div class="spec-row"><dt>Source</dt><dd>Snyk / Community</dd></div>
+          <div class="spec-row"><dt>Methodologies</dt><dd>STRIDE · PASTA · Attack trees · DREAD scoring</dd></div>
+          <div class="spec-row"><dt>Position</dt><dd>Before API testing and static analysis — defines the attack surface</dd></div>
+          <div class="spec-row"><dt>Output</dt><dd>Threat register · trust boundary map · prioritized attack surface</dd></div>
+          <div class="spec-row"><dt>Role</dt><dd>Upstream — runs before both skills; defines the attack surface and prioritizes what to test first</dd></div>
+        </dl>
+      </div>
+
+      <!-- SKILL 07 -->
+      <div class="skill" id="s07">
+        <p class="skill-id">skill · 07</p>
+        <h3>Password Attacks &amp; Sec-Fuzzing</h3>
+        <div class="tagrow">
+          <span class="pill core">credential testing</span>
+          <span class="pill gate">payload library</span>
+          <span class="pill plan">password-attacks · sec-fuzzing</span>
+        </div>
+        <div class="source-badge snyk">⬡ Snyk / Community</div>
+        <p class="gr"><span class="label">Principle</span><span class="t">Test credential policies and input validation with real-world attack data — weak passwords and injection payloads that attackers actually use.</span></p>
+        <p class="lede">Two complementary skills. <strong>password-attacks</strong> provides top password lists (common, darkweb-leaked, application-specific) for authorized spraying and brute-force tests. <strong>sec-fuzzing</strong> provides an essential payload library — SQL injection, command injection, special characters, and encoding variants — for input validation testing.</p>
+
+        <div class="twocol">
+          <div class="listcard use">
+            <span class="label">How the skills use it</span>
+            <ul>
+              <li><strong>API Security Skill</strong> — uses <code>password-attacks</code> for credential spraying tests (rate limit validation) and <code>sec-fuzzing</code> for SQLi and injection payloads against login and search endpoints.</li>
+              <li>Both skills support rate-limit bypass resistance checks and validate SQL injection protection during an audit.</li>
+            </ul>
+          </div>
+          <div class="listcard benefit">
+            <span class="label">Benefits</span>
+            <ul>
+              <li>Real-world payloads — not toy examples but actual attack data.</li>
+              <li>Time-delayed spray loops respect rate limits and avoid accidental DoS.</li>
+              <li>Injection payloads cover classic, boolean, stacked, time-based, and NoSQL variants.</li>
+              <li>Credential lists are tiered — top-100 for quick tests, top-10k for thorough audits.</li>
+            </ul>
+          </div>
+        </div>
+
+        <dl class="specs">
+          <div class="spec-row"><dt>Source</dt><dd>Snyk / Community</dd></div>
+          <div class="spec-row"><dt>password-attacks</dt><dd>Top-N password lists · spray loops with delay · authorized use only</dd></div>
+          <div class="spec-row"><dt>sec-fuzzing</dt><dd>SQLi · command injection · special chars · encoding variants · NoSQL</dd></div>
+          <div class="spec-row"><dt>Authorization</dt><dd>Authorized testing environments only — never production without explicit approval</dd></div>
+          <div class="spec-row"><dt>Role</dt><dd>Supplies password lists for brute-force / rate-limit tests and SQLi payloads for injection tests</dd></div>
+        </dl>
+      </div>
+
+      <!-- Extended QA-lifecycle skills subhead -->
+      <div class="skills-subhead">
+        <span class="label">Extended QA-lifecycle skills</span>
+        <p>These widen the pipeline beyond security testing — covering the requirements that come <em>before</em> a test exists and the coverage proof that comes <em>after</em>. Each is a senior-practitioner pass (25-year BA / SDET / QA-lead persona) invoked when the work reaches that stage of the QA lifecycle.</p>
+      </div>
+
+      <!-- SKILL 08 -->
+      <div class="skill" id="s08">
+        <p class="skill-id">skill · 08</p>
+        <h3>BRD / FRD Analyzer</h3>
+        <div class="tagrow">
+          <span class="pill core">upstream</span>
+          <span class="pill gate">BA / QA lead</span>
+          <span class="pill plan">brd-frd-analyzer</span>
+        </div>
+        <div class="source-badge qa">⬡ QA Lifecycle</div>
+        <p class="gr"><span class="label">Principle</span><span class="t">What isn't written matters as much as what is — if you can't write a test for it, it isn't a requirement.</span></p>
+        <p class="lede">A Senior BA / QA Lead pass over requirement documents — BRD, FRD, PRD, specs, user stories, epics. It classifies the document, extracts and catalogs every requirement, and flags ambiguity, gaps, and risk <em>before</em> any test is written.</p>
+
+        <h3 class="sub">What it produces</h3>
+        <div class="cap-grid">
+          <div class="cap"><span class="cap-id">/ classify</span><h4>Document overview</h4><p>Identifies the doc type and emits a header with section, requirement, scope, and ambiguous / untestable / missing tallies.</p></div>
+          <div class="cap"><span class="cap-id">/ catalog</span><h4>Requirement extraction</h4><p>Structured FR / NFR / business-rule catalog with auto-assigned IDs, actors, and acceptance criteria; user stories with Given/When/Then.</p></div>
+          <div class="cap"><span class="cap-id">/ quality</span><h4>Quality &amp; issues</h4><p>Checks each requirement for measurable, unambiguous, testable, atomic, and feasible — logging issues by severity.</p></div>
+          <div class="cap"><span class="cap-id">/ gaps</span><h4>Gaps, risk &amp; testability</h4><p>Gap analysis, a risk register, a dependency map, and a testability summary with the exact questions to ask the BA / PO.</p></div>
+        </div>
+
+        <div class="twocol">
+          <div class="listcard use">
+            <span class="label">How the agents use it</span>
+            <ul>
+              <li>Runs <strong>upstream of the QA Automation Agent</strong> — turns raw requirement docs into clear, testable requirements ready to become specs.</li>
+              <li>Feeds the <strong><a href="#s10">RTM Generator</a></strong> with catalogued requirement IDs to trace coverage against.</li>
+            </ul>
+          </div>
+          <div class="listcard benefit">
+            <span class="label">Benefits</span>
+            <ul>
+              <li>Catches bad requirements early, where roughly 70% of defects originate.</li>
+              <li>Untestable items surface with specific clarifying questions before automation starts.</li>
+              <li>Scope, risk, and dependencies are made explicit, cutting rework.</li>
+              <li>Output scales to document size — inline, or a multi-sheet Excel for large specs.</li>
+            </ul>
+          </div>
+        </div>
+
+        <dl class="specs">
+          <div class="spec-row"><dt>Inputs</dt><dd>BRD · FRD · PRD · spec.md · user stories / epics</dd></div>
+          <div class="spec-row"><dt>Outputs</dt><dd>Analysis report · requirements catalog · issues log · gap &amp; risk register</dd></div>
+          <div class="spec-row"><dt>Output scale</dt><dd>Inline (&lt;10) · summary + offer (10–50) · Excel (50+)</dd></div>
+          <div class="spec-row"><dt>Position</dt><dd>Before test-case generation and RTM</dd></div>
+        </dl>
+      </div>
+
+      <!-- SKILL 09 -->
+      <div class="skill" id="s09">
+        <p class="skill-id">skill · 09</p>
+        <h3>Playwright API Test Generator</h3>
+        <div class="tagrow">
+          <span class="pill core">API layer</span>
+          <span class="pill gate">SDET architect</span>
+          <span class="pill plan">playwright-api-generator</span>
+        </div>
+        <div class="source-badge qa">⬡ QA Lifecycle</div>
+        <p class="gr"><span class="label">Principle</span><span class="t">Every assertion precise, every test isolated, every failure message meaningful — tests that fail for the right reasons.</span></p>
+        <p class="lede">A Senior SDET Architect that turns API specs — OpenAPI / Swagger, Postman / Insomnia collections, curl, or test-case sheets — into production-ready <span class="mono">@playwright/test</span> API suites, adding new files to a repo without touching existing ones.</p>
+
+        <h3 class="sub">What it covers</h3>
+        <div class="cap-grid">
+          <div class="cap"><span class="cap-id">/ triage</span><h4>Input triage</h4><p>Identifies the source — collection, spec, sheet, or raw endpoints — and gathers any missing context in one batched question set.</p></div>
+          <div class="cap"><span class="cap-id">/ repo-safe</span><h4>Repo mode</h4><p>Reads structure and conventions, presents a plan, then adds only new files — existing tests are never modified.</p></div>
+          <div class="cap"><span class="cap-id">/ coverage</span><h4>Coverage matrix</h4><p>Positive, negative, edge, and chained CRUD cases per endpoint — asserting status, response schema, and key field values.</p></div>
+          <div class="cap"><span class="cap-id">/ standards</span><h4>Code standards</h4><p>Named describe blocks, a failure message on every expect, env-based secrets, TS interfaces, and teardown of created data.</p></div>
+        </div>
+
+        <div class="twocol">
+          <div class="listcard use">
+            <span class="label">How the agents use it</span>
+            <ul>
+              <li>Extends the <strong>QA Automation Agent</strong> to the API layer, complementing its UI / browser runs with request-context tests.</li>
+              <li>Reuses the agents' existing discipline — <code>process.env</code> for secrets, never overwrite, language-matched output.</li>
+            </ul>
+          </div>
+          <div class="listcard benefit">
+            <span class="label">Benefits</span>
+            <ul>
+              <li>API coverage without flaky or vague assertions.</li>
+              <li>Safe to drop into an existing repo — no conflicts, no overwrites.</li>
+              <li>Security-aware: flags auth-bypass, IDOR, and mass-assignment gaps.</li>
+              <li>Self-consistent files with zero broken imports, ready to run.</li>
+            </ul>
+          </div>
+        </div>
+
+        <dl class="specs">
+          <div class="spec-row"><dt>Inputs</dt><dd>OpenAPI/Swagger · Postman/Insomnia · curl · Excel/CSV cases · repo path</dd></div>
+          <div class="spec-row"><dt>Output</dt><dd>tests/api/*.spec.ts · fixtures · helpers · types</dd></div>
+          <div class="spec-row"><dt>Coverage</dt><dd>Positive · negative · edge · chained (CRUD)</dd></div>
+          <div class="spec-row"><dt>Repo rule</dt><dd>Add-only — existing files never modified</dd></div>
+        </dl>
+      </div>
+
+      <!-- SKILL 10 -->
+      <div class="skill" id="s10">
+        <p class="skill-id">skill · 10</p>
+        <h3>Requirements Traceability Matrix Generator</h3>
+        <div class="tagrow">
+          <span class="pill core">closes the loop</span>
+          <span class="pill gate">IEEE-829 / ISO 29119</span>
+          <span class="pill plan">rtm-generator</span>
+        </div>
+        <div class="source-badge qa">⬡ QA Lifecycle</div>
+        <p class="gr"><span class="label">Principle</span><span class="t">Every requirement needs a test-case ID — distinguish "tested" from "passed", and never go live with critical requirements untested.</span></p>
+        <p class="lede">A Senior QA Lead skill that builds a bidirectional Requirements Traceability Matrix — mapping business and functional requirements to test cases, execution results, and defects — for coverage proof and audit sign-off.</p>
+
+        <h3 class="sub">What it produces</h3>
+        <div class="cap-grid">
+          <div class="cap"><span class="cap-id">/ catalog</span><h4>Requirement &amp; TC catalog</h4><p>Extracts and IDs requirements (BR / FR / NFR) and test cases from the provided documents.</p></div>
+          <div class="cap"><span class="cap-id">/ matrix</span><h4>Bidirectional trace</h4><p>Forward (requirement → test) and backward (test → requirement) traceability, flagging gaps and orphan tests.</p></div>
+          <div class="cap"><span class="cap-id">/ dashboard</span><h4>Coverage dashboard</h4><p>Covered / partial / not-covered, pass / fail / blocked, defect linkage, and overall coverage, execution, and pass rates.</p></div>
+          <div class="cap"><span class="cap-id">/ signoff</span><h4>Gaps &amp; sign-off</h4><p>Gap-analysis recommendations and a GO / NO-GO / conditional sign-off block for QA, BA, PM, and UAT.</p></div>
+        </div>
+
+        <div class="twocol">
+          <div class="listcard use">
+            <span class="label">How the agents use it</span>
+            <ul>
+              <li>Consumes requirements from the <strong><a href="#s08">BRD / FRD Analyzer</a></strong> and the specs the <strong>QA Automation Agent</strong> produces, mapping each to coverage.</li>
+              <li>Mirrors the agents' journal discipline — a verifiable, auditable record of what's tested and what passed.</li>
+            </ul>
+          </div>
+          <div class="listcard benefit">
+            <span class="label">Benefits</span>
+            <ul>
+              <li>Proves coverage — nothing missed, nothing over-tested.</li>
+              <li>Surfaces untested critical requirements before release.</li>
+              <li>Audit- and compliance-ready (e.g. 100% RTM for fintech / healthcare).</li>
+              <li>Scales from inline markdown to a color-coded Excel workbook.</li>
+            </ul>
+          </div>
+        </div>
+
+        <dl class="specs">
+          <div class="spec-row"><dt>Inputs</dt><dd>BRD · FRD · user stories · test-case sheets · defect list</dd></div>
+          <div class="spec-row"><dt>Outputs</dt><dd>Forward &amp; backward RTM · coverage dashboard · gap analysis · sign-off</dd></div>
+          <div class="spec-row"><dt>Standards</dt><dd>IEEE-829 · ISO 29119</dd></div>
+          <div class="spec-row"><dt>Output scale</dt><dd>Markdown (≤20) · color-coded Excel (&gt;20)</dd></div>
+        </dl>
+      </div>
+
+      <a class="backtop" href="#index">← back to directory</a>
+    </div>
+  </section>
+
+  <!-- ===== SHARED PRINCIPLES ===== -->
+  <section class="section" id="principles">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">Shared rules</p>
+        <h2>How the two skills work together</h2>
+        <p>Both obey the same evidence standard, the same classification framework, and the same approval discipline — which is what lets findings from one feed directly into reports from the other.</p>
+      </div>
+      <div class="principles">
+        <div class="principle">
+          <h3>Evidence, never assumption</h3>
+          <p>A finding is only a finding when the raw HTTP response or SARIF output proves it. Plausible-but-unverified issues are flagged as "possible" — never reported as confirmed.</p>
+        </div>
+        <div class="principle">
+          <h3>One classification standard</h3>
+          <p>Every finding — whether from black-box API testing or static analysis — is classified by the same OWASP Top 10:2025 category and CWE reference, making the full audit report internally consistent.</p>
+        </div>
+        <div class="principle">
+          <h3>Fix verification closes the loop</h3>
+          <p>The API Security Skill re-runs exact original test steps when a fix is claimed. FIXED only when the server response proves it — not when the developer says "implemented."</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <div class="wrap">
+      <span>Security &amp; Vulnerability Testing Pipeline · Skills Catalog · 2 primary skills / 10-skill library</span>
+      <span>FraudBloQR Security Audit · Panasatech · Staging environment · api-security-testing · tob-semgrep</span>
+    </div>
+  </footer>
+
+</main>
+
+<script>
+/* Single-skill mode: when opened at a skill anchor (#s01…#s10 or #a01/#a02),
+   show only that skill in isolation — like the Greenfield catalog. Section
+   links (#overview, #index, #skills, #principles) restore the full catalog. */
+(function () {
+  var PRIMARY = ['a01', 'a02'];
+  var LIB = ['s01','s02','s03','s04','s05','s06','s07','s08','s09','s10'];
+  var byId = function (id) { return document.getElementById(id); };
+
+  function applyView() {
+    var h = (location.hash || '').slice(1);
+    var isPrimary = PRIMARY.indexOf(h) >= 0;
+    var isLib = LIB.indexOf(h) >= 0;
+
+    var hero = document.querySelector('.hero');
+    var pipeline = document.querySelector('.pipeline');
+    var overview = byId('overview'), index = byId('index'), principles = byId('principles');
+    var a01 = byId('a01'), a02 = byId('a02'), skills = byId('skills');
+    var skillsHead = skills ? skills.querySelector('.section-head') : null;
+    var subheads = skills ? skills.querySelectorAll('.skills-subhead') : [];
+    var libEls = LIB.map(byId);
+    var bulk = [hero, pipeline, overview, index, principles];
+
+    if (!isPrimary && !isLib) {
+      bulk.forEach(function (e) { if (e) e.style.display = ''; });
+      if (a01) a01.style.display = '';
+      if (a02) a02.style.display = '';
+      if (skills) skills.style.display = '';
+      if (skillsHead) skillsHead.style.display = '';
+      subheads.forEach(function (e) { e.style.display = ''; });
+      libEls.forEach(function (e) { if (e) e.style.display = ''; });
+      return;
+    }
+
+    // single-skill view
+    bulk.forEach(function (e) { if (e) e.style.display = 'none'; });
+    if (a01) a01.style.display = (h === 'a01') ? '' : 'none';
+    if (a02) a02.style.display = (h === 'a02') ? '' : 'none';
+    if (isLib) {
+      if (skills) skills.style.display = '';
+      if (skillsHead) skillsHead.style.display = 'none';
+      subheads.forEach(function (e) { e.style.display = 'none'; });
+      libEls.forEach(function (e) { if (e) e.style.display = (e.id === h) ? '' : 'none'; });
+    } else if (skills) {
+      skills.style.display = 'none';
+    }
+    window.scrollTo(0, 0);
+  }
+
+  window.addEventListener('hashchange', applyView);
+  applyView();
+})();
+</script>
+</body>
+</html>

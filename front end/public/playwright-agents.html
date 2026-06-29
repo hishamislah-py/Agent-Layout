@@ -1,0 +1,655 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/png" href="/Logo%20(2).png" />
+<title>Playwright QA Pipeline · Agent Catalog</title>
+<meta name="description" content="Reference for the two-agent Playwright pipeline — a QA story-executor that turns test cases into verified specs, and a POM refactor agent that restructures them into a maintainable Page Object Model. Includes the shared skills both agents draw on.">
+<style>
+  :root {
+    --ink:        #0B0B0D;
+    --ink-2:      #111218;
+    --surface:    #15171F;
+    --surface-2:  #1B1E27;
+    --line:       #2B2E38;
+    --line-soft:  #20222B;
+    --text:       #E7E3D6;
+    --muted:      #A6A296;
+    --faint:      #6E6A5E;
+    --accent:     #F5C010;
+    --accent-2:   #FFD43B;
+    --accent-dim: rgba(245,192,16,.13);
+    --accent-line:rgba(245,192,16,.30);
+    --green:      #88c9a1;
+    --green-dim:  rgba(136,201,161,.12);
+    --green-line: rgba(136,201,161,.30);
+
+    --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+    --font-mono: ui-monospace, "SF Mono", "JetBrains Mono", "Menlo", "Consolas", monospace;
+
+    --maxw: 1060px;
+    --step: clamp(2.4rem, 6vw, 4.5rem);
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce){ html { scroll-behavior: auto; } }
+  body {
+    margin: 0;
+    background:
+      radial-gradient(120% 80% at 80% -10%, rgba(245,192,16,.07), transparent 55%),
+      var(--ink);
+    color: var(--text);
+    font-family: var(--font-sans);
+    font-size: 17px; line-height: 1.6;
+    -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
+  }
+  ::selection { background: var(--accent-dim); color: var(--accent-2); }
+  .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 24px; }
+  a { color: var(--accent-2); text-decoration: none; }
+  a:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+  .eyebrow { font-family: var(--font-mono); font-size: .72rem; letter-spacing: .22em; text-transform: uppercase; color: var(--accent); margin: 0; }
+  .label { font-family: var(--font-mono); font-size: .68rem; letter-spacing: .18em; text-transform: uppercase; color: var(--faint); }
+  h1, h2, h3 { text-wrap: balance; font-weight: 650; letter-spacing: -.02em; line-height: 1.1; }
+  h1, h2, h3, h4 { -webkit-user-select: none; user-select: none; cursor: default; }
+  .mono { font-family: var(--font-mono); }
+
+  /* ===== top bar ===== */
+  .topbar { border-bottom: 1px solid var(--line-soft); position: sticky; top: 0; z-index: 30; background: rgba(11,11,13,.82); backdrop-filter: blur(10px); }
+  .topbar .wrap { display: flex; align-items: center; justify-content: space-between; height: 56px; }
+  .brand { display: flex; align-items: center; gap: 10px; font-family: var(--font-mono); font-size: .8rem; letter-spacing: .04em; color: var(--muted); }
+  .brand:hover { text-decoration: none; color: var(--muted); }
+  .brand b { color: var(--text); font-weight: 600; }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 10px var(--accent); }
+  .topbar nav { display: flex; gap: 22px; }
+  .topbar nav a { color: var(--muted); font-family: var(--font-mono); font-size: .74rem; letter-spacing: .04em; }
+  .topbar nav a:hover { color: var(--text); text-decoration: none; }
+  @media (max-width: 820px){ .topbar nav { display: none; } }
+
+  /* ===== pipeline strip ===== */
+  .pipeline { border-bottom: 1px solid var(--line-soft); background: var(--ink-2); position: sticky; top: 56px; z-index: 25; }
+  .pipeline .wrap { display: flex; align-items: center; gap: 6px; overflow-x: auto; padding-top: 12px; padding-bottom: 12px; scrollbar-width: none; }
+  .pipeline .wrap::-webkit-scrollbar { display: none; }
+  .stage { display: inline-flex; align-items: baseline; gap: 8px; white-space: nowrap; font-family: var(--font-mono); font-size: .76rem; color: var(--faint); padding: 5px 11px; border-radius: 999px; border: 1px solid transparent; }
+  .stage .s-n { font-size: .66rem; opacity: .8; }
+  .stage:hover { color: var(--text); border-color: var(--accent-line); background: var(--accent-dim); }
+  .stage:hover .s-n { color: var(--accent); opacity: 1; }
+  .arr { color: var(--line); font-family: var(--font-mono); }
+
+  /* ===== hero ===== */
+  .hero { padding: var(--step) 0 calc(var(--step) * .65); }
+  .hero-grid { display: grid; grid-template-columns: 1.05fr .95fr; gap: 48px; align-items: center; }
+  @media (max-width: 880px){ .hero-grid { grid-template-columns: 1fr; gap: 36px; } }
+  .hero h1 { font-size: clamp(2.4rem, 6vw, 4rem); margin: 16px 0 0; }
+  .hero .lede { color: var(--muted); font-size: 1.1rem; max-width: 48ch; margin: 20px 0 0; }
+  .hero-meta { display: flex; flex-wrap: wrap; gap: 10px 26px; margin-top: 28px; font-family: var(--font-mono); font-size: .76rem; color: var(--muted); }
+  .hero-meta span b { color: var(--text); font-weight: 600; }
+
+  .scanner { position: relative; border: 1px solid var(--line); border-radius: 10px; background: linear-gradient(180deg, var(--surface), var(--ink-2)); overflow: hidden; box-shadow: 0 24px 60px -30px rgba(0,0,0,.8); }
+  .scanner-head { display: flex; align-items: center; gap: 8px; padding: 11px 14px; border-bottom: 1px solid var(--line-soft); font-family: var(--font-mono); font-size: .72rem; color: var(--faint); }
+  .tl { display: flex; gap: 6px; margin-right: 6px; }
+  .tl i { width: 9px; height: 9px; border-radius: 50%; background: var(--line); display: block; }
+  .scan-body { position: relative; }
+  pre.code { margin: 0; padding: 18px; font-family: var(--font-mono); font-size: .76rem; line-height: 1.7; color: #aeb9c5; overflow-x: auto; tab-size: 2; }
+  pre.code .k { color: #ffcf6a; } pre.code .s { color: #88c9a1; } pre.code .c { color: #56616e; font-style: italic; } pre.code .f { color: #e4d290; } pre.code .n { color: #d8a0d8; }
+  .scanline { position: absolute; left: 0; right: 0; top: 0; height: 38px; background: linear-gradient(180deg, transparent, rgba(245,192,16,.16) 70%, var(--accent-line)); border-bottom: 1px solid var(--accent); box-shadow: 0 0 22px 2px rgba(245,192,16,.25); pointer-events: none; animation: sweep 5.4s cubic-bezier(.6,0,.4,1) infinite; }
+  @keyframes sweep { 0%{transform:translateY(-40px);opacity:0;} 8%{opacity:1;} 72%{opacity:1;} 85%{transform:translateY(300px);opacity:0;} 100%{transform:translateY(300px);opacity:0;} }
+  @media (prefers-reduced-motion: reduce){ .scanline{ animation:none; opacity:.9; top:110px; } }
+
+  /* ===== generic section ===== */
+  .section { padding: calc(var(--step) * .7) 0; border-top: 1px solid var(--line-soft); scroll-margin-top: 120px; }
+  .section-head { max-width: 58ch; margin-bottom: 34px; }
+  .section-head h2 { font-size: clamp(1.6rem, 3.2vw, 2.2rem); margin: 12px 0 0; }
+  .section-head p { color: var(--muted); margin: 14px 0 0; }
+  .prose p { color: var(--muted); max-width: 66ch; margin: 0 0 16px; }
+  .prose strong { color: var(--text); font-weight: 600; }
+
+  /* ===== index ===== */
+  .idx-phase { margin-top: 26px; }
+  .idx-phase > .label { display: block; margin-bottom: 12px; padding-left: 2px; }
+  .idx-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: var(--line-soft); border: 1px solid var(--line-soft); border-radius: 12px; overflow: hidden; }
+  @media (max-width: 480px){ .idx-grid { grid-template-columns: 1fr; } }
+  .idx-card { background: var(--surface); padding: 16px 16px 18px; display: flex; flex-direction: column; gap: 5px; transition: background .16s ease; }
+  .idx-card:hover { background: var(--surface-2); text-decoration: none; }
+  .idx-card .ic-n { font-family: var(--font-mono); font-size: .68rem; color: var(--accent); letter-spacing: .1em; }
+  .idx-card .ic-name { color: var(--text); font-weight: 600; font-size: .98rem; }
+  .idx-card .ic-stage { font-family: var(--font-mono); font-size: .68rem; color: var(--faint); }
+
+  /* ===== agent section ===== */
+  .agent-sec { scroll-margin-top: 120px; }
+  .agent-head { max-width: 70ch; }
+  .agent-head h2 { font-size: clamp(1.7rem, 3.6vw, 2.5rem); margin: 12px 0 0; }
+  .gr { margin: 18px 0 0; border-left: 2px solid var(--accent); background: var(--accent-dim); padding: 12px 16px; border-radius: 0 8px 8px 0; }
+  .gr .label { display: block; margin-bottom: 3px; color: var(--accent); }
+  .gr span.t { color: var(--text); font-style: italic; }
+  .agent-head .lede { color: var(--muted); margin: 18px 0 0; max-width: 64ch; }
+
+  /* I/O flow */
+  .io-flow { display: grid; grid-template-columns: 1fr 40px 1fr; gap: 0; align-items: stretch; margin: 28px 0 6px; border: 1px solid var(--line-soft); border-radius: 12px; overflow: hidden; }
+  @media (max-width: 640px){ .io-flow { grid-template-columns: 1fr; } }
+  .io-col { background: var(--surface); padding: 16px 18px; }
+  .io-col.out { background: var(--ink-2); }
+  .io-col .label { display: block; margin-bottom: 9px; }
+  .io-col.out .label { color: var(--accent); }
+  .io-col ul { margin: 0; padding-left: 0; list-style: none; display: flex; flex-direction: column; gap: 6px; }
+  .io-col li { font-family: var(--font-mono); font-size: .76rem; color: var(--muted); padding-left: 14px; position: relative; }
+  .io-col li::before { content: "▸"; position: absolute; left: 0; color: var(--faint); }
+  .io-col.out li { color: var(--text); }
+  .io-col.out li::before { color: var(--accent); }
+  .io-mid { display: flex; align-items: center; justify-content: center; background: var(--surface-2); color: var(--accent); font-family: var(--font-mono); font-size: 1.1rem; }
+  @media (max-width: 640px){ .io-mid { padding: 6px; } }
+
+  .sub { font-size: 1.05rem; margin: 30px 0 14px; color: var(--text); }
+
+  /* capability grid */
+  .cap-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: var(--line-soft); border: 1px solid var(--line-soft); border-radius: 12px; overflow: hidden; }
+  @media (max-width: 640px){ .cap-grid { grid-template-columns: 1fr; } }
+  .cap { background: var(--surface); padding: 18px 18px 20px; display: flex; flex-direction: column; gap: 7px; transition: background .16s ease; }
+  .cap:hover { background: var(--surface-2); }
+  .cap .cap-id { font-family: var(--font-mono); font-size: .68rem; color: var(--accent); letter-spacing: .08em; }
+  .cap h4 { font-size: 1rem; margin: 0; font-weight: 600; }
+  .cap p { margin: 0; color: var(--muted); font-size: .9rem; line-height: 1.5; }
+
+  /* workflow steps */
+  .flow { counter-reset: step; border: 1px solid var(--line-soft); border-radius: 12px; overflow: hidden; margin-top: 8px; }
+  .flow-step { display: grid; grid-template-columns: 54px 1fr; border-top: 1px solid var(--line-soft); background: var(--surface); transition: background .16s ease; }
+  .flow-step:first-child { border-top: none; }
+  .flow-step:hover { background: var(--surface-2); }
+  .flow-step .fs-n { counter-increment: step; font-family: var(--font-mono); font-size: .8rem; color: var(--accent); padding: 16px 0 16px 18px; }
+  .flow-step .fs-n::before { content: counter(step, decimal-leading-zero); }
+  .flow-step .fs-body { padding: 15px 18px 16px 6px; }
+  .flow-step h4 { margin: 0 0 4px; font-size: .98rem; font-weight: 600; }
+  .flow-step p { margin: 0; color: var(--muted); font-size: .9rem; line-height: 1.5; }
+  .flow-step code { font-family: var(--font-mono); font-size: .82em; color: var(--accent-2); }
+
+  /* strengths / guardrail / usage / benefit lists */
+  .twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; margin-top: 8px; }
+  @media (max-width: 640px){ .twocol { grid-template-columns: 1fr; } }
+  .listcard { border: 1px solid var(--line-soft); border-radius: 12px; padding: 18px 20px 20px; background: var(--surface); }
+  .listcard.guard, .listcard.benefit { border-left: 2px solid var(--green); }
+  .listcard.strength, .listcard.use { border-left: 2px solid var(--accent); }
+  .listcard > .label { display: block; margin-bottom: 12px; }
+  .listcard.strength > .label, .listcard.use > .label { color: var(--accent); }
+  .listcard.guard > .label, .listcard.benefit > .label { color: var(--green); }
+  .listcard ul { margin: 0; padding-left: 0; list-style: none; display: flex; flex-direction: column; gap: 9px; }
+  .listcard li { font-size: .9rem; color: var(--muted); padding-left: 18px; position: relative; line-height: 1.5; }
+  .listcard li strong { color: var(--text); font-weight: 600; }
+  .listcard li code { font-family: var(--font-mono); font-size: .84em; color: var(--accent-2); }
+  .listcard.strength li::before, .listcard.use li::before { content: "+"; position: absolute; left: 0; color: var(--accent); font-family: var(--font-mono); }
+  .listcard.guard li::before, .listcard.benefit li::before { content: "✓"; position: absolute; left: 1px; top: 1px; color: var(--green); font-size: .8rem; }
+
+  /* specs */
+  .specs { border: 1px solid var(--line-soft); border-radius: 12px; overflow: hidden; margin-top: 22px; }
+  .spec-row { display: grid; grid-template-columns: 190px 1fr; border-top: 1px solid var(--line-soft); }
+  .spec-row:first-child { border-top: none; }
+  .spec-row dt { padding: 12px 16px; background: var(--ink-2); font-family: var(--font-mono); font-size: .72rem; letter-spacing: .04em; color: var(--muted); }
+  .spec-row dd { margin: 0; padding: 12px 16px; color: var(--text); font-family: var(--font-mono); font-size: .78rem; }
+  @media (max-width: 560px){ .spec-row { grid-template-columns: 1fr; } .spec-row dd { padding-top: 0; } }
+
+  .tagrow { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 14px; }
+  .pill { font-family: var(--font-mono); font-size: .64rem; letter-spacing: .08em; text-transform: uppercase; padding: 3px 9px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); }
+  .pill.core { border-color: var(--accent-line); color: var(--accent); background: var(--accent-dim); }
+  .pill.gate { border-color: var(--green-line); color: var(--green); background: var(--green-dim); }
+  .pill.plan { border-color: var(--line); color: var(--faint); }
+
+  .backtop { font-family: var(--font-mono); font-size: .7rem; color: var(--faint); margin-top: 20px; display: inline-block; }
+
+  /* ===== skills ===== */
+  .skill { border: 1px solid var(--line-soft); border-radius: 14px; background: linear-gradient(180deg, var(--surface), var(--ink-2)); padding: 26px 26px 28px; margin-top: 22px; scroll-margin-top: 120px; }
+  @media (max-width: 560px){ .skill { padding: 20px 18px 22px; } }
+  .skill .skill-id { font-family: var(--font-mono); font-size: .72rem; color: var(--faint); letter-spacing: .04em; }
+  .skill h3 { font-size: clamp(1.35rem, 2.8vw, 1.8rem); margin: 8px 0 0; }
+  .skill .lede { color: var(--muted); margin: 16px 0 0; max-width: 66ch; }
+  .skill .lede code { font-family: var(--font-mono); font-size: .84em; color: var(--accent-2); }
+  .usedby { font-family: var(--font-mono); font-size: .7rem; color: var(--faint); margin-top: 14px; }
+  .usedby b { color: var(--text); font-weight: 600; }
+
+  /* principles */
+  .principles { display: grid; grid-template-columns: repeat(3,1fr); gap: 18px; }
+  @media (max-width: 720px){ .principles { grid-template-columns: 1fr; } }
+  .principle { border-top: 2px solid var(--accent); padding-top: 16px; }
+  .principle h3 { font-size: 1.02rem; margin: 0 0 7px; }
+  .principle p { margin: 0; color: var(--muted); font-size: .9rem; }
+
+  footer.foot { border-top: 1px solid var(--line-soft); padding: 28px 0 48px; color: var(--faint); font-family: var(--font-mono); font-size: .72rem; }
+  footer.foot .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+</style>
+</head>
+<body>
+<span id="top" aria-hidden="true"></span>
+
+<header class="topbar">
+  <div class="wrap">
+    <div class="bar-left" style="display:flex;align-items:center;gap:18px">
+      <a href="/toolkit" style="display:inline-flex;align-items:center;gap:6px;padding:7px 15px;border-radius:9px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:.8rem;font-weight:600;text-decoration:none;white-space:nowrap">← Back</a>
+      <a class="brand" href="#top"><span class="dot"></span> Playwright&nbsp;<b>QA Pipeline</b></a>
+    </div>
+    <nav>
+      <a href="#overview">Overview</a>
+      <a href="#index">Agents</a>
+      <a href="#a01">QA Executor</a>
+      <a href="#a02">POM Refactor</a>
+      <a href="#skills">Skills</a>
+      <a href="#principles">Shared Rules</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <p class="eyebrow">Agent Catalog · 2 agents · 2 shared skills</p>
+        <h1>The agents that build &amp; maintain the test suite</h1>
+        <p class="lede">A two-stage Playwright pipeline. One agent turns a written test case into a verified, runnable spec by driving a real browser. The other restructures those specs into a clean Page Object Model — and re-runs them to prove nothing changed. Both work from the same codified skills.</p>
+        <div class="hero-meta">
+          <span>Stack&nbsp; <b>@playwright/test</b></span>
+          <span>Driver&nbsp; <b>Playwright MCP</b></span>
+          <span>Shared state&nbsp; <b>Run journals</b></span>
+        </div>
+      </div>
+      <div class="scanner" aria-hidden="true">
+        <div class="scanner-head"><span class="tl"><i></i><i></i><i></i></span> tests/specs/user-login.spec.js</div>
+        <div class="scan-body">
+          <div class="scanline"></div>
+<pre class="code"><span class="k">import</span> { test, expect } <span class="k">from</span> <span class="s">'../fixtures/fixtures.js'</span>;
+
+test(<span class="s">'user can log in'</span>, <span class="k">async</span> ({ loginPage }) =&gt; {
+    <span class="c">// Step 1: navigate &amp; submit credentials</span>
+    <span class="k">await</span> loginPage.<span class="f">login</span>(USER, PASS);
+
+    <span class="c">// assertion verified during the live run</span>
+    <span class="k">await</span> expect(loginPage.<span class="f">successBanner</span>)
+        .<span class="f">toBeVisible</span>();
+});</pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- OVERVIEW -->
+  <section class="section" id="overview">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">Overview</p>
+        <h2>Two agents, one chain of custody</h2>
+      </div>
+      <div class="prose">
+        <p>The pipeline runs in order. The <strong>QA Automation Agent</strong> takes a human-written test case, drives the page step-by-step through the Playwright MCP browser, and writes a spec that is a transcript of a real, successful run — never code from imagination. It records every run in a journal.</p>
+        <p>The <strong>POM Refactor Agent</strong> reads that journal first, then restructures the working specs into a maintainable Page Object Model — extending page files in place, flagging conflicts for human review, and re-running the suite to confirm behaviour is preserved. Both agents follow the same two <strong>codified skills</strong> — a locator strategy and a spec-authoring standard — so their output stays consistent and interchangeable.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- INDEX -->
+  <section class="section" id="index">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">Directory</p>
+        <h2>The two agents</h2>
+        <p>In execution order. Jump to either for its purpose, capabilities, tools, workflow, skills, and guardrails.</p>
+      </div>
+      <div class="idx-phase">
+        <span class="label">Stage 01 · Authoring</span>
+        <div class="idx-grid">
+          <a class="idx-card" href="#a01"><span class="ic-n">01</span><span class="ic-name">QA Automation Agent</span><span class="ic-stage">playwright-story-executor</span></a>
+          <a class="idx-card" href="#a02"><span class="ic-n">02</span><span class="ic-name">POM Refactor Agent</span><span class="ic-stage">pom-refactor-agent</span></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =================== AGENT 01 =================== -->
+  <section class="section agent-sec" id="a01">
+    <div class="wrap">
+      <div class="agent-head">
+        <p class="eyebrow">Playwright QA · Stage 01 · Authoring — Story to Verified Spec</p>
+        <h2>QA Automation Agent</h2>
+        <div class="tagrow"><span class="pill core">snapshot-first</span><span class="pill gate">live-verified</span><span class="pill plan">playwright-story-executor</span></div>
+        <p class="gr"><span class="label">Golden rule</span><span class="t">Code is a transcript of a real, successful run — never written from imagination.</span></p>
+        <p class="lede">A senior QA / SDET engineer that takes a human-written test case or user story and turns it into a verified, runnable Playwright test — by first executing the steps live through the Playwright MCP browser, then writing code only from what actually worked.</p>
+      </div>
+
+      <h3 class="sub">Purpose</h3>
+      <div class="prose">
+        <p>Given a URL, a sequence of steps, and an expected result, it produces a working <span class="mono">@playwright/test</span> spec. It triggers on phrases like <em>"run this test case," "automate these steps,"</em> or <em>"turn this user story into a Playwright test."</em></p>
+      </div>
+
+      <div class="io-flow">
+        <div class="io-col"><span class="label">Inputs</span><ul>
+          <li>Entry URL</li>
+          <li>Ordered manual steps</li>
+          <li>Test data / credentials</li>
+          <li>Expected final outcome</li>
+        </ul></div>
+        <div class="io-mid">→</div>
+        <div class="io-col out"><span class="label">Outputs</span><ul>
+          <li>tests/&lt;name&gt;.spec.js</li>
+          <li>PASS / FAIL per step</li>
+          <li>test/qa-agent-memory.md journal</li>
+        </ul></div>
+      </div>
+
+      <h3 class="sub">Key capabilities</h3>
+      <div class="cap-grid">
+        <div class="cap"><span class="cap-id">/ parse</span><h4>Atomic step breakdown</h4><p>Splits a test case into ordered steps, separating actions (navigate, type, click) from assertions (expected results).</p></div>
+        <div class="cap"><span class="cap-id">/ drive</span><h4>Live browser execution</h4><p>Drives a real page snapshot-first, verifying each step took effect before moving to the next.</p></div>
+        <div class="cap"><span class="cap-id">/ generate</span><h4>Transcript-based code</h4><p>Writes a parameterized spec mirroring the actual run, with real expect() assertions and step comments.</p></div>
+        <div class="cap"><span class="cap-id">/ remember</span><h4>Persistent journal</h4><p>Logs every run — pass/fail, locators, errors — so history is auditable across sessions.</p></div>
+      </div>
+
+      <h3 class="sub">Tools / skills</h3>
+      <div class="prose">
+        <p><strong>File operations:</strong> Read, Write, Edit, Glob, Grep.<br>
+        <strong>Playwright MCP browser tools:</strong> navigate, click, type, fill-form, press-key, hover, select-option, drag, file-upload, snapshot, screenshot, console-messages, network-requests, evaluate, tabs, wait-for, dialog-handling, resize, install, close.</p>
+        <p><strong>Codified skills:</strong> follows <a href="#s01">playwright-locator-strategy</a> when choosing every element, and <a href="#s02">playwright-spec-authoring</a> when turning the completed run into the spec file.</p>
+      </div>
+
+      <h3 class="sub">Workflow</h3>
+      <div class="flow">
+        <div class="flow-step"><span class="fs-n"></span><div class="fs-body"><h4>Analyze</h4><p>Reads the full case and breaks it into atomic actions and assertions; identifies the entry URL, inputs, and expected outcome.</p></div></div>
+        <div class="flow-step"><span class="fs-n"></span><div class="fs-body"><h4>Clarify (gate)</h4><p>Asks all ambiguity / safety questions in one batch before touching the browser. Proceeds silently if nothing is unclear.</p></div></div>
+        <div class="flow-step"><span class="fs-n"></span><div class="fs-body"><h4>Execute live — snapshot-first</h4><p>For each step: snapshot the page, locate the exact element (per the locator strategy), act, then re-snapshot to confirm. Assertions are marked PASS or FAIL from what is actually present.</p></div></div>
+        <div class="flow-step"><span class="fs-n"></span><div class="fs-body"><h4>Write the test code</h4><p>Only after a step succeeds does it write that step's code — applying the spec-authoring skill: <code>// Step N</code> comments, parameterized data, real assertions.</p></div></div>
+        <div class="flow-step"><span class="fs-n"></span><div class="fs-body"><h4>Update memory</h4><p>Appends a terse, factual run entry to test/qa-agent-memory.md — name, date, URL, result, steps executed, failure detail, notes.</p></div></div>
+      </div>
+
+      <h3 class="sub">Strengths &amp; guardrails</h3>
+      <div class="twocol">
+        <div class="listcard strength">
+          <span class="label">Strengths</span>
+          <ul>
+            <li><strong>Reliability</strong> — specs reflect verified real behaviour, not guesses.</li>
+            <li><strong>Strict locator policy</strong> — role / accessibility first, getByTestId fallback, CSS/XPath only as a flagged last resort.</li>
+            <li><strong>Safety-conscious</strong> — confirms destructive actions; never hard-codes secrets.</li>
+            <li><strong>Traceability</strong> — the journal shows what's been tested, what passed, and which step/locator last failed.</li>
+          </ul>
+        </div>
+        <div class="listcard guard">
+          <span class="label">Guardrails</span>
+          <ul>
+            <li>No destructive actions without explicit confirmation.</li>
+            <li><strong>One recovery attempt</strong> per failing step, then stop and report — never fabricate a pass.</li>
+            <li>Never commits or echoes real credentials (parameterized via process.env).</li>
+            <li>Prefers browser_wait_for over fixed timeouts.</li>
+          </ul>
+        </div>
+      </div>
+
+      <dl class="specs">
+        <div class="spec-row"><dt>Agent name</dt><dd>playwright-story-executor</dd></div>
+        <div class="spec-row"><dt>Spec output</dt><dd>tests/&lt;testname&gt;.spec.js (kebab-case)</dd></div>
+        <div class="spec-row"><dt>Journal</dt><dd>test/qa-agent-memory.md (append-only)</dd></div>
+        <div class="spec-row"><dt>Skills applied</dt><dd>playwright-locator-strategy · playwright-spec-authoring</dd></div>
+        <div class="spec-row"><dt>Final report</dt><dd>Plan · PASS/FAIL per step · spec &amp; journal paths · failure hypothesis + fix</dd></div>
+      </dl>
+      <a class="backtop" href="#index">← back to directory</a>
+    </div>
+  </section>
+
+  <!-- =================== AGENT 02 =================== -->
+  <section class="section agent-sec" id="a02">
+    <div class="wrap">
+      <div class="agent-head">
+        <p class="eyebrow">Playwright QA · Stage 02 · Authoring — Spec to Page Object Model</p>
+        <h2>POM Refactor Agent</h2>
+        <div class="tagrow"><span class="pill core">behaviour-preserving</span><span class="pill gate">re-run verified</span><span class="pill plan">pom-refactor-agent</span></div>
+        <p class="gr"><span class="label">Golden rule</span><span class="t">Preserve behaviour first, improve structure second — never invent a locator or method.</span></p>
+        <p class="lede">A senior test-architecture engineer that restructures working Playwright specs into a clean, maintainable Page Object Model without changing what the tests verify. Language-aware across JavaScript, TypeScript, Java, and Python bindings.</p>
+      </div>
+
+      <h3 class="sub">Purpose</h3>
+      <div class="prose">
+        <p>It reads existing specs, identifies each screen by its URL, and extracts locators and actions into page-object classes under <span class="mono">tests/pages/</span>. The original spec is left untouched; the refactored version is written to <span class="mono">tests/specs/</span> and verified by an actual test run. Triggers on <em>"refactor into POM," "convert specs to page objects,"</em> or <em>"apply POM pattern."</em></p>
+      </div>
+
+      <div class="io-flow">
+        <div class="io-col"><span class="label">Inputs</span><ul>
+          <li>Working Playwright spec(s)</li>
+          <li>QA + POM run journals</li>
+          <li>package.json / tsconfig.json</li>
+          <li>Existing pages / fixtures</li>
+        </ul></div>
+        <div class="io-mid">→</div>
+        <div class="io-col out"><span class="label">Outputs</span><ul>
+          <li>tests/pages/*.js page objects</li>
+          <li>tests/fixtures/fixtures.js</li>
+          <li>tests/specs/&lt;name&gt;.spec.js</li>
+          <li>test/pom-refactor-memory.md journal</li>
+        </ul></div>
+      </div>
+
+      <h3 class="sub">Key capabilities</h3>
+      <div class="cap-grid">
+        <div class="cap"><span class="cap-id">/ partition</span><h4>URL-driven screens</h4><p>Partitions specs into screens by URL, naming each page file from the path — /control/users → UsersPage.js.</p></div>
+        <div class="cap"><span class="cap-id">/ merge</span><h4>Safe in-place extend</h4><p>Extends existing page files, deduping locators and methods; conflicting bodies are flagged for review, never overwritten.</p></div>
+        <div class="cap"><span class="cap-id">/ auth</span><h4>storageState extraction</h4><p>Lifts repeated inline logins into a global-setup storageState fixture so tests start pre-authenticated.</p></div>
+        <div class="cap"><span class="cap-id">/ teardown</span><h4>Teardown migration</h4><p>Moves UI-based cleanup into named page methods (e.g. deleteUser), preserving safety guard variables.</p></div>
+      </div>
+
+      <h3 class="sub">Tools / skills</h3>
+      <div class="prose">
+        <p><strong>Read, Write, Edit, Glob, Grep, Bash.</strong> The Bash access is what lets it actually run <span class="mono">npx playwright test</span> to verify the refactor preserved behaviour before declaring success.</p>
+        <p><strong>Codified skills:</strong> applies <a href="#s01">playwright-locator-strategy</a> to every locator it lifts onto a page object, and reuses the language-detection rules of <a href="#s02">playwright-spec-authoring</a> to match the repo's module system (ESM / CJS / TypeScript) when emitting the refactored spec.</p>
+      </div>
+
+      <h3 class="sub">Workflow</h3>
+      <div class="flow">
+        <div class="flow-step"><span class="fs-n"></span><div class="fs-body"><h4>Read memory (always first)</h4><p>Checks the QA journal and its own. Will not refactor a spec the QA journal marks FAIL; honours past human decisions on flagged conflicts.</p></div></div>
+        <div class="flow-step"><span class="fs-n"></span><div class="fs-body"><h4>Discover &amp; inspect</h4><p>Detects the module system (ESM / CommonJS / TypeScript) and conventions, then maps every screen transition, locator, action, and teardown block.</p></div></div>
+        <div class="flow-step"><span class="fs-n"></span><div class="fs-body"><h4>Clarify (gate)</h4><p>Batches all genuinely ambiguous questions — unclear screen names, teardown intent, test-data handling, method conflicts — before writing code.</p></div></div>
+        <div class="flow-step"><span class="fs-n"></span><div class="fs-body"><h4>Identify screens &amp; build page objects</h4><p>Partitions by URL using the step-attribution rule (an action belongs to the screen you're on), then creates or extends page objects on a shared BasePage, choosing locators per the locator strategy.</p></div></div>
+        <div class="flow-step"><span class="fs-n"></span><div class="fs-body"><h4>Higher-order refactors</h4><p>Applies storageState auth and teardown migration where present; leaves test data in place by default unless explicitly asked to move it.</p></div></div>
+        <div class="flow-step"><span class="fs-n"></span><div class="fs-body"><h4>Fixtures, write &amp; verify</h4><p>Writes fixtures and the refactored spec, then runs npx playwright test. One recovery attempt on failure, else stop and report.</p></div></div>
+        <div class="flow-step"><span class="fs-n"></span><div class="fs-body"><h4>Update memory</h4><p>Appends a detailed entry to test/pom-refactor-memory.md — paths, module system, verification result, files touched, conflicts flagged.</p></div></div>
+      </div>
+
+      <h3 class="sub">Strengths &amp; guardrails</h3>
+      <div class="twocol">
+        <div class="listcard strength">
+          <span class="label">Strengths</span>
+          <ul>
+            <li><strong>Behaviour-preserving</strong> — verified by a real run; "looks right" is never a pass.</li>
+            <li><strong>Non-destructive merging</strong> — originals untouched; conflicts flagged via _REVIEW_&lt;hash&gt;.</li>
+            <li><strong>Cross-agent awareness</strong> — reads the QA journal so it won't build on a known-broken test.</li>
+            <li><strong>Clean conventions</strong> — action-named methods, no duplication, shared logic on BasePage.</li>
+          </ul>
+        </div>
+        <div class="listcard guard">
+          <span class="label">Guardrails</span>
+          <ul>
+            <li>Never modifies the original spec — output lives only under tests/specs/.</li>
+            <li>Never overwrites a method body — always flags for review.</li>
+            <li>Never invents a missing locator — stops and asks.</li>
+            <li><strong>One verification recovery</strong> per run; PASS only if the run exits 0.</li>
+          </ul>
+        </div>
+      </div>
+
+      <dl class="specs">
+        <div class="spec-row"><dt>Agent name</dt><dd>pom-refactor-agent</dd></div>
+        <div class="spec-row"><dt>Languages</dt><dd>JavaScript · TypeScript · Java · Python</dd></div>
+        <div class="spec-row"><dt>Source spec</dt><dd>tests/&lt;name&gt;.spec.js (never modified)</dd></div>
+        <div class="spec-row"><dt>Refactored output</dt><dd>tests/specs/ · tests/pages/ · tests/fixtures/</dd></div>
+        <div class="spec-row"><dt>Skills applied</dt><dd>playwright-locator-strategy · playwright-spec-authoring (language rules)</dd></div>
+        <div class="spec-row"><dt>Verification</dt><dd>npx playwright test — PASS only on exit 0</dd></div>
+        <div class="spec-row"><dt>Journal</dt><dd>test/pom-refactor-memory.md (append-only)</dd></div>
+      </dl>
+      <a class="backtop" href="#index">← back to directory</a>
+    </div>
+  </section>
+
+  <!-- =================== SKILLS =================== -->
+  <section class="section agent-sec" id="skills">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">Skills</p>
+        <h2>The skills both agents draw on</h2>
+        <p>Reusable, codified standards invoked proactively during a run. They are what keep the two agents' output consistent — so a spec authored by one is structured exactly as the other expects.</p>
+      </div>
+
+      <!-- SKILL 01 -->
+      <div class="skill" id="s01">
+        <p class="skill-id">skill · 01</p>
+        <h3>Playwright Locator Strategy</h3>
+        <div class="tagrow"><span class="pill core">shared</span><span class="pill gate">used by both agents</span><span class="pill plan">playwright-locator-strategy</span></div>
+        <p class="gr"><span class="label">Principle</span><span class="t">Choose the most stable locator available, dropping a tier only when the current one is genuinely ambiguous or unavailable.</span></p>
+        <p class="lede">Decides <em>how</em> every element is targeted — in a strict priority order, with a hard rule that each locator must resolve to exactly one element and must never be invented without confirming it against the live page.</p>
+
+        <h3 class="sub">Priority order</h3>
+        <div class="flow">
+          <div class="flow-step"><span class="fs-n"></span><div class="fs-body"><h4>Role / accessibility — the default</h4><p><code>getByRole</code>, <code>getByLabel</code>, <code>getByPlaceholder</code>, <code>getByText</code>. Used whenever the element exposes a stable role plus an accessible name.</p></div></div>
+          <div class="flow-step"><span class="fs-n"></span><div class="fs-body"><h4>Test ID — the fallback</h4><p><code>getByTestId</code> targeting <code>data-testid</code>. Used only when role-based selection is ambiguous or unstable.</p></div></div>
+          <div class="flow-step"><span class="fs-n"></span><div class="fs-body"><h4>CSS / XPath — last resort</h4><p>Only when nothing better exists, and always with a <code>// TODO: brittle locator — &lt;reason&gt;</code> comment explaining why.</p></div></div>
+        </div>
+
+        <div class="twocol">
+          <div class="listcard use">
+            <span class="label">How the agents use it</span>
+            <ul>
+              <li><strong>QA agent</strong> — picks the locator for every action and assertion during the live run, narrowing (scope, <code>{ exact: true }</code>, <code>.filter()</code>) rather than dropping to CSS when a role matches several elements.</li>
+              <li><strong>POM agent</strong> — applies the same order when lifting locators onto page objects, and preserves existing brittle-locator TODO comments verbatim.</li>
+            </ul>
+          </div>
+          <div class="listcard benefit">
+            <span class="label">Benefits</span>
+            <ul>
+              <li>Locators survive refactors because they target user-facing attributes, not DOM structure.</li>
+              <li>One element per locator eliminates a common class of flaky tests.</li>
+              <li>Brittle selectors are visible and justified, never silent.</li>
+              <li>Identical rules across agents mean handoffs need no re-checking.</li>
+            </ul>
+          </div>
+        </div>
+
+        <dl class="specs">
+          <div class="spec-row"><dt>Tier 1</dt><dd>getByRole · getByLabel · getByPlaceholder · getByText</dd></div>
+          <div class="spec-row"><dt>Tier 2</dt><dd>getByTestId (data-testid)</dd></div>
+          <div class="spec-row"><dt>Tier 3</dt><dd>CSS / XPath — flagged with // TODO: brittle locator</dd></div>
+          <div class="spec-row"><dt>Hard rule</dt><dd>Resolve to exactly one element · never invent · prefer user-facing attributes</dd></div>
+        </dl>
+      </div>
+
+      <!-- SKILL 02 -->
+      <div class="skill" id="s02">
+        <p class="skill-id">skill · 02</p>
+        <h3>Playwright Spec Authoring</h3>
+        <div class="tagrow"><span class="pill core">QA-primary</span><span class="pill gate">language rules shared</span><span class="pill plan">playwright-spec-authoring</span></div>
+        <p class="gr"><span class="label">Principle</span><span class="t">Write the spec only from steps that actually ran — every statement mirrors a real action, every locator one resolved live.</span></p>
+        <p class="lede">Defines <em>how</em> a completed run becomes a clean <span class="mono">@playwright/test</span> file: language detection, file naming and location, body structure, mapping assertions to web-first <code>expect()</code>, and safe handling of data and secrets.</p>
+
+        <h3 class="sub">What it standardises</h3>
+        <div class="cap-grid">
+          <div class="cap"><span class="cap-id">/ language</span><h4>Match the repo</h4><p>Detects the module system first — emits TypeScript (.spec.ts) when tsconfig/TS deps are present, else JavaScript, matching existing import style.</p></div>
+          <div class="cap"><span class="cap-id">/ file</span><h4>Naming &amp; structure</h4><p>kebab-case under tests/, one test() block per case, standard import of test and expect.</p></div>
+          <div class="cap"><span class="cap-id">/ body</span><h4>Steps &amp; assertions</h4><p>Mirrors each step in order with a // Step N comment; turns each assertion into a real web-first expect().</p></div>
+          <div class="cap"><span class="cap-id">/ data</span><h4>Data &amp; secrets</h4><p>Parameterises URL and inputs as top-level consts; reads anything secret-like from process.env, never hard-coded.</p></div>
+        </div>
+
+        <div class="twocol">
+          <div class="listcard use">
+            <span class="label">How the agents use it</span>
+            <ul>
+              <li><strong>QA agent</strong> — its primary authoring standard: after the live run succeeds, it writes the spec exactly to this structure, referencing the locator strategy for each selector.</li>
+              <li><strong>POM agent</strong> — reuses the language-detection rules so the refactored spec it emits matches the repo's module system and extension.</li>
+            </ul>
+          </div>
+          <div class="listcard benefit">
+            <span class="label">Benefits</span>
+            <ul>
+              <li>Specs run as written — no references to helpers or fixtures that don't exist.</li>
+              <li>No fixed sleeps; relies on auto-waiting and web-first assertions for stability.</li>
+              <li>Secrets stay out of the codebase and out of version control.</li>
+              <li>Consistent shape makes every spec predictable to read, review, and later refactor.</li>
+            </ul>
+          </div>
+        </div>
+
+        <dl class="specs">
+          <div class="spec-row"><dt>Output</dt><dd>tests/&lt;test-name&gt;.spec.{js,ts} (kebab-case)</dd></div>
+          <div class="spec-row"><dt>Language</dt><dd>Auto-detected — TS if tsconfig / TS deps present, else JS</dd></div>
+          <div class="spec-row"><dt>Assertions</dt><dd>Web-first expect(...) — e.g. toBeVisible()</dd></div>
+          <div class="spec-row"><dt>Secrets</dt><dd>process.env.&lt;NAME&gt; · documented, never hard-coded</dd></div>
+          <div class="spec-row"><dt>Quality bar</dt><dd>Runs as written · no fixed sleeps · no phantom helpers</dd></div>
+        </dl>
+      </div>
+
+      <a class="backtop" href="#index">← back to directory</a>
+    </div>
+  </section>
+
+  <!-- SHARED PRINCIPLES -->
+  <section class="section" id="principles">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">Shared rules</p>
+        <h2>How the two agents work together</h2>
+        <p>Both obey the same constraints and the same skills, which is what lets the output of one feed safely into the other.</p>
+      </div>
+      <div class="principles">
+        <div class="principle"><h3>Verify, never assume</h3><p>Every result is grounded in a real browser run. A spec that wasn't executed, or a refactor that wasn't re-run, is never reported as passing.</p></div>
+        <div class="principle"><h3>One shared locator policy</h3><p>The locator-strategy skill is identical across both agents: role / accessibility first, getByTestId fallback, CSS/XPath only as a flagged last resort.</p></div>
+        <div class="principle"><h3>A memory trail connects them</h3><p>The QA agent writes a journal; the POM agent reads it before refactoring — so structure is never built on a known-broken test.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <div class="wrap">
+      <span>Playwright QA Pipeline · Agent Catalog · 2 agents / 2 shared skills</span>
+      <span>Summarized from agent &amp; skill definitions · playwright-story-executor &amp; pom-refactor-agent</span>
+    </div>
+  </footer>
+
+</main>
+
+<script>
+/* Single-agent mode: opened at #a01/#a02 (or skill #s01/#s02) shows only that
+   one in isolation; section links restore the full catalog. */
+(function () {
+  var AGENTS = ['a01', 'a02'];
+  var SKILLS = ['s01', 's02'];
+  var byId = function (id) { return document.getElementById(id); };
+  function applyView() {
+    var h = (location.hash || '').slice(1);
+    var isAgent = AGENTS.indexOf(h) >= 0;
+    var isSkill = SKILLS.indexOf(h) >= 0;
+    var hero = document.querySelector('.hero');
+    var pipeline = document.querySelector('.pipeline');
+    var overview = byId('overview'), index = byId('index'), principles = byId('principles');
+    var a01 = byId('a01'), a02 = byId('a02'), skills = byId('skills');
+    var skillsHead = skills ? skills.querySelector('.section-head') : null;
+    var skillEls = SKILLS.map(byId);
+    var bulk = [hero, pipeline, overview, index, principles];
+
+    if (!isAgent && !isSkill) {
+      // directory hub: grid + general sections visible, per-agent detail hidden
+      bulk.forEach(function (e) { if (e) e.style.display = ''; });
+      if (a01) a01.style.display = 'none';
+      if (a02) a02.style.display = 'none';
+      if (skills) skills.style.display = '';
+      if (skillsHead) skillsHead.style.display = '';
+      skillEls.forEach(function (e) { if (e) e.style.display = ''; });
+      return;
+    }
+    bulk.forEach(function (e) { if (e) e.style.display = 'none'; });
+    if (a01) a01.style.display = (h === 'a01') ? '' : 'none';
+    if (a02) a02.style.display = (h === 'a02') ? '' : 'none';
+    if (isSkill) {
+      if (skills) skills.style.display = '';
+      if (skillsHead) skillsHead.style.display = 'none';
+      skillEls.forEach(function (e) { if (e) e.style.display = (e.id === h) ? '' : 'none'; });
+    } else if (skills) {
+      skills.style.display = 'none';
+    }
+    window.scrollTo(0, 0);
+  }
+  window.addEventListener('hashchange', applyView);
+  applyView();
+})();
+</script>
+</body>
+</html>

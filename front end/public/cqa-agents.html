@@ -1,0 +1,531 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/png" href="/Logo%20(2).png" />
+<title>CQA Pipeline · Agent Catalog</title>
+<meta name="description" content="Reference for the 8 specialist AI agents in the Code Quality Assessment (CQA) pipeline — seven ISO 25010 dimension agents plus an on-demand Critical File Audit agent.">
+<style>
+  :root {
+    --ink:#0B0B0D; --ink-2:#111218; --surface:#15171F; --surface-2:#1B1E27;
+    --line:#2B2E38; --line-soft:#20222B; --text:#E7E3D6; --muted:#A6A296; --faint:#6E6A5E;
+    --accent:#F5C010; --accent-2:#FFD43B; --accent-dim:rgba(245,192,16,.13); --accent-line:rgba(245,192,16,.30);
+    --green:#88c9a1; --green-dim:rgba(136,201,161,.12); --green-line:rgba(136,201,161,.30);
+    --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+    --font-mono: ui-monospace, "SF Mono", "JetBrains Mono", "Menlo", "Consolas", monospace;
+    --maxw:1060px; --step:clamp(2.4rem, 6vw, 4.5rem);
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; background:radial-gradient(120% 80% at 80% -10%, rgba(245,192,16,.07), transparent 55%), var(--ink); color:var(--text); font-family:var(--font-sans); font-size:17px; line-height:1.6; -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility; }
+  ::selection { background:var(--accent-dim); color:var(--accent-2); }
+  .wrap { max-width:var(--maxw); margin:0 auto; padding:0 24px; }
+  a { color:var(--accent-2); text-decoration:none; }
+  a:hover { text-decoration:underline; text-underline-offset:3px; }
+  .eyebrow { font-family:var(--font-mono); font-size:.72rem; letter-spacing:.22em; text-transform:uppercase; color:var(--accent); margin:0; }
+  .label { font-family:var(--font-mono); font-size:.68rem; letter-spacing:.18em; text-transform:uppercase; color:var(--faint); }
+  h1,h2,h3 { text-wrap:balance; font-weight:650; letter-spacing:-.02em; line-height:1.1; }
+  h1,h2,h3,h4 { -webkit-user-select:none; user-select:none; cursor:default; }
+  .mono { font-family:var(--font-mono); }
+
+  .topbar { border-bottom:1px solid var(--line-soft); position:sticky; top:0; z-index:30; background:rgba(11,11,13,.82); backdrop-filter:blur(10px); }
+  .topbar .wrap { display:flex; align-items:center; justify-content:space-between; height:56px; }
+  .brand { display:flex; align-items:center; gap:10px; font-family:var(--font-mono); font-size:.8rem; letter-spacing:.04em; color:var(--muted); }
+  .brand b { color:var(--text); font-weight:600; }
+  .dot { width:7px; height:7px; border-radius:50%; background:var(--accent); box-shadow:0 0 10px var(--accent); }
+  .topbar nav { display:flex; gap:22px; }
+  .topbar nav a { color:var(--muted); font-family:var(--font-mono); font-size:.74rem; letter-spacing:.04em; }
+  .topbar nav a:hover { color:var(--text); text-decoration:none; }
+  @media (max-width:720px){ .topbar nav { display:none; } }
+
+  .hero { padding:var(--step) 0 calc(var(--step) * .65); }
+  .hero h1 { font-size:clamp(2.4rem, 6vw, 4rem); margin:16px 0 0; }
+  .hero .lede { color:var(--muted); font-size:1.1rem; max-width:54ch; margin:20px 0 0; }
+  .hero-meta { display:flex; flex-wrap:wrap; gap:10px 26px; margin-top:28px; font-family:var(--font-mono); font-size:.76rem; color:var(--muted); }
+  .hero-meta span b { color:var(--text); font-weight:600; }
+
+  .section { padding:calc(var(--step) * .7) 0; border-top:1px solid var(--line-soft); }
+  .section-head { max-width:58ch; margin-bottom:34px; }
+  .section-head h2 { font-size:clamp(1.6rem, 3.2vw, 2.2rem); margin:12px 0 0; }
+  .section-head p { color:var(--muted); margin:14px 0 0; }
+  .prose p { color:var(--muted); max-width:66ch; margin:0 0 16px; }
+  .prose strong { color:var(--text); font-weight:600; }
+
+  .idx-phase { margin-top:26px; }
+  .idx-phase > .label { display:block; margin-bottom:12px; padding-left:2px; }
+  .idx-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--line-soft); border:1px solid var(--line-soft); border-radius:12px; overflow:hidden; }
+  @media (max-width:760px){ .idx-grid { grid-template-columns:repeat(2,1fr); } }
+  @media (max-width:480px){ .idx-grid { grid-template-columns:1fr; } }
+  .idx-card { background:var(--surface); padding:16px 16px 18px; display:flex; flex-direction:column; gap:5px; transition:background .16s ease; }
+  .idx-card:hover { background:var(--surface-2); text-decoration:none; }
+  .idx-card .ic-n { font-family:var(--font-mono); font-size:.68rem; color:var(--accent); letter-spacing:.1em; }
+  .idx-card .ic-name { color:var(--text); font-weight:600; font-size:.98rem; }
+  .idx-card .ic-stage { font-family:var(--font-mono); font-size:.68rem; color:var(--faint); }
+  [data-hidden] { display:none !important; }
+
+  .agent-sec { scroll-margin-top:120px; }
+  .agent-head { max-width:70ch; }
+  .agent-head h2 { font-size:clamp(1.7rem, 3.6vw, 2.5rem); margin:12px 0 0; }
+  .gr { margin:18px 0 0; border-left:2px solid var(--accent); background:var(--accent-dim); padding:12px 16px; border-radius:0 8px 8px 0; }
+  .gr .label { display:block; margin-bottom:3px; color:var(--accent); }
+  .gr span.t { color:var(--text); font-style:italic; }
+  .agent-head .lede { color:var(--muted); margin:18px 0 0; max-width:64ch; }
+
+  .io-flow { display:grid; grid-template-columns:1fr 40px 1fr; gap:0; align-items:stretch; margin:28px 0 6px; border:1px solid var(--line-soft); border-radius:12px; overflow:hidden; }
+  @media (max-width:640px){ .io-flow { grid-template-columns:1fr; } }
+  .io-col { background:var(--surface); padding:16px 18px; }
+  .io-col.out { background:var(--ink-2); }
+  .io-col .label { display:block; margin-bottom:9px; }
+  .io-col.out .label { color:var(--accent); }
+  .io-col ul { margin:0; padding-left:0; list-style:none; display:flex; flex-direction:column; gap:6px; }
+  .io-col li { font-family:var(--font-mono); font-size:.76rem; color:var(--muted); padding-left:14px; position:relative; }
+  .io-col li::before { content:"▸"; position:absolute; left:0; color:var(--faint); }
+  .io-col.out li { color:var(--text); }
+  .io-col.out li::before { color:var(--accent); }
+  .io-mid { display:flex; align-items:center; justify-content:center; background:var(--surface-2); color:var(--accent); font-family:var(--font-mono); font-size:1.1rem; }
+  @media (max-width:640px){ .io-mid { padding:6px; } }
+
+  .sub { font-size:1.05rem; margin:30px 0 14px; color:var(--text); }
+  .cap-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:1px; background:var(--line-soft); border:1px solid var(--line-soft); border-radius:12px; overflow:hidden; }
+  @media (max-width:640px){ .cap-grid { grid-template-columns:1fr; } }
+  .cap { background:var(--surface); padding:18px 18px 20px; display:flex; flex-direction:column; gap:7px; transition:background .16s ease; }
+  .cap:hover { background:var(--surface-2); }
+  .cap .cap-id { font-family:var(--font-mono); font-size:.68rem; color:var(--accent); letter-spacing:.08em; }
+  .cap h4 { font-size:1rem; margin:0; font-weight:600; }
+  .cap p { margin:0; color:var(--muted); font-size:.9rem; line-height:1.5; }
+
+  .specs { border:1px solid var(--line-soft); border-radius:12px; overflow:hidden; margin-top:22px; }
+  .spec-row { display:grid; grid-template-columns:190px 1fr; border-top:1px solid var(--line-soft); }
+  .spec-row:first-child { border-top:none; }
+  .spec-row dt { padding:12px 16px; background:var(--ink-2); font-family:var(--font-mono); font-size:.72rem; letter-spacing:.04em; color:var(--muted); }
+  .spec-row dd { margin:0; padding:12px 16px; color:var(--text); font-family:var(--font-mono); font-size:.78rem; }
+  @media (max-width:560px){ .spec-row { grid-template-columns:1fr; } .spec-row dd { padding-top:0; } }
+
+  .score-table { width:100%; border-collapse:collapse; margin-top:14px; font-family:var(--font-mono); font-size:.78rem; border:1px solid var(--line-soft); border-radius:12px; overflow:hidden; }
+  .score-table th { text-align:left; padding:9px 14px; background:var(--ink-2); color:var(--faint); font-size:.66rem; letter-spacing:.08em; text-transform:uppercase; }
+  .score-table td { padding:10px 14px; border-top:1px solid var(--line-soft); color:var(--muted); vertical-align:top; }
+  .score-table td:first-child { color:var(--accent); white-space:nowrap; width:74px; font-weight:600; }
+
+  .tagrow { display:flex; flex-wrap:wrap; gap:7px; margin-top:14px; }
+  .pill { font-family:var(--font-mono); font-size:.64rem; letter-spacing:.08em; text-transform:uppercase; padding:3px 9px; border-radius:999px; border:1px solid var(--line); color:var(--muted); }
+  .pill.core { border-color:var(--accent-line); color:var(--accent); background:var(--accent-dim); }
+  .pill.gate { border-color:var(--green-line); color:var(--green); background:var(--green-dim); }
+  .pill.plan { border-color:var(--line); color:var(--faint); }
+  .backtop { font-family:var(--font-mono); font-size:.7rem; color:var(--faint); margin-top:20px; display:inline-block; }
+
+  .principles { display:grid; grid-template-columns:repeat(2,1fr); gap:18px; }
+  @media (max-width:720px){ .principles { grid-template-columns:1fr; } }
+  .principle { border-top:2px solid var(--accent); padding-top:16px; }
+  .principle h3 { font-size:1.02rem; margin:0 0 7px; }
+  .principle p { margin:0; color:var(--muted); font-size:.9rem; }
+
+  footer.foot { border-top:1px solid var(--line-soft); padding:28px 0 48px; color:var(--faint); font-family:var(--font-mono); font-size:.72rem; }
+  footer.foot .wrap { display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap; }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap">
+    <div class="bar-left" style="display:flex;align-items:center;gap:18px">
+      <a href="/toolkit" style="display:inline-flex;align-items:center;gap:6px;padding:7px 15px;border-radius:9px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:.8rem;font-weight:600;text-decoration:none;white-space:nowrap">← Back</a>
+      <div class="brand"><span class="dot"></span> CQA&nbsp;Pipeline&nbsp;<b>· Agent Catalog</b></div>
+    </div>
+    <nav>
+      <a href="#overview">Overview</a>
+      <a href="#index">Agents</a>
+      <a href="#principles">Principles</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="wrap">
+      <p class="eyebrow">Agent Catalog · 8 agents · 7 dimensions</p>
+      <h1>The agents that assess code quality</h1>
+      <p class="lede">A Docker-based pipeline that runs 20+ static-analysis and security tools over any codebase, then applies eight specialist AI agents that synthesise raw tool output into scored, ISO 25010–aligned quality chapters. Every agent runs on the orchestrator's model (<span class="mono">model: inherit</span>) and writes one structured block into a canonical <span class="mono">assessment.json</span>.</p>
+      <div class="hero-meta">
+        <span>Model&nbsp; <b>claude-sonnet (inherit)</b></span>
+        <span>Dimensions&nbsp; <b>7 · ISO 25010</b></span>
+        <span>Frameworks&nbsp; <b>OWASP Top 10 2025 + API Top 10 2023</b></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- OVERVIEW -->
+  <section class="section" id="overview">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">Overview</p>
+        <h2>How the agents work</h2>
+      </div>
+      <div class="prose">
+        <p>Each agent receives a <strong>pre-filtered findings slice</strong> (only the findings relevant to its dimension), a samples manifest of up to 50 source files it may read, and a set of optional structured-evidence artefacts (knowledge graph, reverse-engineering files, semantic-search results). Agents use only read-only tools — <span class="mono">Read · Grep · Glob · Bash</span> — and write a structured JSON block with a 0–10 dimension score, a prose narrative, top findings, and prioritised recommendations.</p>
+        <p>Seven dimension agents run <strong>in parallel</strong>; an eighth — the Critical File Audit agent — runs <strong>on demand</strong> for god-class candidates and feeds confirmed findings back into the Security and Maintainability agents. Where evidence is missing, an agent writes a structured failure record rather than scoring on absent data, and the report surfaces a Coverage Limitation instead.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- INDEX -->
+  <section class="section" id="index">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">Directory</p>
+        <h2>All 8 agents</h2>
+        <p>Seven ISO 25010 dimension agents plus one on-demand deep-audit agent. Select any agent for its role, evidence inputs, analysis steps and scoring anchors.</p>
+      </div>
+      <div class="idx-phase">
+        <span class="label">Dimension agents · run in parallel</span>
+        <div class="idx-grid">
+          <a class="idx-card" href="#a01"><span class="ic-n">01</span><span class="ic-name">Security</span><span class="ic-stage">security-agent</span></a>
+          <a class="idx-card" href="#a02"><span class="ic-n">02</span><span class="ic-name">Maintainability</span><span class="ic-stage">maintainability-agent</span></a>
+          <a class="idx-card" href="#a03"><span class="ic-n">03</span><span class="ic-name">Architecture</span><span class="ic-stage">architecture-agent</span></a>
+          <a class="idx-card" href="#a04"><span class="ic-n">04</span><span class="ic-name">Operational Readiness</span><span class="ic-stage">operational-readiness-agent</span></a>
+          <a class="idx-card" href="#a05"><span class="ic-n">05</span><span class="ic-name">Performance</span><span class="ic-stage">performance-agent</span></a>
+          <a class="idx-card" href="#a06"><span class="ic-n">06</span><span class="ic-name">Test Coverage</span><span class="ic-stage">test-coverage-agent</span></a>
+          <a class="idx-card" href="#a07"><span class="ic-n">07</span><span class="ic-name">Dependency Security</span><span class="ic-stage">dependency-security-agent</span></a>
+        </div>
+      </div>
+      <div class="idx-phase">
+        <span class="label">On-demand</span>
+        <div class="idx-grid">
+          <a class="idx-card" href="#a08"><span class="ic-n">08</span><span class="ic-name">Critical File Audit</span><span class="ic-stage">critical-file-audit-agent</span></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- a01 SECURITY -->
+  <section class="section agent-sec" id="a01">
+    <div class="wrap">
+      <div class="agent-head">
+        <p class="eyebrow">Dimension 01 · Security</p>
+        <h2>Security Agent</h2>
+        <div class="tagrow"><span class="pill core">dimension agent</span><span class="pill">OWASP Top 10 2025</span><span class="pill">API Top 10 2023</span><span class="pill">CWE</span></div>
+        <p class="gr"><span class="label">Golden rule</span><span class="t">Score on confirmed exploitability, not scanner noise — quote the evidence and map every finding to OWASP and CWE.</span></p>
+        <p class="lede">Produces the Security chapter. It reads the full method body behind every critical/high finding, confirms whether it is actually exploitable, and maps the surviving findings to OWASP categories and the API Top 10.</p>
+      </div>
+      <div class="io-flow">
+        <div class="io-col"><span class="label">Evidence inputs</span><ul><li>findings slice (dimension = security)</li><li>samples manifest (≤ 50 files)</li><li>user-journeys.json · db-analysis.json</li><li>design-recovery.json · socraticode-impact.json</li></ul></div>
+        <div class="io-mid">→</div>
+        <div class="io-col out"><span class="label">Outputs</span><ul><li>Dimension score (0–10)</li><li>OWASP + CWE mapping</li><li>OWASP API Top 10 coverage</li><li>Confirmed findings + recommendations</li></ul></div>
+      </div>
+      <h3 class="sub">Core analysis steps</h3>
+      <div class="cap-grid">
+        <div class="cap"><span class="cap-id">/ confirm</span><h4>Exploitability triage</h4><p>Reads the full method for each critical/high finding and tags it confirmed, requires-validation, or false-positive — quoting evidence verbatim.</p></div>
+        <div class="cap"><span class="cap-id">/ map</span><h4>OWASP + CWE</h4><p>Maps every finding to OWASP Top 10 2025 and CWE; for API-heavy repos, to OWASP API Top 10 2023.</p></div>
+        <div class="cap"><span class="cap-id">/ api</span><h4>API Top 10 coverage</h4><p>Per category: confirmed-clean, has-findings, or requires-DAST — covering BOLA, broken auth, mass assignment, resource consumption and function-level authz.</p></div>
+        <div class="cap"><span class="cap-id">/ cve</span><h4>CVE reachability</h4><p>Verifies whether a vulnerable library is actually called vs. imported-only vs. transitive; downgrades unused-library CVEs even if flagged critical.</p></div>
+      </div>
+      <h3 class="sub">Scoring anchors</h3>
+      <table class="score-table">
+        <tr><th>Score</th><th>Condition</th></tr>
+        <tr><td>9–10</td><td>Zero criticals, zero highs, defence-in-depth visible across auth/authz layers.</td></tr>
+        <tr><td>7–8</td><td>Zero criticals, ≤ 3 highs with clear remediations, structured security-event logging.</td></tr>
+        <tr><td>5–6</td><td>1–2 patchable criticals, ≤ 8 highs, no systemic access-control failure.</td></tr>
+        <tr><td>3–4</td><td>≥ 3 criticals or systemic auth/authorization issues across surfaces.</td></tr>
+        <tr><td>0–2</td><td>Exploitable secrets in git history, broken access control in production paths, confirmed injection.</td></tr>
+      </table>
+      <a class="backtop" href="#index">← back to directory</a>
+    </div>
+  </section>
+
+  <!-- a02 MAINTAINABILITY -->
+  <section class="section agent-sec" id="a02">
+    <div class="wrap">
+      <div class="agent-head">
+        <p class="eyebrow">Dimension 02 · Maintainability</p>
+        <h2>Maintainability Agent</h2>
+        <div class="tagrow"><span class="pill core">dimension agent</span><span class="pill">ISO 25010</span><span class="pill">Cyclomatic Complexity</span><span class="pill">Mutation Index</span></div>
+        <p class="gr"><span class="label">Golden rule</span><span class="t">Separate inherent complexity (the domain is hard) from accidental complexity (poor design) — and put a number on onboarding time.</span></p>
+        <p class="lede">Assesses complexity, duplication, accumulated debt and coupling, and estimates how long a new engineer needs to become productive in the codebase.</p>
+      </div>
+      <div class="io-flow">
+        <div class="io-col"><span class="label">Evidence inputs</span><ul><li>findings slice (complexity, duplication, debt, naming)</li><li>db-analysis.json (god tables)</li><li>design-recovery.json (layer map)</li><li>knowledge-graph.json · socraticode-impact.json</li></ul></div>
+        <div class="io-mid">→</div>
+        <div class="io-col out"><span class="label">Outputs</span><ul><li>Dimension score (0–10)</li><li>Onboarding-time estimate (weeks)</li><li>Coupling hotspots + cycle break strategies</li><li>ISO 25010 subcharacteristic narrative</li></ul></div>
+      </div>
+      <h3 class="sub">Required narrative elements</h3>
+      <div class="cap-grid">
+        <div class="cap"><span class="cap-id">/ complexity</span><h4>Inherent vs accidental</h4><p>Distinguishes domain-driven complexity from complexity introduced by poor design choices.</p></div>
+        <div class="cap"><span class="cap-id">/ onboarding</span><h4>Onboarding estimate</h4><p>Explicit estimate in weeks with justification: 1–2 (clean, ≤ 50k LOC) through 6+ (spaghetti, high churn).</p></div>
+        <div class="cap"><span class="cap-id">/ iso</span><h4>ISO 25010 subcharacteristics</h4><p>Cites modularity, reusability, analysability, modifiability and testability.</p></div>
+        <div class="cap"><span class="cap-id">/ cycles</span><h4>Cycle break strategies</h4><p>Names a break strategy for each detected circular dependency.</p></div>
+      </div>
+      <h3 class="sub">Scoring anchors</h3>
+      <table class="score-table">
+        <tr><th>Score</th><th>Condition</th></tr>
+        <tr><td>9–10</td><td>Avg CC &lt; 10, duplication &lt; 3%, Maintainability Index &gt; 80, clean modules.</td></tr>
+        <tr><td>7–8</td><td>Avg CC &lt; 15, duplication &lt; 8%, MI &gt; 65, some coupling hotspots.</td></tr>
+        <tr><td>5–6</td><td>Avg CC &lt; 20, duplication &lt; 15%, growing technical-debt backlog.</td></tr>
+        <tr><td>3–4</td><td>Several god classes, high duplication, hard to test independently.</td></tr>
+        <tr><td>0–2</td><td>Spaghetti architecture, no module boundaries, duplication &gt; 40%.</td></tr>
+      </table>
+      <a class="backtop" href="#index">← back to directory</a>
+    </div>
+  </section>
+
+  <!-- a03 ARCHITECTURE -->
+  <section class="section agent-sec" id="a03">
+    <div class="wrap">
+      <div class="agent-head">
+        <p class="eyebrow">Dimension 03 · Architecture</p>
+        <h2>Architecture Agent</h2>
+        <div class="tagrow"><span class="pill core">dimension agent</span><span class="pill">Fitness Violations</span><span class="pill">C4 / Mermaid</span><span class="pill">Dependency-Cruiser · Deptrac</span></div>
+        <p class="gr"><span class="label">Golden rule</span><span class="t">Judge the structure against its own intended layering — and name a concrete break strategy for every cycle.</span></p>
+        <p class="lede">Evaluates layering fitness, circular dependencies, extensibility and structural coupling, and renders a verdict from clean through spaghetti.</p>
+      </div>
+      <div class="io-flow">
+        <div class="io-col"><span class="label">Evidence inputs</span><ul><li>findings slice (fitness, dependency, circular)</li><li>design-recovery.json (C4, layer map)</li><li>user-journeys.json · design-nfr-candidates.md</li><li>frontend-business-logic.json · knowledge-graph.json</li></ul></div>
+        <div class="io-mid">→</div>
+        <div class="io-col out"><span class="label">Outputs</span><ul><li>Dimension score (0–10)</li><li>Layering verdict</li><li>Cycle resolution + extensibility assessment</li><li>NFR fitness · business-logic leakage</li></ul></div>
+      </div>
+      <h3 class="sub">Required analysis sections</h3>
+      <div class="cap-grid">
+        <div class="cap"><span class="cap-id">/ verdict</span><h4>Layering verdict</h4><p>clean · mostly-clean · inconsistent · spaghetti — based on violation patterns and layer contracts.</p></div>
+        <div class="cap"><span class="cap-id">/ cycles</span><h4>Circular dependency resolution</h4><p>Per cycle: mediator service, event bus, or interface-extraction strategy.</p></div>
+        <div class="cap"><span class="cap-id">/ extend</span><h4>Extensibility</h4><p>Plugin points, multi-tenancy readiness and domain isolation.</p></div>
+        <div class="cap"><span class="cap-id">/ leak</span><h4>Business-logic leakage</h4><p>For JS/TS repos: client-side logic that should be server-only, with its security and maintainability implications.</p></div>
+      </div>
+      <h3 class="sub">Scoring anchors</h3>
+      <table class="score-table">
+        <tr><th>Score</th><th>Condition</th></tr>
+        <tr><td>9–10</td><td>Clean layering, zero violations, zero cycles, extensible design.</td></tr>
+        <tr><td>7–8</td><td>Mostly clean, ≤ 5 violations, no circular dependencies.</td></tr>
+        <tr><td>5–6</td><td>Inconsistent layering, some cycles, limited extensibility.</td></tr>
+        <tr><td>3–4</td><td>Recurring violations, multiple circular-dependency clusters.</td></tr>
+        <tr><td>0–2</td><td>No discernible architecture, arbitrary coupling throughout.</td></tr>
+      </table>
+      <a class="backtop" href="#index">← back to directory</a>
+    </div>
+  </section>
+
+  <!-- a04 OPERATIONAL READINESS -->
+  <section class="section agent-sec" id="a04">
+    <div class="wrap">
+      <div class="agent-head">
+        <p class="eyebrow">Dimension 04 · Operational Readiness</p>
+        <h2>Operational Readiness Agent</h2>
+        <div class="tagrow"><span class="pill core">dimension agent</span><span class="pill">Observability</span><span class="pill">Secrets Management</span><span class="pill">Migration Safety</span></div>
+        <p class="gr"><span class="label">Golden rule</span><span class="t">Ask whether this could be run, observed and rolled back in production — and list what must be true first.</span></p>
+        <p class="lede">Covers error handling, logging, secrets infrastructure, resilience patterns and deployment safety, and ends with explicit production-cutover prerequisites.</p>
+      </div>
+      <div class="io-flow">
+        <div class="io-col"><span class="label">Coverage areas</span><ul><li>Error handling · structured logging</li><li>Config &amp; secrets infrastructure</li><li>Monitoring · Dockerfile hygiene</li><li>Resilience (timeouts, retries, breakers)</li><li>LLM cost/safety guards · deploy safety</li></ul></div>
+        <div class="io-mid">→</div>
+        <div class="io-col out"><span class="label">Outputs</span><ul><li>Dimension score (0–10)</li><li>Schema &amp; migration integrity subsection</li><li>Production cutover prerequisites</li><li>Resilience &amp; observability findings</li></ul></div>
+      </div>
+      <h3 class="sub">What it produces</h3>
+      <div class="cap-grid">
+        <div class="cap"><span class="cap-id">/ observe</span><h4>Observability</h4><p>JSON-structured logs with correlation IDs, distributed tracing, health endpoints and alerting hooks vs. ad-hoc string logging.</p></div>
+        <div class="cap"><span class="cap-id">/ secrets</span><h4>Secrets &amp; config</h4><p>Secrets manager vs. plaintext env vars vs. hardcoded strings; config-cache correctness.</p></div>
+        <div class="cap"><span class="cap-id">/ migrate</span><h4>Schema &amp; migration integrity</h4><p>When db-analysis.json is present, compares live schema against tracked migrations; untracked live tables = DR risk.</p></div>
+        <div class="cap"><span class="cap-id">/ cutover</span><h4>Cutover prerequisites</h4><p>An explicit list of what must hold before the codebase is production-ready, derived from all dimension findings.</p></div>
+      </div>
+      <h3 class="sub">Scoring anchors</h3>
+      <table class="score-table">
+        <tr><th>Score</th><th>Condition</th></tr>
+        <tr><td>9–10</td><td>Structured logs, correlation IDs, secrets in vault, tracing, timeouts on all outbound calls.</td></tr>
+        <tr><td>7–8</td><td>Structured logging, basic monitoring, secrets in env (not hardcoded), graceful shutdown.</td></tr>
+        <tr><td>5–6</td><td>Mixed logging, some missing timeouts, config inconsistencies, no tracing.</td></tr>
+        <tr><td>3–4</td><td>Ad-hoc error handling, secrets in config/code, no retry/breaker patterns.</td></tr>
+        <tr><td>0–2</td><td>Console debug logging, secrets in git, no health endpoints, no rollback procedure.</td></tr>
+      </table>
+      <a class="backtop" href="#index">← back to directory</a>
+    </div>
+  </section>
+
+  <!-- a05 PERFORMANCE -->
+  <section class="section agent-sec" id="a05">
+    <div class="wrap">
+      <div class="agent-head">
+        <p class="eyebrow">Dimension 05 · Performance</p>
+        <h2>Performance Agent</h2>
+        <div class="tagrow"><span class="pill core">dimension agent</span><span class="pill">N+1 Detection</span><span class="pill">Caching</span><span class="pill">Query Optimisation</span></div>
+        <p class="gr"><span class="label">Golden rule</span><span class="t">Find the query patterns that don't scale — and give a concrete, ORM-appropriate fix for each hotspot.</span></p>
+        <p class="lede">Hunts N+1 queries, eager-loading gaps, missing caching, wide API payloads and chatty service patterns, with a relative before/after estimate per fix.</p>
+      </div>
+      <div class="io-flow">
+        <div class="io-col"><span class="label">Evidence inputs</span><ul><li>findings slice (N+1, payload, index, slow-query hints)</li><li>knowledge-graph.json (call-chain depth, hot paths)</li><li>socraticode-impact.json (query &amp; caching patterns)</li></ul></div>
+        <div class="io-mid">→</div>
+        <div class="io-col out"><span class="label">Outputs</span><ul><li>Dimension score (0–10)</li><li>Per-hotspot: file, method, loop, fix</li><li>Relative capacity estimate per fix</li></ul></div>
+      </div>
+      <h3 class="sub">Detected anti-patterns</h3>
+      <div class="cap-grid">
+        <div class="cap"><span class="cap-id">/ nplus1</span><h4>N+1 &amp; query-in-loop</h4><p>DB calls inside iteration over a collection; eager-loading gaps fetched as subsequent queries.</p></div>
+        <div class="cap"><span class="cap-id">/ payload</span><h4>Wide payloads</h4><p>Responses returning all columns when only a subset is needed.</p></div>
+        <div class="cap"><span class="cap-id">/ chatty</span><h4>Chatty services</h4><p>A single handler making more than five outbound service calls.</p></div>
+        <div class="cap"><span class="cap-id">/ unbounded</span><h4>Unbounded &amp; nested</h4><p>Fetch-all on growing tables; loop-in-loop DB access at O(n²) or worse.</p></div>
+      </div>
+      <h3 class="sub">Scoring anchors</h3>
+      <table class="score-table">
+        <tr><th>Score</th><th>Condition</th></tr>
+        <tr><td>9–10</td><td>Zero N+1, caching on hot paths, indexed queries throughout.</td></tr>
+        <tr><td>7–8</td><td>≤ 2 N+1 on low-traffic paths, caching on critical reads.</td></tr>
+        <tr><td>5–6</td><td>3–6 N+1 patterns, missing FK indexes, no caching layer.</td></tr>
+        <tr><td>3–4</td><td>Pervasive N+1 on main paths, SELECT * on large tables.</td></tr>
+        <tr><td>0–2</td><td>Full table scans per request, no indexing, unbounded queries in the request path.</td></tr>
+      </table>
+      <a class="backtop" href="#index">← back to directory</a>
+    </div>
+  </section>
+
+  <!-- a06 TEST COVERAGE -->
+  <section class="section agent-sec" id="a06">
+    <div class="wrap">
+      <div class="agent-head">
+        <p class="eyebrow">Dimension 06 · Test Coverage</p>
+        <h2>Test Coverage Agent</h2>
+        <div class="tagrow"><span class="pill core">dimension agent</span><span class="pill">Mutation Score (MSI)</span><span class="pill">Assertion Quality</span><span class="pill">Branch Coverage</span></div>
+        <p class="gr"><span class="label">Golden rule</span><span class="t">Coverage that executes code without verifying it is worthless — weight mutation score above line coverage.</span></p>
+        <p class="lede">Reads coverage and mutation metrics, judges assertion quality, detects brittle tests, and breaks coverage down by business-critical component.</p>
+      </div>
+      <div class="io-flow">
+        <div class="io-col"><span class="label">Evidence inputs</span><ul><li>findings slice (coverage, mutation, organisation)</li><li>test-coverage-deep.json · test-cases.json</li><li>user-journeys.json (untested endpoints)</li><li>knowledge-graph.json (centrality × gaps)</li></ul></div>
+        <div class="io-mid">→</div>
+        <div class="io-col out"><span class="label">Outputs</span><ul><li>Dimension score (0–10)</li><li>Coverage-by-component table</li><li>Brittle-test &amp; flaky-signal findings</li><li>Priority test targets</li></ul></div>
+      </div>
+      <h3 class="sub">Assertion quality signals</h3>
+      <div class="cap-grid">
+        <div class="cap"><span class="cap-id">/ mocks</span><h4>Mock saturation</h4><p>Every dependency mocked = the test verifies very little; flagged as brittle.</p></div>
+        <div class="cap"><span class="cap-id">/ behaviour</span><h4>Behaviour vs implementation</h4><p>Tests asserting private internals break on refactors.</p></div>
+        <div class="cap"><span class="cap-id">/ flaky</span><h4>Flaky &amp; slow signals</h4><p>Sleep calls, retry loops, and suites over five minutes that block CI feedback.</p></div>
+        <div class="cap"><span class="cap-id">/ msi</span><h4>Mutation over coverage</h4><p>90% line / 40% MSI is a worse signal than 70% line / 70% MSI.</p></div>
+      </div>
+      <h3 class="sub">Scoring anchors</h3>
+      <table class="score-table">
+        <tr><th>Score</th><th>Condition</th></tr>
+        <tr><td>9–10</td><td>85%+ coverage, critical paths 90%+, MSI ≥ 75%, assertion-dense, &lt; 5 min suite.</td></tr>
+        <tr><td>7–8</td><td>80%+ coverage, critical paths 85%+, MSI ≥ 60%, some brittle tests.</td></tr>
+        <tr><td>5–6</td><td>70–80% coverage, critical paths 70–85%, MSI 40–60%, slow but green.</td></tr>
+        <tr><td>3–4</td><td>50–70% coverage, critical paths &lt; 70%, heavy mock saturation, MSI &lt; 40%.</td></tr>
+        <tr><td>0–2</td><td>&lt; 50% coverage, no tests on critical paths, smoke-only tests.</td></tr>
+      </table>
+      <a class="backtop" href="#index">← back to directory</a>
+    </div>
+  </section>
+
+  <!-- a07 DEPENDENCY SECURITY -->
+  <section class="section agent-sec" id="a07">
+    <div class="wrap">
+      <div class="agent-head">
+        <p class="eyebrow">Dimension 07 · Dependency Security</p>
+        <h2>Dependency Security Agent</h2>
+        <div class="tagrow"><span class="pill core">dimension agent</span><span class="pill">Grype · Trivy · Snyk</span><span class="pill">npm / pip / composer audit</span><span class="pill">govulncheck</span></div>
+        <p class="gr"><span class="label">Golden rule</span><span class="t">A CVE in an unused library is not a production risk — bucket by reachability, recommend per library not per CVE.</span></p>
+        <p class="lede">Deduplicates CVEs across many scanners, buckets them by exploitability, and checks licenses and unmaintained dependencies.</p>
+      </div>
+      <div class="io-flow">
+        <div class="io-col"><span class="label">Evidence inputs</span><ul><li>findings slice (multi-tool CVE reports)</li><li>dependency manifests + lockfiles</li><li>call-site evidence for reachability</li></ul></div>
+        <div class="io-mid">→</div>
+        <div class="io-col out"><span class="label">Outputs</span><ul><li>Dimension score (0–10)</li><li>Deduplicated CVE list by exploitability bucket</li><li>License &amp; unmaintained-library flags</li><li>One recommendation per library</li></ul></div>
+      </div>
+      <h3 class="sub">How it reasons</h3>
+      <div class="cap-grid">
+        <div class="cap"><span class="cap-id">/ dedup</span><h4>Multi-tool dedup</h4><p>Merges on CVE id + package; uses the most conservative severity; records tool disagreement as uncertainty.</p></div>
+        <div class="cap"><span class="cap-id">/ buckets</span><h4>Exploitability buckets</h4><p>confirmed-exploitable · imported-not-called · transitively-only — unused-library CVEs are downgraded.</p></div>
+        <div class="cap"><span class="cap-id">/ license</span><h4>License compliance</h4><p>Flags GPL/AGPL/SSPL dependencies in distributed products.</p></div>
+        <div class="cap"><span class="cap-id">/ stale</span><h4>Unmaintained libraries</h4><p>2+ major versions behind, no commits in 24+ months, or explicitly deprecated.</p></div>
+      </div>
+      <h3 class="sub">Scoring anchors</h3>
+      <table class="score-table">
+        <tr><th>Score</th><th>Condition</th></tr>
+        <tr><td>9–10</td><td>Zero critical/high CVEs, all deps ≤ 1 major version behind.</td></tr>
+        <tr><td>7–8</td><td>Zero critical CVEs, ≤ 3 high (all patchable), no unmaintained deps.</td></tr>
+        <tr><td>5–6</td><td>1–2 critical CVEs (not yet exploitable or unused path), ≤ 10 highs.</td></tr>
+        <tr><td>3–4</td><td>Multiple critical CVEs in actively-called libraries, unmaintained core deps.</td></tr>
+        <tr><td>0–2</td><td>Known-exploited CVEs (CISA KEV) in production call paths, license violations.</td></tr>
+      </table>
+      <a class="backtop" href="#index">← back to directory</a>
+    </div>
+  </section>
+
+  <!-- a08 CRITICAL FILE AUDIT -->
+  <section class="section agent-sec" id="a08">
+    <div class="wrap">
+      <div class="agent-head">
+        <p class="eyebrow">On-demand · Deep audit</p>
+        <h2>Critical File Audit Agent</h2>
+        <div class="tagrow"><span class="pill gate">on-demand</span><span class="pill">Full-file read · no cap</span><span class="pill">Knowledge-graph prioritised</span></div>
+        <p class="gr"><span class="label">Golden rule</span><span class="t">Read the whole file like a senior reviewer — highest blast-radius methods first — and confirm before you escalate.</span></p>
+        <p class="lede">Triggered for god-class candidates (high LOC, finding density or coupling). Unlike the dimension agents, it reads the entire target file with no sample cap, catching issues static scanners miss. Its <span class="mono">cfa_</span> findings feed the Security and Maintainability agents.</p>
+      </div>
+      <div class="io-flow">
+        <div class="io-col"><span class="label">Inputs</span><ul><li>Target file (full, no cap)</li><li>knowledge-graph node (in-degree per method)</li><li>semantic search over risk concentrations</li></ul></div>
+        <div class="io-mid">→</div>
+        <div class="io-col out"><span class="label">Outputs</span><ul><li>cfa_NNN findings (method, line range, severity)</li><li>Verbatim evidence (≤ 15 lines) + remediation</li><li>Exploitability evidence + false-positive risk</li><li>Severity/status summary + verdict</li></ul></div>
+      </div>
+      <h3 class="sub">Three phases</h3>
+      <div class="cap-grid">
+        <div class="cap"><span class="cap-id">/ navigate</span><h4>Phase 1 — Navigation</h4><p>Sorts methods by in-degree (callers) and runs targeted semantic searches to build a read-priority list before reading.</p></div>
+        <div class="cap"><span class="cap-id">/ read</span><h4>Phase 2 — Guided full read</h4><p>Reads the file in ≤ 500-line chunks, highest-priority methods first, recording findings as encountered.</p></div>
+        <div class="cap"><span class="cap-id">/ verify</span><h4>Phase 3 — Verification</h4><p>For each requires-verification finding, runs a semantic search to confirm or downgrade.</p></div>
+        <div class="cap"><span class="cap-id">/ checklist</span><h4>Audit categories</h4><p>Authorization, PII &amp; logging, performance, framework anti-patterns and correctness.</p></div>
+      </div>
+      <dl class="specs">
+        <div class="spec-row"><dt>Trigger</dt><dd>God-class candidates — high LOC, finding density, or coupling</dd></div>
+        <div class="spec-row"><dt>Feeds</dt><dd>Security Agent · Maintainability Agent (as confirmed findings)</dd></div>
+        <div class="spec-row"><dt>Output prefix</dt><dd>cfa_NNN findings in the canonical schema</dd></div>
+      </dl>
+      <a class="backtop" href="#index">← back to directory</a>
+    </div>
+  </section>
+
+  <!-- PRINCIPLES -->
+  <section class="section" id="principles">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">Operating principles</p>
+        <h2>The rules every agent works by</h2>
+      </div>
+      <div class="principles">
+        <div class="principle"><h3>One model, inherited</h3><p>Every agent runs on the orchestrator's Claude model (<span class="mono">model: inherit</span>) — consistent reasoning, no extra keys, no version mismatch.</p></div>
+        <div class="principle"><h3>Prose narrative only</h3><p>The <span class="mono">narrative</span> field is flowing prose — no bullets, no headers. Evidence and locations live in the findings array so the report builder owns formatting.</p></div>
+        <div class="principle"><h3>Never score on absent evidence</h3><p>If a dimension can't be assessed the agent writes a structured failure with populated <span class="mono">data_gaps</span>; the report shows a Coverage Limitation instead of a blank.</p></div>
+        <div class="principle"><h3>Prioritised recommendations</h3><p>Recommendations are ordered critical→low then by lowest effort; every critical finding yields at least one, with explicit <span class="mono">depends_on</span> sequencing.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <div class="wrap">
+      <span>CQA Pipeline · Agent Catalog · 8 agents / 7 dimensions</span>
+      <span>v1.3.3 · model: inherit · canonical assessment.json</span>
+    </div>
+  </footer>
+
+</main>
+
+<script>
+/* Isolated-agent view: the directory is the hub; selecting an agent shows only
+   that agent. Any non-agent anchor (#index, #overview, #principles) returns to
+   the directory. State lives in location.hash, so deep links and back/forward work. */
+(function () {
+  var DIRECTORY = ['.hero', '#overview', '#index', '#principles'];
+  var agents = Array.prototype.slice.call(document.querySelectorAll('.agent-sec'));
+  function dirEls() {
+    return DIRECTORY.map(function (sel) { return document.querySelector(sel); }).filter(Boolean);
+  }
+  function render() {
+    var id = location.hash.replace('#', '');
+    var isAgent = /^a\d+$/.test(id) && !!document.getElementById(id);
+    agents.forEach(function (sec) {
+      if (isAgent && sec.id === id) sec.removeAttribute('data-hidden');
+      else sec.setAttribute('data-hidden', '');
+    });
+    dirEls().forEach(function (el) {
+      if (isAgent) el.setAttribute('data-hidden', '');
+      else el.removeAttribute('data-hidden');
+    });
+    if (isAgent) window.scrollTo(0, 0);
+    else if (id) { var t = document.getElementById(id); if (t) t.scrollIntoView(); }
+  }
+  window.addEventListener('hashchange', render);
+  render();
+})();
+</script>
+</body>
+</html>

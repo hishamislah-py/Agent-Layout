@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ART — QA Agent Cards</title>
+<style>
+:root{
+  --bg:#000; --gold:#f5c010; --white:#fff; --muted:#cfcfd6;
+  --bdr:rgba(255,255,255,.085); --card:#08080a;
+  --font:'Inter','Segoe UI',system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--white);font-family:var(--font);line-height:1.5;-webkit-font-smoothing:antialiased;min-height:100vh;display:flex;align-items:center;padding:54px 30px}
+.wrap{position:relative;max-width:820px;margin:0 auto;width:100%}
+.wrap::before{content:"";position:absolute;inset:-54px -30px;background-image:linear-gradient(rgba(245,192,16,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(245,192,16,.05) 1px,transparent 1px);background-size:52px 52px;-webkit-mask-image:radial-gradient(ellipse 90% 90% at 50% 50%,#000,transparent 96%);mask-image:radial-gradient(ellipse 90% 90% at 50% 50%,#000,transparent 96%);pointer-events:none}
+.grid{position:relative;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px;align-items:stretch}
+@media(max-width:680px){.grid{grid-template-columns:1fr}}
+.card{--accent:#f5c010;--mx:50%;--my:50%;position:relative;display:flex;flex-direction:column;min-height:212px;padding:26px 26px 24px;border-radius:18px;background:var(--card);border:1px solid var(--bdr);box-shadow:0 1px 0 rgba(255,255,255,.05) inset,0 10px 28px rgba(0,0,0,.5);overflow:hidden;transition:transform .3s cubic-bezier(.22,1,.36,1),border-color .3s,box-shadow .3s}
+.card::before{content:"";position:absolute;inset:0;background:radial-gradient(380px circle at var(--mx) var(--my),color-mix(in srgb,var(--accent) 13%,transparent),transparent 42%);opacity:0;transition:opacity .3s;pointer-events:none}
+.card:hover{transform:translateY(-5px);border-color:color-mix(in srgb,var(--accent) 44%,transparent);box-shadow:0 18px 42px rgba(0,0,0,.6)}
+.card:hover::before{opacity:1}
+.card-top{display:flex;align-items:center;gap:14px;margin-bottom:18px;position:relative;z-index:1}
+.ic-box{width:46px;height:46px;flex:none;border-radius:12px;display:flex;align-items:center;justify-content:center;color:var(--accent);background:linear-gradient(150deg,color-mix(in srgb,var(--accent) 30%,#0a0a0c),color-mix(in srgb,var(--accent) 7%,#0a0a0c));box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--accent) 36%,transparent)}
+.ic-box svg{width:24px;height:24px}
+.card h2{font-size:19px;font-weight:700;letter-spacing:-.3px;line-height:1.2}
+.card p{font-size:14px;color:var(--muted);line-height:1.6;position:relative;z-index:1;text-wrap:pretty}
+</style>
+</head>
+<body>
+<div class="wrap"><div class="grid" id="grid"></div></div>
+<script>
+const S='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">';
+const I={
+  // QA Automation Agent — Playwright theater mask (the Playwright brand mark)
+  qa:S+'<path d="M5 5h14v4.6c0 5-3.1 9-7 9s-7-4-7-9V5Z"/><path d="M8.5 9.4c.6-.6 1.5-.6 2.1 0"/><path d="M13.4 9.4c.6-.6 1.5-.6 2.1 0"/><path d="M8.8 13c1.3 1.5 5.1 1.5 6.4 0"/></svg>',
+  // POM Refactor Agent — layered page objects (Page Object Model)
+  pom:S+'<rect x="3.5" y="6.5" width="12.5" height="12.5" rx="2"/><path d="M7.5 6.5V5A1.5 1.5 0 0 1 9 3.5h9A1.5 1.5 0 0 1 19.5 5v9a1.5 1.5 0 0 1-1.5 1.5h-1.5"/><path d="M6.7 10.5h6.1M6.7 13.8h3.8"/></svg>',
+};
+const CARDS=[
+  {a:'#5b9dff',ic:'qa', t:'QA Automation Agent', d:'Turns a test case into a verified, runnable Playwright spec.'},
+  {a:'#f5c010',ic:'pom',t:'POM Refactor Agent',  d:'Restructures specs into a maintainable Page Object Model.'},
+];
+const grid=document.getElementById('grid');
+CARDS.forEach(c=>{
+  const el=document.createElement('div');
+  el.className='card';el.style.setProperty('--accent',c.a);
+  el.innerHTML=`<div class="card-top"><div class="ic-box">${I[c.ic]}</div><h2>${c.t}</h2></div><p>${c.d}</p>`;
+  grid.appendChild(el);
+});
+document.addEventListener('pointermove',e=>{
+  const c=e.target.closest('.card');if(!c)return;
+  const r=c.getBoundingClientRect();
+  c.style.setProperty('--mx',(e.clientX-r.left)+'px');
+  c.style.setProperty('--my',(e.clientY-r.top)+'px');
+});
+</script>
+</body>
+</html>

@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/png" href="/Logo%20(2).png" />
 <title>Skill Catalog — Client Onboarding Portal</title>
 <meta name="description" content="The 12 capability skills of the Client Onboarding Portal AI pipeline — each with capabilities, mechanics, output schema, evaluation criteria, and specs.">
 
@@ -42,7 +43,9 @@
   .topbar nav a:hover { color:var(--text); text-decoration:none; }
   @media (max-width:760px){ .topbar nav { display:none; } }
 
-  .pipeline { border-bottom:1px solid var(--line-soft); background:var(--ink-2); }
+  /* single-skill mode: the all-skills switcher and next-skill footer are hidden,
+     so each skill opens in isolation from the Internal Skills grid. */
+  .pipeline { display:none; border-bottom:1px solid var(--line-soft); background:var(--ink-2); }
   .pipeline .wrap { display:flex; align-items:center; gap:4px; overflow-x:auto; padding-top:12px; padding-bottom:12px; scrollbar-width:thin; scrollbar-color:var(--line) transparent; }
   .pipeline .wrap::-webkit-scrollbar { height:5px; }
   .pipeline .wrap::-webkit-scrollbar-thumb { background:var(--line); border-radius:4px; }
@@ -89,7 +92,7 @@
 
   @media (prefers-reduced-motion:reduce) { .scanline{ animation:none; opacity:.85; top:110px; } .finding{ animation:none; opacity:1; transform:none; } body,.dot{ transition:none; } }
 
-  .section { padding:calc(var(--step) * .72) 0; border-top:1px solid var(--line-soft); }
+  .section { padding:calc(var(--step) * .72) 0; border-top:1px solid var(--line-soft); scroll-margin-top:72px; }
   .section-head { max-width:56ch; margin-bottom:34px; }
   .section-head h2 { font-size:clamp(1.6rem,3.2vw,2.3rem); margin:12px 0 0; }
   .section-head p { color:var(--muted); margin:14px 0 0; }
@@ -145,7 +148,7 @@
   .spec-row dd { margin:0; padding:13px 18px; color:var(--text); font-family:var(--font-mono); font-size:.8rem; word-break:break-word; }
   @media (max-width:560px){ .spec-row { grid-template-columns:1fr; } .spec-row dd { padding-top:0; } }
 
-  .next { border-top:1px solid var(--line-soft); padding:var(--step) 0; }
+  .next { display:none; border-top:1px solid var(--line-soft); padding:var(--step) 0; }
   .next-card { display:flex; align-items:center; justify-content:space-between; gap:20px; border:1px solid var(--line); border-radius:12px; padding:22px 26px; background:var(--surface); flex-wrap:wrap; }
   .next-card .nx-l .label { display:block; margin-bottom:6px; }
   .next-card h3 { font-size:1.3rem; margin:0; }
@@ -157,15 +160,18 @@
 
   .fade { animation:fadein .35s ease; }
   @keyframes fadein { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:none; } }
+  h1,h2,h3,h4{-webkit-user-select:none;user-select:none;cursor:default}
 </style>
 </head>
 <body>
 
 <header class="topbar">
   <div class="wrap">
-    <div class="brand"><span class="dot"></span> Onboarding&nbsp;Portal&nbsp;<b>· Skill Catalog</b></div>
+    <div class="bar-left" style="display:flex;align-items:center;gap:18px">
+      <a href="/internal-skills" style="display:inline-flex;align-items:center;gap:6px;padding:7px 15px;border-radius:9px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:.8rem;font-weight:600;text-decoration:none;white-space:nowrap">← Back</a>
+      <div class="brand"><span class="dot"></span> Onboarding&nbsp;Portal&nbsp;<b>· Skill Catalog</b></div>
+    </div>
     <nav>
-      <a href="/toolkit">Back to Engineering Agents</a>
       <a href="#what">Overview</a>
       <a href="#caps">Capabilities</a>
       <a href="#how">Mechanics</a>
@@ -1022,7 +1028,12 @@ function show(slug){
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
-window.addEventListener("hashchange", () => show(location.hash.slice(1)));
+// Only treat the hash as a skill selector when it matches a real skill, so the
+// in-page section links (#what, #caps, …) scroll natively instead of resetting.
+window.addEventListener("hashchange", () => {
+  const h = location.hash.slice(1);
+  if (SKILLS[h]) show(h);
+});
 show(location.hash.slice(1) || ORDER[0]);
 </script>
 

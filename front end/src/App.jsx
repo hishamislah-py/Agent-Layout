@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom'
 import ScrollDiscs from './ScrollDiscs.jsx'
 import AppCards from './AppCards.jsx'
 import RotatingText from './RotatingText.jsx'
-import { HUB_NAME, HUB_PATH } from './internal.js'
+import { HUB_NAME, HUB_PATH, SKILLS_PATH } from './internal.js'
 
 export default function App() {
   const navigate = useNavigate()
@@ -60,8 +60,14 @@ export default function App() {
             <button className="gw-card" style={{ '--accent': '#FBD75B' }} onMouseMove={onMove} onClick={() => navigate(HUB_PATH)}>
               <span className="gw-icon"><img src="/gateway/internal-agents.png" alt="" /></span>
               <h3 className="gw-title">{HUB_NAME}</h3>
-              <p className="gw-desc">Internal agents and skills that power the platform.</p>
+              <p className="gw-desc">Internal agents that power the platform.</p>
               <span className="gw-cta">Open {HUB_NAME}</span>
+            </button>
+            <button className="gw-card" style={{ '--accent': '#EAB308' }} onMouseMove={onMove} onClick={() => navigate(SKILLS_PATH)}>
+              <span className="gw-icon"><img src="/gateway/internal-skills.png" alt="" /></span>
+              <h3 className="gw-title">Internal Skills Catalog</h3>
+              <p className="gw-desc">Reusable capabilities the engineering agents build on.</p>
+              <span className="gw-cta">View skills</span>
             </button>
             <button className="gw-card" style={{ '--accent': '#E0A40C' }} onMouseMove={onMove} onClick={() => { window.location.href = '/external-agents.html' }}>
               <span className="gw-icon"><img src="/gateway/external-skills.png" alt="" /></span>
