@@ -1,0 +1,1193 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agent Catalog — Client Onboarding Portal</title>
+<meta name="description" content="The 11 specialist sub-agents of the Client Onboarding Portal AI pipeline — each with capabilities, mechanics, output envelope, escalation triggers, and specs.">
+
+<style>
+  :root {
+    --ink:        #0B0B0D;
+    --ink-2:      #111218;
+    --surface:    #15171F;
+    --surface-2:  #1B1E27;
+    --line:       #2B2E38;
+    --line-soft:  #20222B;
+    --text:       #E7E3D6;
+    --muted:      #A6A296;
+    --faint:      #6E6A5E;
+
+    /* accent — gold, matching the Discovery agent theme */
+    --accent:     #F5C010;
+    --accent-2:   #FFD43B;
+    --accent-dim: rgba(245,192,16,.13);
+    --accent-line:rgba(245,192,16,.30);
+    --glow:       rgba(245,192,16,.07);
+
+    --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+    --font-mono: ui-monospace, "SF Mono", "JetBrains Mono", "Menlo", "Consolas", monospace;
+
+    --maxw: 1060px;
+    --step: clamp(2.4rem, 6vw, 4.5rem);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background:
+      radial-gradient(120% 80% at 80% -10%, var(--glow), transparent 55%),
+      var(--ink);
+    color: var(--text);
+    font-family: var(--font-sans);
+    font-size: 17px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    transition: background .4s ease;
+  }
+
+  ::selection { background: var(--accent-dim); color: var(--accent-2); }
+
+  .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 24px; }
+
+  a { color: var(--accent-2); text-decoration: none; }
+  a:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+  .eyebrow {
+    font-family: var(--font-mono); font-size: .72rem; letter-spacing: .22em;
+    text-transform: uppercase; color: var(--accent); margin: 0;
+  }
+  .label {
+    font-family: var(--font-mono); font-size: .68rem; letter-spacing: .18em;
+    text-transform: uppercase; color: var(--faint);
+  }
+  h1, h2, h3 { text-wrap: balance; font-weight: 650; letter-spacing: -.02em; line-height: 1.08; }
+  .mono { font-family: var(--font-mono); }
+
+  /* ===== top bar ===== */
+  .topbar {
+    border-bottom: 1px solid var(--line-soft);
+    position: sticky; top: 0; z-index: 20;
+    background: rgba(11,11,13,.82); backdrop-filter: blur(10px);
+  }
+  .topbar .wrap { display: flex; align-items: center; justify-content: space-between; height: 56px; }
+  .brand { display: flex; align-items: center; gap: 10px; font-family: var(--font-mono); font-size: .8rem; letter-spacing: .04em; color: var(--muted); }
+  .brand b { color: var(--text); font-weight: 600; }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 10px var(--accent); transition: background .4s ease, box-shadow .4s ease; }
+  .topbar nav { display: flex; gap: 22px; }
+  .topbar nav a { color: var(--muted); font-family: var(--font-mono); font-size: .74rem; letter-spacing: .04em; }
+  .topbar nav a:hover { color: var(--text); text-decoration: none; }
+  @media (max-width: 760px){ .topbar nav { display: none; } }
+
+  /* ===== switcher strip ===== */
+  .pipeline { border-bottom: 1px solid var(--line-soft); background: var(--ink-2); }
+  .pipeline .wrap { display: flex; align-items: center; gap: 4px; overflow-x: auto; padding-top: 12px; padding-bottom: 12px; scrollbar-width: thin; scrollbar-color: var(--line) transparent; }
+  .pipeline .wrap::-webkit-scrollbar { height: 5px; }
+  .pipeline .wrap::-webkit-scrollbar-thumb { background: var(--line); border-radius: 4px; }
+  .stage {
+    display: inline-flex; align-items: baseline; gap: 8px; white-space: nowrap;
+    font-family: var(--font-mono); font-size: .76rem; color: var(--faint);
+    padding: 5px 11px; border-radius: 999px; border: 1px solid transparent;
+    cursor: pointer; background: none; transition: color .15s ease, background .15s ease, border-color .15s ease;
+  }
+  .stage:hover { color: var(--text); }
+  .stage .s-n { font-size: .66rem; opacity: .8; }
+  .stage.active { color: var(--text); border-color: var(--accent-line); background: var(--accent-dim); }
+  .stage.active .s-n { color: var(--accent); opacity: 1; }
+  .stage.done { color: var(--muted); }
+  .arr { color: var(--line); font-family: var(--font-mono); font-size: .7rem; }
+
+  /* ===== hero ===== */
+  .hero { padding: var(--step) 0 calc(var(--step) * .7); }
+  .hero-grid { display: grid; grid-template-columns: 1.05fr .95fr; gap: 48px; align-items: center; }
+  @media (max-width: 920px){ .hero-grid { grid-template-columns: 1fr; gap: 36px; } }
+
+  .hero h1 { font-size: clamp(2.4rem, 5.8vw, 3.9rem); margin: 16px 0 0; }
+  .hero-status { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+  .pill {
+    font-family: var(--font-mono); font-size: .64rem; letter-spacing: .12em; text-transform: uppercase;
+    padding: 3px 9px; border-radius: 5px; border: 1px solid var(--line);
+    color: var(--muted); background: var(--surface);
+  }
+  .pill.accent { color: var(--accent); border-color: var(--accent-line); background: var(--accent-dim); }
+  .hero .lede { color: var(--muted); font-size: 1.1rem; max-width: 48ch; margin: 18px 0 0; }
+  .hero-meta { display: flex; flex-wrap: wrap; gap: 10px 26px; margin-top: 26px; font-family: var(--font-mono); font-size: .76rem; color: var(--muted); }
+  .hero-meta span b { color: var(--text); font-weight: 600; }
+
+  /* ---- specimen card ---- */
+  .scanner { position: relative; border: 1px solid var(--line); border-radius: 10px; background: linear-gradient(180deg, var(--surface), var(--ink-2)); overflow: hidden; box-shadow: 0 24px 60px -30px rgba(0,0,0,.8); }
+  .scanner-head { display: flex; align-items: center; gap: 8px; padding: 11px 14px; border-bottom: 1px solid var(--line-soft); font-family: var(--font-mono); font-size: .71rem; color: var(--faint); }
+  .tl { display: flex; gap: 6px; margin-right: 6px; }
+  .tl i { width: 9px; height: 9px; border-radius: 50%; background: var(--line); display: block; }
+  .scan-body { position: relative; }
+  pre.code { margin: 0; padding: 18px 18px 20px; font-family: var(--font-mono); font-size: .77rem; line-height: 1.7; color: #aeb9c5; overflow-x: auto; tab-size: 2; }
+  pre.code .k { color: #ffcf6a; }
+  pre.code .s { color: #88c9a1; }
+  pre.code .c { color: #56616e; font-style: italic; }
+  pre.code .f { color: #e4d290; }
+  pre.code .n { color: #d8a0d8; }
+  pre.code .x { color: #ff7a7a; }
+
+  .scanline {
+    position: absolute; left: 0; right: 0; top: 0; height: 38px;
+    background: linear-gradient(180deg, transparent, var(--accent-dim) 70%, var(--accent-line));
+    border-bottom: 1px solid var(--accent); box-shadow: 0 0 22px 2px var(--accent-dim);
+    pointer-events: none; animation: sweep 5.6s cubic-bezier(.6,0,.4,1) infinite;
+  }
+  @keyframes sweep {
+    0% { transform: translateY(-40px); opacity: 0; }
+    8% { opacity: 1; } 70% { opacity: 1; }
+    85% { transform: translateY(300px); opacity: 0; }
+    100% { transform: translateY(300px); opacity: 0; }
+  }
+
+  .findings { border-top: 1px solid var(--line-soft); padding: 14px; display: flex; flex-direction: column; gap: 8px; background: var(--ink-2); }
+  .finding { display: flex; align-items: center; gap: 10px; font-family: var(--font-mono); font-size: .72rem; padding: 8px 11px; border-radius: 7px; border: 1px solid var(--line-soft); background: var(--surface); opacity: 0; transform: translateX(8px); animation: pop .5s ease forwards; }
+  .finding .tag { font-size: .6rem; letter-spacing: .08em; text-transform: uppercase; padding: 2px 7px; border-radius: 4px; color: var(--ink); background: var(--accent); font-weight: 700; flex-shrink: 0; }
+  .finding .tag.alt { background: transparent; color: var(--accent); border: 1px solid var(--accent-line); }
+  .finding .txt { color: var(--text); }
+  .finding .meta { margin-left: auto; color: var(--faint); flex-shrink: 0; }
+  .finding:nth-child(1){ animation-delay: 1.0s; }
+  .finding:nth-child(2){ animation-delay: 1.5s; }
+  .finding:nth-child(3){ animation-delay: 2.0s; }
+  .finding:nth-child(4){ animation-delay: 2.5s; }
+  @keyframes pop { to { opacity: 1; transform: translateX(0); } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .scanline { animation: none; opacity: .85; top: 110px; }
+    .finding { animation: none; opacity: 1; transform: none; }
+    body, .dot { transition: none; }
+  }
+
+  /* ===== section ===== */
+  .section { padding: calc(var(--step) * .72) 0; border-top: 1px solid var(--line-soft); }
+  .section-head { max-width: 56ch; margin-bottom: 34px; }
+  .section-head h2 { font-size: clamp(1.6rem, 3.2vw, 2.3rem); margin: 12px 0 0; }
+  .section-head p { color: var(--muted); margin: 14px 0 0; }
+
+  .prose p { color: var(--muted); max-width: 64ch; margin: 0 0 16px; }
+  .prose strong { color: var(--text); font-weight: 600; }
+
+  /* capability grid */
+  .cap-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--line-soft); border: 1px solid var(--line-soft); border-radius: 12px; overflow: hidden; }
+  @media (max-width: 820px){ .cap-grid { grid-template-columns: repeat(2,1fr); } }
+  @media (max-width: 540px){ .cap-grid { grid-template-columns: 1fr; } }
+  .cap { background: var(--surface); padding: 20px 20px 22px; display: flex; flex-direction: column; gap: 8px; transition: background .18s ease; }
+  .cap:hover { background: var(--surface-2); }
+  .cap .cap-id { font-family: var(--font-mono); font-size: .68rem; color: var(--accent); letter-spacing: .08em; }
+  .cap h3 { font-size: 1rem; margin: 0; }
+  .cap p { margin: 0; color: var(--muted); font-size: .88rem; line-height: 1.5; }
+
+  /* steps */
+  .steps { display: flex; flex-direction: column; }
+  .step { display: grid; grid-template-columns: 56px 1fr; gap: 20px; padding: 20px 0; border-top: 1px solid var(--line-soft); }
+  .step:first-child { border-top: none; }
+  .step .st-n { font-family: var(--font-mono); font-size: 1.4rem; color: var(--accent); font-variant-numeric: tabular-nums; line-height: 1; padding-top: 2px; }
+  .step h3 { font-size: 1.05rem; margin: 0 0 6px; }
+  .step p { margin: 0; color: var(--muted); font-size: .93rem; max-width: 62ch; }
+
+  /* output schema */
+  .schema { display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; }
+  @media (max-width: 720px){ .schema { grid-template-columns: 1fr; } }
+  .field { border: 1px solid var(--line-soft); border-radius: 9px; padding: 14px 16px; background: var(--surface); display: flex; flex-direction: column; gap: 5px; }
+  .field .fname { font-family: var(--font-mono); font-size: .84rem; color: var(--text); }
+  .field .fname .br { color: var(--accent); }
+  .field .fdesc { font-size: .84rem; color: var(--muted); }
+
+  .conf { margin-top: 24px; border: 1px solid var(--accent-line); border-radius: 10px; background: var(--accent-dim); padding: 16px 20px; display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+  .conf .meter { display: flex; gap: 4px; }
+  .conf .seg { width: 24px; height: 10px; border-radius: 2px; background: var(--line); }
+  .conf .seg.on { background: var(--accent); }
+  .conf .conf-txt { font-family: var(--font-mono); font-size: .78rem; color: var(--muted); }
+  .conf .conf-txt b { color: var(--text); }
+
+  /* escalation */
+  .esc-list { display: flex; flex-direction: column; gap: 8px; }
+  .esc-row { border-left: 2px solid var(--accent); background: var(--surface); border-radius: 0 8px 8px 0; padding: 12px 16px; font-family: var(--font-mono); font-size: .82rem; color: var(--text); }
+  .esc-row .to { color: var(--accent); }
+  .esc-note { margin-top: 18px; color: var(--faint); font-size: .85rem; max-width: 70ch; }
+  .esc-note code { color: var(--muted); }
+
+  /* principles */
+  .principles { display: grid; grid-template-columns: repeat(3,1fr); gap: 18px; }
+  @media (max-width: 720px){ .principles { grid-template-columns: 1fr; } }
+  .principle { border-top: 2px solid var(--accent); padding-top: 14px; }
+  .principle h3 { font-size: 1rem; margin: 0 0 7px; }
+  .principle p { margin: 0; color: var(--muted); font-size: .89rem; }
+
+  /* specs */
+  .specs { border: 1px solid var(--line-soft); border-radius: 12px; overflow: hidden; }
+  .spec-row { display: grid; grid-template-columns: 200px 1fr; border-top: 1px solid var(--line-soft); }
+  .spec-row:first-child { border-top: none; }
+  .spec-row dt { padding: 13px 18px; background: var(--ink-2); font-family: var(--font-mono); font-size: .74rem; letter-spacing: .03em; color: var(--muted); }
+  .spec-row dd { margin: 0; padding: 13px 18px; color: var(--text); font-family: var(--font-mono); font-size: .8rem; word-break: break-word; }
+  @media (max-width: 560px){ .spec-row { grid-template-columns: 1fr; } .spec-row dd { padding-top: 0; } }
+
+  /* next */
+  .next { border-top: 1px solid var(--line-soft); padding: var(--step) 0; }
+  .next-card { display: flex; align-items: center; justify-content: space-between; gap: 20px; border: 1px solid var(--line); border-radius: 12px; padding: 22px 26px; background: var(--surface); flex-wrap: wrap; }
+  .next-card .nx-l .label { display: block; margin-bottom: 6px; }
+  .next-card h3 { font-size: 1.3rem; margin: 0; }
+  .next-card button.go { font-family: var(--font-mono); font-size: .82rem; color: var(--accent); border: 1px solid var(--accent-line); border-radius: 8px; padding: 11px 18px; background: var(--accent-dim); cursor: pointer; transition: background .15s ease; }
+  .next-card button.go:hover { background: var(--accent-line); }
+
+  footer.foot { border-top: 1px solid var(--line-soft); padding: 26px 0 48px; color: var(--faint); font-family: var(--font-mono); font-size: .72rem; }
+  footer.foot .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+
+  .fade { animation: fadein .35s ease; }
+  @keyframes fadein { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap">
+    <div class="brand"><span class="dot"></span> Onboarding&nbsp;Portal&nbsp;<b>· Agent Catalog</b></div>
+    <nav>
+      <a href="/toolkit">Back to Engineering Agents</a>
+      <a href="#what">Overview</a>
+      <a href="#caps">Capabilities</a>
+      <a href="#how">Mechanics</a>
+      <a href="#output">Output</a>
+      <a href="#specs">Specs</a>
+    </nav>
+  </div>
+</header>
+
+<div class="pipeline"><div class="wrap" id="switcher"></div></div>
+
+<main id="app"></main>
+
+<footer class="foot">
+  <div class="wrap">
+    <span>Generated from ai/agents/*.md + ai/REGISTRY.md · all agents draft / built-from-scratch</span>
+    <span id="foot-pos">Agent 01 / 11</span>
+  </div>
+</footer>
+
+<script>
+/* ---------- category accents (collapsed to the gold theme) ---------- */
+const GOLD = "#F5C010", GOLD2 = "#FFD43B";
+const CATS = {
+  design:    { label: "Design & Governance", accent: GOLD, accent2: GOLD2 },
+  implement: { label: "Implementation",      accent: GOLD, accent2: GOLD2 },
+  verify:    { label: "Verification",        accent: GOLD, accent2: GOLD2 },
+  review:    { label: "Review (read-only)",  accent: GOLD, accent2: GOLD2 },
+  docs:      { label: "Documentation",       accent: GOLD, accent2: GOLD2 },
+};
+
+/* ---------- agent data ---------- */
+const ORDER = [
+  "architecture-agent","backend-agent","frontend-agent","workflow-engine-agent",
+  "rbac-agent","xlsx-integration-agent","testing-agent","reviewer-agent",
+  "security-agent","audit-versioning-agent","documentation-agent"
+];
+
+const AGENTS = {
+
+"architecture-agent": {
+  num: "01", short: "Architecture", name: "Architecture Agent", cat: "design",
+  runtime: true,
+  lede: "It reads a design proposal the way a principal engineer reviews an RFC — pressure-testing it against the architecture principles, naming the bounded-context violations and hidden coupling, and refusing to approve what should have been an ADR.",
+  meta: [["Tools","Read · Grep · Glob · Write · Edit"],["Access","docs & ADRs only"],["Output","verdict + ADRs (JSON)"]],
+  specimen: {
+    file: "docs/architecture/realtime-sync.md → review",
+    code:
+`<span class="c">## Proposal: live Smart-Client sync</span>
+The xlsx module will call the cases
+service <span class="x">directly</span> to write field values
+on upload — <span class="x">bypassing the event bus</span>
+for "lower latency".
+<span class="c"># No ADR — treated as an impl detail.</span>`,
+    findings: [
+      {tag:"Concern", alt:false, txt:"Direct cross-module write · P7", meta:"BLOCKING"},
+      {tag:"Concern", alt:false, txt:"Side-effect on request path", meta:"MAJOR"},
+      {tag:"ADR", alt:true, txt:"latency vs. consistency", meta:"REQUIRED"},
+      {tag:"Verdict", alt:true, txt:"approve_with_conditions", meta:"VERDICT"},
+    ]
+  },
+  overview: [
+    "Hand it a design brief or ADR draft and the Architecture Agent evaluates it against <strong>architecture-principles.md</strong> — bounded-context integrity, layered structure, event-driven boundaries, and whether the design can scale and evolve. It is read-only on application code: it produces designs, module structures, and ADRs, never implementation.",
+    "Its discipline is to draft the decision record the change actually needs. Where a non-trivial choice is being made without an ADR, it stops and writes one — and where a change quietly crosses a bounded context or edits an already-accepted ADR, it refuses and <strong>escalates to a human architect</strong>."
+  ],
+  caps: [
+    ["verdict","Design verdict","approve / reject / approve_with_conditions, with a rationale tied to a numbered principle."],
+    ["concerns","Severity-tagged concerns","Each concern cites the principle it breaks, why it matters, and a concrete fix."],
+    ["adr","Required ADRs","Drafts the missing decision records — context, decision, alternatives — to the repo template."],
+    ["coupling","Coupling & boundaries","Detects cross-module imports, sync side-effects, and hidden coupling between contexts."],
+    ["scalability","Scalability notes","Flags designs that won't scale or evolve, with the bottleneck made explicit."],
+    ["impact","Module impact","Maps which bounded contexts the change touches and how."]
+  ],
+  steps: [
+    ["Triggered","Fires on a design-review request, an architecture-review-requested PR label, or a major module-structure change spotted by the reviewer agent."],
+    ["Loads the rules","Pulls architecture-principles, the domain glossary, and workflow-rules into a fresh context window."],
+    ["Evaluates the design","Checks bounded-context integrity, layering, event boundaries, scalability — and whether each non-trivial decision has an ADR."],
+    ["Drafts what's missing","Writes required ADRs to the template and proposes module boundaries; never edits an accepted ADR — supersedes it."],
+    ["Emits the verdict","Returns the structured envelope; blocking concerns and cross-context coupling pause for a human architect."]
+  ],
+  output: [
+    ["verdict",true,"approve | reject | approve_with_conditions."],
+    ["strengths",false,"What the design gets right."],
+    ["concerns",true,"severity · principle · issue · rationale · suggestion."],
+    ["required_adrs",true,"title · context · decision_summary · alternatives."],
+    ["module_impact",false,"Per-module impact of the change."],
+    ["scalability_notes",false,"Forward-looking risks to scale & evolvability."]
+  ],
+  escalation: [
+    ["Change crosses bounded contexts","pause; human architect approval"],
+    ["Edit to an already-accepted ADR","stop; supersede with a new ADR only"],
+    ["New top-level domain concept","human architect"],
+    ["Scalability concern with no mitigation","architecture board"]
+  ],
+  principles: [
+    ["Decisions get recorded","Non-trivial choices become ADRs — never buried as 'implementation details'."],
+    ["Boundaries are sacred","No cross-context coupling slips through as a convenience."],
+    ["Don't over-architect","Simple changes stay simple; ceremony is reserved for real decisions."]
+  ],
+  specs: [
+    ["Pipeline stage","01 — Design & Governance"],
+    ["Status","draft · runtime-wired (.claude/agents)"],
+    ["Tools","Read · Grep · Glob · Write · Edit"],
+    ["Write scope","docs/adr/** · docs/architecture/**"],
+    ["Off-limits","apps/** · packages/** · infrastructure/** · ci/**"],
+    ["Required context","architecture-principles · domain-glossary · workflow-rules"],
+    ["Output","agent-output-contract envelope (JSON)"]
+  ]
+},
+
+"backend-agent": {
+  num: "02", short: "Backend", name: "Backend Agent", cat: "implement",
+  runtime: false,
+  lede: "It builds a feature inside one bounded context the way a careful service owner would — authorization at the door, audit inside the transaction, events on the outbox, and the full negative-path test matrix written before it calls the work done.",
+  meta: [["Tools","Read · Edit · Write · Bash · +2"],["Access","apps/api · packages · tests"],["Output","files + events + tests"]],
+  specimen: {
+    file: "modules/cases/application/submit-case.ts (generated)",
+    code:
+`<span class="k">export async function</span> <span class="f">submitCase</span>(cmd, ctx) {
+  authz.<span class="f">assertCan</span>(ctx.actor, <span class="s">"case.submit"</span>, cmd.id)
+  <span class="k">return</span> <span class="f">tx</span>(<span class="k">async</span> (t) =&gt; {
+    <span class="k">const</span> c = <span class="k">await</span> repo.<span class="f">load</span>(cmd.id, t)
+    c.<span class="f">submit</span>(ctx.actor)            <span class="c">// domain behavior</span>
+    <span class="k">await</span> outbox.<span class="f">emit</span>(CaseSubmitted, t) <span class="c">// event + audit</span>
+  })
+}`,
+    findings: [
+      {tag:"Gen", alt:false, txt:"assertCan at entry", meta:"RBAC"},
+      {tag:"Gen", alt:false, txt:"CaseSubmitted on outbox", meta:"AUDIT"},
+      {tag:"Test", alt:true, txt:"happy · bad actor · idempotent", meta:"5 CASES"},
+      {tag:"Flag", alt:true, txt:"schema migration? → escalate", meta:"DB"},
+    ]
+  },
+  overview: [
+    "Given a feature spec and a target module, the Backend Agent implements <strong>one bounded context per PR</strong> — domain entities with behavior, use cases, repositories, HTTP handlers, jobs, and events — and writes the tests alongside the code. It follows the layered structure interfaces → application → domain → infrastructure and never imports another module directly.",
+    "Three things are non-negotiable: every state-changing endpoint calls the central <strong>AuthorizationService</strong>, every state change emits a domain event <strong>and an audit record inside the same transaction</strong>, and concurrent paths use optimistic locking and idempotency keys. Schema migrations and new event types stop the agent and escalate."
+  ],
+  caps: [
+    ["entities","Domain entities","Rich models with behavior — not anemic data bags."],
+    ["usecases","Use cases","Application services orchestrating one transaction with clear boundaries."],
+    ["authz","Authorization","assertCan(actor, action, resource) at every state-changing endpoint."],
+    ["events","Events & audit","Domain events on the transactional outbox; audit record in the same tx."],
+    ["tests","Test matrix","Happy path, invalid actor, invalid precondition, idempotency, audit assertion."],
+    ["concurrency","Concurrency","Optimistic locking and idempotency keys on concurrent-write paths."]
+  ],
+  steps: [
+    ["Triggered","Receives a feature spec from a human or the architecture agent, scoped to one module."],
+    ["Loads guidelines","Pulls architecture, engineering, rbac, security, and testing guidelines."],
+    ["Implements the slice","Generates entities, use cases, repos, handlers and events within the layer rules."],
+    ["Wires safety","Adds authz checks, in-transaction audit emission, and the full test matrix."],
+    ["Hands off","Emits a diff summary; routes to testing, reviewer and (on sensitive paths) security agents."]
+  ],
+  output: [
+    ["files",false,"Created / modified files with full paths."],
+    ["endpoints",false,"New endpoints with their authz rules."],
+    ["events",false,"Domain events emitted."],
+    ["audit_events",true,"Audit records emitted."],
+    ["migrations",true,"DB migrations — flagged for escalation."],
+    ["tests",false,"Unit + integration tests alongside code."]
+  ],
+  escalation: [
+    ["Schema migration required","stop; human DB review"],
+    ["New event type introduced","stop; architecture review"],
+    ["Cross-module coupling needed","architecture agent"],
+    ["Change touches RBAC enforcement","invoke rbac-agent first"]
+  ],
+  principles: [
+    ["Authorize at the door","No inline role checks — always the central AuthorizationService."],
+    ["Audit is not optional","Every state change emits an event and an audit record, in-transaction."],
+    ["One context per PR","Cross-context work is split; boundaries stay intact."]
+  ],
+  specs: [
+    ["Pipeline stage","02 — Implementation"],
+    ["Status","draft · spec only (no runtime adapter)"],
+    ["Tools","Read · Edit · Write · Bash · Grep · Glob"],
+    ["Write scope","apps/api/** · packages/shared-*/** · testing/**"],
+    ["Off-limits","apps/web/** · ai/context/** · docs/adr/** · infrastructure/** · ci/**"],
+    ["Required context","architecture · engineering · rbac · security · testing guidelines"],
+    ["Output","files + structured report envelope"]
+  ]
+},
+
+"frontend-agent": {
+  num: "03", short: "Frontend", name: "Frontend Agent", cat: "implement",
+  runtime: false,
+  lede: "It builds UI inside a feature slice the way a design-system-disciplined engineer would — every template rendered through the form engine, every color a token, every permission read from the server, and accessibility asserted in the tests.",
+  meta: [["Tools","Read · Edit · Write · Bash · +2"],["Access","apps/web · packages · tests"],["Output","components + a11y tests"]],
+  specimen: {
+    file: "features/cases/SubmitButton.tsx (generated)",
+    code:
+`<span class="k">const</span> { can } = <span class="f">usePermissions</span>()     <span class="c">// from server</span>
+<span class="k">if</span> (!<span class="f">can</span>(<span class="s">"case.submit"</span>)) <span class="k">return null</span>  <span class="c">// gate</span>
+<span class="k">return</span> (
+  &lt;<span class="f">Button</span>
+    tone={tokens.color.actionPrimary} <span class="c">// token</span>
+    onClick={submit}
+    aria-label=<span class="s">"Submit case"</span>
+  &gt;Submit&lt;/<span class="f">Button</span>&gt;
+)`,
+    findings: [
+      {tag:"Gen", alt:false, txt:"permissions from server", meta:"RBAC"},
+      {tag:"Gen", alt:false, txt:"design token · no hex", meta:"TOKENS"},
+      {tag:"Test", alt:true, txt:"axe-core: 0 violations", meta:"A11Y"},
+      {tag:"Test", alt:true, txt:"query by role / label", meta:"RTL"},
+    ]
+  },
+  overview: [
+    "Given a feature spec and an API contract, the Frontend Agent generates React components, hooks, and form-engine bindings within a single feature slice. All template-driven content renders through <strong>form-engine-core</strong>, and all theming comes from <strong>design tokens</strong> — never hardcoded colors or spacing.",
+    "It never owns authorization logic: role-gated UI consumes <strong>server-supplied permissions</strong> rather than inventing client-side rules. Every component ships with React Testing Library tests, axe-core accessibility assertions, and — for design-system components — Storybook stories."
+  ],
+  caps: [
+    ["components","Components & hooks","PascalCase components, use* hooks, typed props — within the feature slice."],
+    ["forms","Form-engine bindings","Template-driven UI rendered via form-engine-core, never hand-rolled."],
+    ["tokens","Design tokens","Colors and spacing from tokens; zero hardcoded theme values."],
+    ["rbac","Server-driven gates","Permissions consumed from the server response, not invented client-side."],
+    ["a11y","Accessibility","axe-core assertions; queries by role and label over test-ids."],
+    ["stories","Storybook","Stories for design-system components, with stable snapshots."]
+  ],
+  steps: [
+    ["Triggered","Receives a spec plus an API contract — often the contract emitted by the backend agent."],
+    ["Loads guidelines","Pulls engineering guidelines, rbac-rules, and the domain glossary."],
+    ["Builds the slice","Generates components, hooks and form-engine bindings, styled with tokens."],
+    ["Asserts quality","Writes component, a11y and (where relevant) Storybook tests."],
+    ["Hands off","Emits a diff summary; routes to reviewer and testing agents."]
+  ],
+  output: [
+    ["components",false,"Components, hooks, types."],
+    ["tests",false,"Component (RTL) + a11y (axe-core) tests."],
+    ["stories",false,"Storybook stories for design-system components."],
+    ["diff_summary",false,"PR-ready description."]
+  ],
+  escalation: [
+    ["Design-token change needed","design + architecture review"],
+    ["Global state slice addition","architecture review"],
+    ["API contract change required","coordinate with backend-agent"],
+    ["A11y issue needs design change","design"]
+  ],
+  principles: [
+    ["Tokens, not hex","Theme values come from design tokens, always."],
+    ["Server owns permissions","The client renders gates; it never invents the rules."],
+    ["Accessible by default","Zero axe-core violations is the bar, not a nice-to-have."]
+  ],
+  specs: [
+    ["Pipeline stage","03 — Implementation"],
+    ["Status","draft · spec only (no runtime adapter)"],
+    ["Tools","Read · Edit · Write · Bash · Grep · Glob"],
+    ["Write scope","apps/web/** · packages/design-tokens/** · packages/form-engine-core/** · testing/**"],
+    ["Off-limits","apps/api/** · ai/context/** · docs/adr/** · infrastructure/** · ci/**"],
+    ["Required context","engineering-guidelines · rbac-rules · domain-glossary"],
+    ["Output","components + structured report envelope"]
+  ]
+},
+
+"workflow-engine-agent": {
+  num: "04", short: "Workflow", name: "Workflow Engine Agent", cat: "implement",
+  runtime: true,
+  lede: "It changes the case state machine the way a workflow owner does — adding transitions as data, wiring every side-effect and audit event, and proving with property tests that no state is orphaned and no approval can jump the queue.",
+  meta: [["Tools","Read · Edit · Write · Bash · +2"],["Access","cases · approvals · fsm"],["Output","FSM config + tests"]],
+  specimen: {
+    file: "modules/cases/fsm.yaml (additive)",
+    code:
+`<span class="k">- name:</span> submit_for_approval
+  <span class="k">from:</span> [draft, reworking]
+  <span class="k">to:</span> submitted_for_approval
+  <span class="k">actor_roles:</span> [implementation_lead]
+  <span class="k">preconditions:</span> [all_required_present]
+  <span class="k">side_effects:</span> [ApprovalRequested]
+  <span class="k">audit_event:</span> CASE_SUBMITTED`,
+    findings: [
+      {tag:"Gen", alt:false, txt:"transition added (additive)", meta:"FSM"},
+      {tag:"Gen", alt:false, txt:"audit_event wired", meta:"AUDIT"},
+      {tag:"Test", alt:true, txt:"reachability · no orphans", meta:"PROPERTY"},
+      {tag:"Flag", alt:true, txt:"no new top-level state", meta:"OK"},
+    ]
+  },
+  overview: [
+    "The Workflow Engine Agent generates and modifies the case FSM — <strong>defined as data</strong> — along with its transition handlers, side-effect emitters, and audit subscribers. Each transition declares its allowed actor roles, composable preconditions, emitted events, and audit event.",
+    "It guards the lifecycle's invariants: every transition emits an audit event, <strong>sequential approval</strong> (issuer before client) is preserved, fields freeze at and beyond submitted_for_approval, and no new top-level state is added without an ADR. Property tests check reachability, orphan states, and version monotonicity."
+  ],
+  caps: [
+    ["config","FSM config","Transitions added as data — from/to, roles, preconditions, effects, audit."],
+    ["handlers","Transition handlers","Side-effect emitters wired to each transition."],
+    ["audit","Audit wiring","An audit subscriber for every new event."],
+    ["tests","Transition tests","Happy, invalid actor, invalid precondition, idempotency, audit assertion."],
+    ["property","Property tests","Reachability, no orphan states, version monotonicity, single-editor."],
+    ["invariants","Invariant guard","Sequential approval preserved; frozen-stage edits blocked."]
+  ],
+  steps: [
+    ["Triggered","Fires on lifecycle-touching work or an FSM-tagged PR."],
+    ["Loads the rules","Pulls workflow-rules, architecture-principles, rbac-rules, testing-guidelines."],
+    ["Edits the machine","Adds transitions and handlers additively; wires audit subscribers."],
+    ["Proves invariants","Runs property tests and the five-case matrix per transition."],
+    ["Hands off","Routes to testing, reviewer and audit-versioning agents."]
+  ],
+  output: [
+    ["fsm_config",false,"Updated FSM config (additive)."],
+    ["handlers",false,"Transition handlers + side-effect emitters."],
+    ["audit_wiring",true,"Audit subscribers for new events."],
+    ["tests",false,"Five-case matrix per transition."],
+    ["property_tests",false,"Reachability / orphan / monotonicity."],
+    ["diff_summary",false,"PR-ready description."]
+  ],
+  escalation: [
+    ["New top-level state","stop; ADR + human architect"],
+    ["Existing transition semantics changed","stop; workflow lead"],
+    ["workflow-rules.md update required","stop; ADR + architecture-agent"],
+    ["Race not solvable with optimistic locking","human design review"]
+  ],
+  principles: [
+    ["Logic is data","Transitions live in FSM config, never hardcoded."],
+    ["Every move is audited","No transition exists without an audit event."],
+    ["The queue holds","Sequential approval and single-editor invariants are never bypassed."]
+  ],
+  specs: [
+    ["Pipeline stage","04 — Implementation"],
+    ["Status","draft · runtime-wired (.claude/agents)"],
+    ["Tools","Read · Edit · Write · Bash · Grep · Glob"],
+    ["Write scope","modules/cases/** · modules/approvals/** · shared/state-machine/** · docs/workflows/** · testing/**"],
+    ["Off-limits","apps/web/** · workflow-rules.md · architecture-principles.md · docs/adr/**"],
+    ["Required context","workflow-rules · architecture-principles · rbac-rules · testing-guidelines"],
+    ["Output","FSM config + structured envelope"]
+  ]
+},
+
+"rbac-agent": {
+  num: "05", short: "RBAC", name: "RBAC Agent", cat: "implement",
+  runtime: true,
+  lede: "It treats authorization as a matrix to be covered, not a vibe — a central assertCan at every endpoint, a parameterized test for every role-action pair, and a refusal to let a single inline role check survive review.",
+  meta: [["Tools","Read · Edit · Write · Bash · +2"],["Access","rbac · interfaces · web"],["Output","authz code + matrix tests"]],
+  specimen: {
+    file: "modules/cases/interfaces/case.controller.ts",
+    code:
+`@<span class="f">Post</span>(<span class="s">":id/approve"</span>)
+<span class="f">approve</span>(@<span class="f">Param</span>(<span class="s">"id"</span>) id, @<span class="f">Actor</span>() actor) {
+  authz.<span class="f">assertCan</span>(actor, <span class="s">"case.approve"</span>, id)
+  <span class="x">// if (actor.role === "admin")  → flagged</span>
+  <span class="k">return this</span>.approveCase.<span class="f">run</span>(id, actor)
+}`,
+    findings: [
+      {tag:"Gen", alt:false, txt:"assertCan present", meta:"RBAC"},
+      {tag:"Flag", alt:false, txt:"inline role check removed", meta:"REFACTOR"},
+      {tag:"Test", alt:true, txt:"every role × action", meta:"MATRIX"},
+      {tag:"Test", alt:true, txt:"deactivated · expired", meta:"NEGATIVE"},
+    ]
+  },
+  overview: [
+    "The RBAC Agent generates and reviews authorization checks so that every state-changing endpoint calls <strong>authz.assertCan(actor, action, resource)</strong>, and the policy data in shared/rbac/policies matches the rbac-rules.md matrix exactly. It treats inline role checks as defects to be refactored out.",
+    "For each endpoint it produces a parameterized test sweep over <strong>every role-action combination</strong> plus negative cases — deactivated user, expired client/issuer, access to an unscoped resource, missing session — and verifies that frontend gates correspond to backend permissions for defense in depth."
+  ],
+  caps: [
+    ["assertCan","Central checks","assertCan at every endpoint — no inline role logic."],
+    ["matrix","Matrix coverage","Code and tests cover the full role × action × resource grid."],
+    ["negatives","Negative cases","Deactivated, expired, unscoped, no-session paths tested."],
+    ["policies","Policy sync","Policy data kept identical to the rbac-rules.md matrix."],
+    ["defense","Defense in depth","Frontend gates verified against backend permissions."],
+    ["detect","Inline-check detection","Finds if (role === …) patterns and flags them for refactor."]
+  ],
+  steps: [
+    ["Triggered","Fires on endpoint or UI-gate changes, or PRs touching modules/*/interfaces."],
+    ["Loads the matrix","Pulls rbac-rules and security-guidelines."],
+    ["Generates checks","Adds assertCan and parameterized role sweeps."],
+    ["Covers negatives","Adds deactivated / expired / unscoped / no-session tests."],
+    ["Hands off","Routes to testing, security and reviewer agents."]
+  ],
+  output: [
+    ["authz_checks",false,"One-line assertCan + import per endpoint."],
+    ["matrix_tests",true,"Parameterized role × action × resource sweep."],
+    ["negative_tests",false,"Deactivated, expired, unscoped, no-session."],
+    ["policy_updates",false,"Policy data aligned to the matrix."],
+    ["diff_summary",false,"PR-ready description."]
+  ],
+  escalation: [
+    ["New role required","stop; ADR + product + security"],
+    ["New permission category","stop; ADR + architecture + security"],
+    ["rbac-rules.md update needed","stop; ADR"],
+    ["Field-level visibility conflict","workflow-engine-agent + product"]
+  ],
+  principles: [
+    ["Central, never inline","All authorization flows through the AuthorizationService."],
+    ["Cover the whole grid","Every role-action pair is tested, including the denials."],
+    ["Trust the server","actor_id comes from the session, never the request body."]
+  ],
+  specs: [
+    ["Pipeline stage","05 — Implementation"],
+    ["Status","draft · runtime-wired (.claude/agents)"],
+    ["Tools","Read · Edit · Write · Bash · Grep · Glob"],
+    ["Write scope","shared/rbac/** · modules/*/interfaces/** · apps/web/src/** · testing/**"],
+    ["Off-limits","rbac-rules.md · docs/adr/**"],
+    ["Required context","rbac-rules · security-guidelines"],
+    ["Output","authz code + structured envelope"]
+  ]
+},
+
+"xlsx-integration-agent": {
+  num: "06", short: "XLSX", name: "XLSX Integration Agent", cat: "implement",
+  runtime: false,
+  lede: "It moves data between Smart Client and the portal the way a cautious integrations engineer would — mapping by explicit metadata, processing off the request path, and treating an already-approved value as something it is never allowed to silently overwrite.",
+  meta: [["Tools","Read · Edit · Write · Bash · +2"],["Access","xlsx · form-engine · fixtures"],["Output","parsers + sync delta"]],
+  specimen: {
+    file: "modules/xlsx/sync-delta.ts (generated)",
+    code:
+`<span class="k">function</span> <span class="f">syncDelta</span>(incoming, current) {
+  <span class="k">return</span> incoming.<span class="f">filter</span>((v) =&gt; {
+    <span class="k">const</span> existing = current[v.field]
+    <span class="k">if</span> (existing?.approved) <span class="k">return false</span> <span class="c">// never overwrite</span>
+    <span class="k">return</span> existing?.value !== v.value  <span class="c">// additive only</span>
+  })
+}`,
+    findings: [
+      {tag:"Gen", alt:false, txt:"additive-only sync", meta:"RULE"},
+      {tag:"Gen", alt:false, txt:"approved values protected", meta:"SAFE"},
+      {tag:"Test", alt:true, txt:"round-trip integrity", meta:"FIXTURE"},
+      {tag:"Test", alt:true, txt:"10k rows in budget", meta:"PERF"},
+    ]
+  },
+  overview: [
+    "The XLSX Integration Agent implements parsers, exporters, and the mapping engine that connects the portal to Smart Client. Mapping is driven entirely by <strong>explicit template metadata</strong> — never inferred — and uploads are processed asynchronously by background workers, applied atomically only after validation passes.",
+    "Its hard rule is value protection: <strong>approved values are never silently overwritten</strong> during sync. The delta is additive — add-if-missing — unless an explicit override with a reason is supplied. Tests run against real fixture files and include a 10k-row performance check."
+  ],
+  caps: [
+    ["parse","Parsers","Read Smart Client extracts into validated structures."],
+    ["export","Exporters","Emit XLSX from canonical case data."],
+    ["mapping","Mapping engine","Inbound + outbound mapping from explicit template metadata."],
+    ["delta","Sync delta","Pure additive-only delta that protects approved values."],
+    ["validate","Validation reports","Errors and warnings, with clean rejection of malformed input."],
+    ["fixtures","Fixture tests","Valid / malformed / edge cases plus a 10k-row perf test."]
+  ],
+  steps: [
+    ["Triggered","Fires on XLSX-tagged work or mapping/sync changes."],
+    ["Loads context","Pulls workflow-rules, architecture, engineering and security guidelines."],
+    ["Builds the pipeline","Generates parser, exporter, mapping engine and the delta function."],
+    ["Proves safety","Fixture tests for round-trip, malformed input, and approved-value protection."],
+    ["Hands off","Routes to testing, reviewer and audit-versioning agents."]
+  ],
+  output: [
+    ["parser",false,"Parser code."],
+    ["exporter",false,"Exporter code."],
+    ["sync_delta",true,"Pure additive-only delta function."],
+    ["validation_report",false,"Errors / warnings structure."],
+    ["tests",false,"Fixture-driven valid / malformed / edge + perf."],
+    ["diff_summary",false,"PR-ready description."]
+  ],
+  escalation: [
+    ["Smart Client extract format changes","product + architecture review"],
+    ["Sync behavior change proposed","ADR"],
+    ["Performance issue with large files","architecture (worker design)"],
+    ["Mapping conflict not resolvable by metadata","template redesign"]
+  ],
+  principles: [
+    ["Approved means protected","A sync never silently overwrites an approved value."],
+    ["Map by metadata","Field mapping is explicit — never a best guess."],
+    ["Off the request path","Large files are processed asynchronously, applied atomically."]
+  ],
+  specs: [
+    ["Pipeline stage","06 — Implementation"],
+    ["Status","draft · spec only (no runtime adapter)"],
+    ["Tools","Read · Edit · Write · Bash · Grep · Glob"],
+    ["Write scope","modules/xlsx/** · packages/form-engine-core/** · testing/fixtures/xlsx/** · testing/**"],
+    ["Off-limits","ai/context/** · docs/adr/**"],
+    ["Required context","workflow-rules · architecture · engineering · security guidelines"],
+    ["Output","parsers/exporters + structured envelope"]
+  ]
+},
+
+"testing-agent": {
+  num: "07", short: "Testing", name: "Testing Agent", cat: "verify",
+  runtime: false,
+  lede: "It owns the test suite and nothing else — finding the branches no one covered, writing the concurrency and negative cases, running the suite, and blocking the merge when coverage slips rather than quietly lowering the floor.",
+  meta: [["Tools","Read · Edit · Write · Bash · +2"],["Access","test files only"],["Output","tests + coverage Δ"]],
+  specimen: {
+    file: "modules/cases/submit-case.spec.ts (generated)",
+    code:
+`<span class="f">it</span>(<span class="s">"rejects submit when actor lacks role"</span>, …)
+<span class="f">it</span>(<span class="s">"is idempotent on duplicate submit"</span>, …)
+<span class="f">it</span>(<span class="s">"emits CASE_SUBMITTED audit row"</span>, …)
+<span class="c">// coverage: cases 84.1% → 86.7%  (+2.6)</span>
+<span class="c">// ⚠ untested branch: rework loop guard</span>`,
+    findings: [
+      {tag:"Gen", alt:false, txt:"negative + concurrency cases", meta:"TESTS"},
+      {tag:"Gen", alt:false, txt:"coverage Δ +2.6%", meta:"COVERAGE"},
+      {tag:"Flag", alt:true, txt:"1 untested branch", meta:"MEDIUM"},
+      {tag:"Flag", alt:true, txt:"untestable → escalate", meta:"HANDOFF"},
+    ]
+  },
+  overview: [
+    "The Testing Agent identifies missing coverage for a diff and generates the unit, integration, and concurrency tests to close it — including the <strong>FSM transition matrix</strong> and the per-endpoint <strong>RBAC sweep</strong>. It modifies only test files and fixtures; it never touches production code.",
+    "It runs the suite, computes the coverage delta, and reports untested branches with severity. If coverage drops past the threshold it <strong>blocks for human review</strong>, and if a scenario can't be tested because the production code is untestable, it escalates to the relevant generator agent rather than working around it."
+  ],
+  caps: [
+    ["gaps","Coverage gaps","Finds untested branches in the diff and rates them by severity."],
+    ["generate","Test generation","Unit, integration, and concurrency tests."],
+    ["fsm","FSM coverage","Ensures each transition has happy + negative + idempotency + audit tests."],
+    ["rbac","RBAC sweep","Per-endpoint role × action coverage tests."],
+    ["run","Suite run","Executes tests and reports pass/fail counts and durations."],
+    ["delta","Coverage delta","Current vs target, per touched module."]
+  ],
+  steps: [
+    ["Triggered","Runs post-implementation in the agent pipeline, or on request."],
+    ["Loads guidelines","Pulls testing-guidelines, workflow-rules and rbac-rules."],
+    ["Finds the gaps","Diffs coverage against the change and the FSM / RBAC matrices."],
+    ["Writes & runs","Generates tests with factories, runs the suite, computes the delta."],
+    ["Hands off","Routes to the reviewer agent; escalates untestable code upstream."]
+  ],
+  output: [
+    ["test_files",false,"New / modified test files."],
+    ["coverage_delta",true,"Per-module current vs target."],
+    ["untested_branches",false,"List with severity."],
+    ["run_summary",false,"Pass/fail counts and durations."]
+  ],
+  escalation: [
+    ["Coverage drops past threshold","block; human review"],
+    ["Production code must change to pass","hand off to the generator agent"],
+    ["Production bug found while testing","file a separate issue; never silently fix"]
+  ],
+  principles: [
+    ["Tests only","Never edits production code to make a test pass."],
+    ["The floor holds","Coverage thresholds are never lowered to go green."],
+    ["Name the behavior","it('[behavior] when [condition]') — factories over inline literals."]
+  ],
+  specs: [
+    ["Pipeline stage","07 — Verification"],
+    ["Status","draft · spec only (no runtime adapter)"],
+    ["Tools","Read · Edit · Write · Bash · Grep · Glob"],
+    ["Write scope","apps/**/tests/** · *.test.* · *.spec.* · testing/**"],
+    ["Off-limits","apps/api/src/** · apps/web/src/** · ai/context/** · docs/adr/** · infrastructure/**"],
+    ["Required context","testing-guidelines · workflow-rules · rbac-rules"],
+    ["Output","tests + structured envelope"]
+  ]
+},
+
+"reviewer-agent": {
+  num: "08", short: "Reviewer", name: "Reviewer Agent", cat: "review",
+  runtime: true,
+  lede: "It reads a pull request the way a senior reviewer with an adversarial streak does — twelve checklist items, every finding tied to severity and a fix, and a hard rule that a CRITICAL blocks the merge no matter how nice the rest of the diff looks.",
+  meta: [["Tools","Read · Grep · Glob · Bash"],["Access","all paths (read-only)"],["Output","findings envelope (JSON)"]],
+  specimen: {
+    file: "PR #482 · cases: add bulk-approve → review",
+    code:
+`<span class="k">+ async function</span> <span class="f">bulkApprove</span>(ids, actor) {
+<span class="k">+</span>   <span class="k">for</span> (<span class="k">const</span> id <span class="k">of</span> ids)
+<span class="k">+</span>     <span class="k">await</span> <span class="f">approve</span>(id, actor)   <span class="x">// no authz per item</span>
+<span class="k">+</span> }                            <span class="x">// no audit emission</span>`,
+    findings: [
+      {tag:"Finding", alt:false, txt:"missing authz on bulk path", meta:"CRITICAL"},
+      {tag:"Finding", alt:false, txt:"no audit event emitted", meta:"HIGH"},
+      {tag:"Finding", alt:true, txt:"no negative-path test", meta:"MEDIUM"},
+      {tag:"Verdict", alt:true, txt:"block", meta:"VERDICT"},
+    ]
+  },
+  overview: [
+    "The Reviewer Agent runs a <strong>read-only</strong> pass over a PR diff against a twelve-point engineering checklist — naming, forbidden patterns, error handling, transaction boundaries, RBAC, audit, test coverage, dead code, the 'why' in the description, ADR presence, coverage delta, and type discipline.",
+    "It is <strong>adversarial by design and never rubber-stamps</strong>. Findings are severity-tagged with a rationale and a concrete suggestion, capped at thirty and prioritized. The verdict mapping is fixed: any CRITICAL blocks, an un-waivered HIGH requests changes, otherwise it approves — and confidence below 0.60 sets the escalation flag."
+  ],
+  caps: [
+    ["checklist","12-point checklist","From naming to type discipline, reviewed on every PR."],
+    ["forbidden","Forbidden patterns","God classes, anemic models, inline RBAC, magic strings, sync notifications."],
+    ["severity","Severity findings","Each finding tagged, with rationale and an actionable suggestion."],
+    ["verdict","Fixed verdict","CRITICAL → block · HIGH → request changes · else approve."],
+    ["coverage","Checklist coverage","Per-item pass / fail / n_a, reported in the envelope."],
+    ["escalate","Escalation","Confidence < 0.60 flags and blocks; ADR gaps route to architecture."]
+  ],
+  steps: [
+    ["Triggered","Fires on PR open via the CI hook."],
+    ["Loads the rules","Pulls engineering, architecture, workflow and rbac context plus the severity & output standards."],
+    ["Walks the checklist","Reviews all twelve items against the diff, read-only."],
+    ["Tallies severity","Counts findings; severity_counts must equal the tally."],
+    ["Posts the verdict","Comments the structured envelope; CRITICAL/HIGH set CI status."]
+  ],
+  output: [
+    ["verdict",true,"approve | request_changes | block."],
+    ["findings",true,"severity · category · file · line · issue · rationale · suggestion."],
+    ["severity_counts",false,"critical / high / medium / low tallies."],
+    ["checklist_coverage",false,"Per-item pass / fail / n_a."],
+    ["confidence_score",false,"0–1; below 0.60 escalates."]
+  ],
+  escalation: [
+    ["Any CRITICAL finding","human approval to merge"],
+    ["Any un-waivered HIGH finding","human approval to merge"],
+    ["ADR-relevant change without ADR","invoke architecture-agent"],
+    ["confidence_score < 0.60","escalation_flag; block merge"]
+  ],
+  principles: [
+    ["Never rubber-stamp","Findings aren't suppressed to be helpful."],
+    ["Read-only","It reports; it never edits code or auto-merges."],
+    ["Severity is the gate","A single CRITICAL blocks, regardless of the rest."]
+  ],
+  specs: [
+    ["Pipeline stage","08 — Review"],
+    ["Status","draft · runtime-wired (.claude/agents)"],
+    ["Tools","Read · Grep · Glob · Bash"],
+    ["Write scope","none — read-only (write-allowed: false)"],
+    ["Scope","all paths (read)"],
+    ["Required context","engineering · architecture · workflow · rbac · severity-vocabulary · agent-output-contract"],
+    ["Output","agent-output-contract envelope (JSON)"]
+  ]
+},
+
+"security-agent": {
+  num: "09", short: "Security", name: "Security Agent", cat: "review",
+  runtime: true,
+  lede: "It reviews the parts of the diff that can hurt you — auth, uploads, state changes, secrets, audit — maps what it finds to the OWASP Top 10, and blocks on a CRITICAL or HIGH until a human on the security side signs off.",
+  meta: [["Tools","Read · Grep · Glob"],["Access","sensitive paths (read-only)"],["Output","OWASP findings (JSON)"]],
+  specimen: {
+    file: "modules/users/reset-password.ts → scan",
+    code:
+`<span class="k">const</span> token = req.query.token         <span class="x">// token in URL</span>
+<span class="k">const</span> user = <span class="k">await</span> <span class="f">findByEmail</span>(body.email)
+user.password = body.password         <span class="x">// not hashed</span>
+logger.<span class="f">info</span>(<span class="s">"reset"</span>, { email: body.email }) <span class="x">// PII</span>`,
+    findings: [
+      {tag:"Finding", alt:false, txt:"password stored unhashed", meta:"A02 · CRITICAL"},
+      {tag:"Finding", alt:false, txt:"secret/token in URL", meta:"A02 · HIGH"},
+      {tag:"Finding", alt:true, txt:"PII (email) in log", meta:"A09 · HIGH"},
+      {tag:"Verdict", alt:true, txt:"block", meta:"VERDICT"},
+    ]
+  },
+  overview: [
+    "The Security Agent runs a focused, <strong>read-only</strong> review whenever a PR touches sensitive paths — auth, users, xlsx, rbac, approvals, audit, or any .env file. It works through a fourteen-point checklist and maps each finding to an <strong>OWASP Top 10</strong> category.",
+    "Coverage spans input validation, injection vectors, defense-in-depth RBAC, audit emission, secret and PII handling, token hygiene, upload validation, CSRF, password hashing, mass-assignment, idempotency, and optimistic locking. <strong>Any CRITICAL or HIGH finding blocks the merge</strong> until a human security review acknowledges it."
+  ],
+  caps: [
+    ["trigger","Path-triggered","Activates on auth, users, xlsx, rbac, approvals, audit and .env changes."],
+    ["owasp","OWASP mapping","Every finding tagged to an OWASP Top 10 category."],
+    ["tokens","Token & secret hygiene","Signed, short-lived, single-use tokens; no secrets in logs or URLs."],
+    ["injection","Injection & validation","Schema-first input validation; parameterized queries."],
+    ["uploads","Upload safety","Type, size, content sniffing and sanitization."],
+    ["authn","Authn & mass-assignment","Argon2id/bcrypt, session invalidation, DTO allowlists."]
+  ],
+  steps: [
+    ["Triggered","Path heuristic on PR open via the CI hook."],
+    ["Loads the rules","Pulls security-guidelines, rbac-rules and the standards docs."],
+    ["Walks the checklist","Reviews all fourteen items over the sensitive diff, read-only."],
+    ["Maps to OWASP","Tags findings and tallies severity_counts."],
+    ["Blocks or clears","CRITICAL/HIGH block until human security review acks."]
+  ],
+  output: [
+    ["verdict",true,"approve | request_changes | block."],
+    ["findings",true,"severity · owasp_category · file · line · issue · rationale · suggested_fix."],
+    ["severity_counts",false,"critical / high / medium / low tallies."],
+    ["checklist_coverage",false,"Per-item pass / fail / n_a."],
+    ["confidence_score",false,"0–1; below 0.60 escalates."]
+  ],
+  escalation: [
+    ["Any CRITICAL or HIGH finding","block; mandatory human security review"],
+    ["confidence_score < 0.60","escalation_flag; block merge"],
+    ["Findings in authn/authz core","security lead"],
+    ["Systemic pattern across endpoints","architecture/security joint review"]
+  ],
+  principles: [
+    ["Assume hostile input","Every public entry is validated, schema-first."],
+    ["Secrets stay secret","No PII or secrets in logs; no tokens in URLs."],
+    ["Block, don't warn","A CRITICAL or HIGH stops the merge — not a comment."]
+  ],
+  specs: [
+    ["Pipeline stage","09 — Review"],
+    ["Status","draft · runtime-wired (.claude/agents)"],
+    ["Tools","Read · Grep · Glob"],
+    ["Write scope","none — read-only (write-allowed: false)"],
+    ["Trigger paths","auth · users · xlsx · rbac · approvals · audit · **/*.env*"],
+    ["Required context","security-guidelines · rbac-rules · severity-vocabulary · agent-output-contract"],
+    ["Output","agent-output-contract envelope (JSON)"]
+  ]
+},
+
+"audit-versioning-agent": {
+  num: "10", short: "Audit", name: "Audit / Versioning Agent", cat: "verify",
+  runtime: false,
+  lede: "It makes sure history can't be rewritten — every state change paired with an audit record, every published version and snapshot immutable, and the append-only invariant defended at the database, not just in code.",
+  meta: [["Tools","Read · Edit · Write · Bash · +2"],["Access","audit · events · cases"],["Output","audit-coverage report"]],
+  specimen: {
+    file: "modules/audit/completeness.check.ts",
+    code:
+`<span class="k">for</span> (<span class="k">const</span> op <span class="k">of</span> <span class="f">stateChangingOps</span>(diff)) {
+  <span class="k">if</span> (!<span class="f">auditEvent</span>(op))
+    <span class="f">flag</span>(op, <span class="s">"MISSING_AUDIT"</span>)  <span class="x">// blocks merge</span>
+}
+<span class="f">assert</span>(auditTable.grants === <span class="s">"INSERT"</span>) <span class="c">// append-only</span>`,
+    findings: [
+      {tag:"Gen", alt:false, txt:"subscriber wired for event", meta:"AUDIT"},
+      {tag:"Flag", alt:false, txt:"1 op missing audit", meta:"BLOCK"},
+      {tag:"Gen", alt:true, txt:"append-only constraint", meta:"IMMUTABLE"},
+      {tag:"Gen", alt:true, txt:"no PII in audit row", meta:"SAFE"},
+    ]
+  },
+  overview: [
+    "The Audit / Versioning Agent verifies that <strong>every state-changing operation emits both a domain event and an audit record</strong>, and wires the audit subscribers for any new events. It runs completeness checks over a diff and treats a missing audit emission as a blocking gap.",
+    "It defends immutability across the audit log, published template versions, and case/approval/final snapshots — <strong>INSERT-only</strong> for the app role, no mutation of published versions — and verifies hash-chain integrity where enabled. Audit records never store PII or secrets."
+  ],
+  caps: [
+    ["completeness","Completeness checks","Maps each state-changing op in a diff to a required audit event."],
+    ["subscribers","Subscriber wiring","Wires an audit subscriber for every new domain event."],
+    ["immutability","Immutability guard","Append-only audit log; published versions and snapshots frozen."],
+    ["hashchain","Hash-chain integrity","Verifies the chain by property test where enabled."],
+    ["pii","PII safety","Ensures no PII or secrets land in audit records."],
+    ["tests","Audit tests","Assert an audit row after each state change."]
+  ],
+  steps: [
+    ["Triggered","Runs post-implementation, after backend or workflow-engine agents."],
+    ["Loads context","Pulls architecture-principles, security-guidelines and workflow-rules."],
+    ["Scans the diff","Identifies every state-changing operation."],
+    ["Matches & wires","Maps each to an audit event; wires missing subscribers and tests."],
+    ["Hands off","Routes to the reviewer agent with an audit-coverage delta."]
+  ],
+  output: [
+    ["state_changes",false,"State-changing operations found in the diff."],
+    ["audit_mapping",true,"Each op's audit event + subscriber status."],
+    ["wiring",false,"Code for missing subscribers."],
+    ["tests",false,"Audit-emission assertions."],
+    ["coverage_delta",false,"Audit-coverage delta + diff summary."]
+  ],
+  escalation: [
+    ["New audit event type","architecture + security (registry must approve)"],
+    ["Change weakens immutability","security review"],
+    ["Hash-chain break detected","incident response"]
+  ],
+  principles: [
+    ["History is append-only","Audit rows are never updated or deleted."],
+    ["Published is frozen","Template versions and snapshots are immutable."],
+    ["No secrets in the ledger","Audit records carry no PII or secrets."]
+  ],
+  specs: [
+    ["Pipeline stage","10 — Verification"],
+    ["Status","draft · spec only (no runtime adapter)"],
+    ["Tools","Read · Edit · Write · Bash · Grep · Glob"],
+    ["Write scope","modules/audit/** · shared/events/** · modules/cases/** · modules/approvals/** · testing/**"],
+    ["Off-limits","ai/context/** · docs/adr/**"],
+    ["Required context","architecture-principles · security-guidelines · workflow-rules"],
+    ["Output","audit-coverage report + envelope"]
+  ]
+},
+
+"documentation-agent": {
+  num: "11", short: "Docs", name: "Documentation Agent", cat: "docs",
+  runtime: false,
+  lede: "It keeps the docs honest after the code moves — refreshing domain docs, READMEs and runbooks, growing the glossary as new terms appear, and staying firmly away from the ADRs and core context files it isn't allowed to touch.",
+  meta: [["Tools","Read · Edit · Write · Grep · Glob"],["Access","docs · glossary · READMEs"],["Output","doc diffs + glossary"]],
+  specimen: {
+    file: "docs/domain/cases.md → post-merge update",
+    code:
+`<span class="c">## Bulk approval</span>
+<span class="k">+</span> A lead can approve multiple cases in
+<span class="k">+</span> one action. Each emits CASE_APPROVED.
+glossary += <span class="s">"Bulk Approval"</span>  <span class="c">// new term</span>
+<span class="x"># ADR-worthy? → flag for architecture</span>`,
+    findings: [
+      {tag:"Gen", alt:false, txt:"domain doc updated", meta:"DOCS"},
+      {tag:"Gen", alt:false, txt:"glossary term added", meta:"GLOSSARY"},
+      {tag:"Flag", alt:true, txt:"no synonym collision", meta:"OK"},
+      {tag:"Flag", alt:true, txt:"ADR-worthy → architecture", meta:"HANDOFF"},
+    ]
+  },
+  overview: [
+    "The Documentation Agent updates documentation after a change merges — <strong>domain docs, module READMEs, runbook drafts, and API-reference snippets</strong> from code annotations. It maintains the domain glossary, adding new terms introduced in code and flagging duplicates or synonyms.",
+    "It deliberately stays out of two areas: it never edits ADRs (those are the architecture agent's to supersede) and never touches the <strong>core context files</strong> — architecture-principles, workflow-rules, rbac-rules. ADR-worthy changes are flagged and routed rather than written."
+  ],
+  caps: [
+    ["domain","Domain docs","Updates docs/domain and docs/workflows to match merged behavior."],
+    ["glossary","Glossary upkeep","Adds new terms; flags synonyms and collisions."],
+    ["readme","READMEs","Reflects new modules and features on touched READMEs."],
+    ["runbooks","Runbook drafts","Drafts entries when new operational scenarios appear."],
+    ["apiref","API references","Generates snippets from code annotations."],
+    ["flag","ADR routing","Flags ADR-worthy changes for the architecture agent."]
+  ],
+  steps: [
+    ["Triggered","Fires post-merge, or on an explicit request to update a doc."],
+    ["Loads context","Pulls the domain glossary and project-context."],
+    ["Syncs the docs","Updates domain docs, READMEs and runbook drafts."],
+    ["Tends the glossary","Adds new terms; checks uniqueness and link integrity."],
+    ["Routes the rest","Flags ADR-worthy changes; a reviewer pass checks accuracy."]
+  ],
+  output: [
+    ["doc_diffs",false,"Updated documentation."],
+    ["glossary",true,"Additions and refinements."],
+    ["runbooks",false,"Drafted operational entries."],
+    ["readme",false,"README updates on touched modules."]
+  ],
+  escalation: [
+    ["ADR-worthy change","architecture-agent"],
+    ["Glossary term collision (synonym)","glossary owner"],
+    ["Needs an authoritative source that doesn't exist","ask a human"]
+  ],
+  principles: [
+    ["Docs follow code","Documentation is updated to match what merged."],
+    ["One term, one meaning","Glossary uniqueness is preserved — no synonyms."],
+    ["Stay in lane","No ADR edits, no core context-file changes."]
+  ],
+  specs: [
+    ["Pipeline stage","11 — Documentation"],
+    ["Status","draft · spec only (the documentation skill is runtime-wired)"],
+    ["Tools","Read · Edit · Write · Grep · Glob"],
+    ["Write scope","docs/** · domain-glossary.md · **/README.md"],
+    ["Off-limits","apps/** · packages/** · architecture-principles.md · workflow-rules.md · rbac-rules.md · docs/adr/**"],
+    ["Required context","domain-glossary · project-context"],
+    ["Output","doc diffs + structured envelope"]
+  ]
+},
+
+};
+
+/* ---------- rendering ---------- */
+function rgba(hex, a){
+  const n = parseInt(hex.slice(1), 16);
+  return "rgba(" + ((n>>16)&255) + "," + ((n>>8)&255) + "," + (n&255) + "," + a + ")";
+}
+function applyAccent(cat){
+  const c = CATS[cat], r = document.documentElement.style;
+  r.setProperty("--accent", c.accent);
+  r.setProperty("--accent-2", c.accent2);
+  r.setProperty("--accent-dim", rgba(c.accent, .13));
+  r.setProperty("--accent-line", rgba(c.accent, .30));
+  r.setProperty("--glow", rgba(c.accent, .06));
+}
+
+function buildSwitcher(active){
+  const el = document.getElementById("switcher");
+  const ai = ORDER.indexOf(active);
+  let html = "";
+  ORDER.forEach((slug, i) => {
+    const a = AGENTS[slug];
+    const cls = slug === active ? "stage active" : (i < ai ? "stage done" : "stage");
+    html += '<button class="' + cls + '" data-slug="' + slug + '">' +
+            '<span class="s-n">' + a.num + '</span> ' + a.short + '</button>';
+    if (i < ORDER.length - 1) html += '<span class="arr">▸</span>';
+  });
+  el.innerHTML = html;
+  el.querySelectorAll(".stage").forEach(b =>
+    b.addEventListener("click", () => show(b.dataset.slug)));
+}
+
+function render(slug){
+  const a = AGENTS[slug];
+  const cat = CATS[a.cat];
+
+  const meta = a.meta.map(m => '<span>' + m[0] + '&nbsp; <b>' + m[1] + '</b></span>').join("");
+  const findings = a.specimen.findings.map(f =>
+    '<div class="finding"><span class="tag' + (f.alt ? ' alt' : '') + '">' + f.tag +
+    '</span><span class="txt">' + f.txt + '</span><span class="meta">' + f.meta + '</span></div>').join("");
+  const overview = a.overview.map(p => '<p>' + p + '</p>').join("");
+  const caps = a.caps.map(c =>
+    '<div class="cap"><span class="cap-id">/ ' + c[0] + '</span><h3>' + c[1] + '</h3><p>' + c[2] + '</p></div>').join("");
+  const steps = a.steps.map((s, i) =>
+    '<div class="step"><div class="st-n">' + String(i+1).padStart(2,"0") +
+    '</div><div><h3>' + s[0] + '</h3><p>' + s[1] + '</p></div></div>').join("");
+  const fields = a.output.map(o =>
+    '<div class="field"><span class="fname">' + (o[1] ? '<span class="br">' + o[0] + '</span>' : o[0]) +
+    '</span><span class="fdesc">' + o[2] + '</span></div>').join("");
+  const esc = a.escalation.map(e =>
+    '<div class="esc-row">' + e[0] + ' <span class="to">→ ' + e[1] + '</span></div>').join("");
+  const principles = a.principles.map(p =>
+    '<div class="principle"><h3>' + p[0] + '</h3><p>' + p[1] + '</p></div>').join("");
+  const specs = a.specs.map(s =>
+    '<div class="spec-row"><dt>' + s[0] + '</dt><dd>' + s[1] + '</dd></div>').join("");
+
+  const ni = (ORDER.indexOf(slug) + 1) % ORDER.length;
+  const nextSlug = ORDER[ni];
+  const next = AGENTS[nextSlug];
+  const nextLabel = ni === 0 ? "Back to start ▸" : "Next in the pipeline";
+
+  const runtimePill = a.runtime
+    ? '<span class="pill accent">runtime-wired</span>'
+    : '<span class="pill">spec only</span>';
+
+  document.getElementById("app").innerHTML =
+  '<section class="hero fade"><div class="wrap hero-grid"><div>' +
+    '<p class="eyebrow">Pipeline Stage ' + a.num + ' · ' + cat.label + '</p>' +
+    '<h1>' + a.name + '</h1>' +
+    '<div class="hero-status"><span class="pill">draft</span>' + runtimePill +
+      '<span class="pill accent">' + cat.label + '</span></div>' +
+    '<p class="lede">' + a.lede + '</p>' +
+    '<div class="hero-meta">' + meta + '</div>' +
+  '</div>' +
+    '<div class="scanner" aria-hidden="true"><div class="scanner-head">' +
+      '<span class="tl"><i></i><i></i><i></i></span>' + a.specimen.file + '</div>' +
+      '<div class="scan-body"><div class="scanline"></div><pre class="code">' + a.specimen.code + '</pre></div>' +
+      '<div class="findings">' + findings + '</div>' +
+    '</div>' +
+  '</div></section>' +
+
+  '<section class="section" id="what"><div class="wrap">' +
+    '<div class="section-head"><p class="eyebrow">Overview</p><h2>What it does</h2></div>' +
+    '<div class="prose">' + overview + '</div></div></section>' +
+
+  '<section class="section" id="caps"><div class="wrap">' +
+    '<div class="section-head"><p class="eyebrow">Capabilities</p><h2>What it produces</h2></div>' +
+    '<div class="cap-grid">' + caps + '</div></div></section>' +
+
+  '<section class="section" id="how"><div class="wrap">' +
+    '<div class="section-head"><p class="eyebrow">Mechanics</p><h2>How it works</h2>' +
+    '<p>From trigger to hand-off, in a fresh isolated context window.</p></div>' +
+    '<div class="steps">' + steps + '</div></div></section>' +
+
+  '<section class="section" id="output"><div class="wrap">' +
+    '<div class="section-head"><p class="eyebrow">Deliverable</p><h2>The output</h2>' +
+    '<p>Returned as the standard structured envelope; key fields below.</p></div>' +
+    '<div class="schema">' + fields + '</div>' +
+    '<div class="conf"><div class="meter">' +
+      '<span class="seg on"></span><span class="seg on"></span><span class="seg on"></span>' +
+      '<span class="seg on"></span><span class="seg on"></span><span class="seg on"></span>' +
+      '<span class="seg"></span><span class="seg"></span><span class="seg"></span><span class="seg"></span></div>' +
+      '<span class="conf-txt">Quality gate &mdash; <b>confidence_score &lt; 0.60</b> sets escalation_flag and pauses for human review.</span>' +
+    '</div></div></section>' +
+
+  '<section class="section"><div class="wrap">' +
+    '<div class="section-head"><p class="eyebrow">Guardrails</p><h2>Escalation triggers</h2>' +
+    '<p>When it stops and hands a decision to a human, instead of proceeding.</p></div>' +
+    '<div class="esc-list">' + esc + '</div>' +
+    '<p class="esc-note">Plus the <b>universal rules</b> every agent obeys: pause on any change to <code>docs/adr/</code>, ' +
+    '<code>architecture-principles.md</code> or <code>rbac-rules.md</code>; a new FSM state or audit-event type; ' +
+    'schema migrations, <code>infrastructure/</code> or <code>ci/</code>; a diff over ~500 lines; any CRITICAL/HIGH finding; ' +
+    'or a coverage drop past threshold.</p></div></section>' +
+
+  '<section class="section"><div class="wrap">' +
+    '<div class="section-head"><p class="eyebrow">Operating principles</p><h2>The rules it works by</h2></div>' +
+    '<div class="principles">' + principles + '</div></div></section>' +
+
+  '<section class="section" id="specs"><div class="wrap">' +
+    '<div class="section-head"><p class="eyebrow">Technical specifications</p><h2>At a glance</h2></div>' +
+    '<dl class="specs">' + specs + '</dl></div></section>' +
+
+  '<section class="next"><div class="wrap"><div class="next-card">' +
+    '<div class="nx-l"><span class="label">' + nextLabel + '</span>' +
+    '<h3>' + next.name + ' →</h3></div>' +
+    '<button class="go" data-slug="' + nextSlug + '">Stage ' + next.num + '</button>' +
+  '</div></div></section>';
+
+  document.querySelector(".next-card .go").addEventListener("click", e => show(e.target.dataset.slug));
+  document.getElementById("foot-pos").textContent = "Agent " + a.num + " / 11";
+}
+
+function show(slug){
+  if (!AGENTS[slug]) slug = ORDER[0];
+  applyAccent(AGENTS[slug].cat);
+  buildSwitcher(slug);
+  render(slug);
+  if (location.hash.slice(1) !== slug) history.replaceState(null, "", "#" + slug);
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+window.addEventListener("hashchange", () => show(location.hash.slice(1)));
+show(location.hash.slice(1) || ORDER[0]);
+</script>
+
+</body>
+</html>

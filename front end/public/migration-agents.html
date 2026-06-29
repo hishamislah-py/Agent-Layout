@@ -1,0 +1,1149 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Send2 Migration · Agent Catalog</title>
+<meta name="description" content="Detailed reference for every agent in the Send2 equivalence-first migration pipeline — 26 specialized agents across 8 phases.">
+<style>
+  :root {
+    --ink:        #0B0B0D;
+    --ink-2:      #111218;
+    --surface:    #15171F;
+    --surface-2:  #1B1E27;
+    --line:       #2B2E38;
+    --line-soft:  #20222B;
+    --text:       #E7E3D6;
+    --muted:      #A6A296;
+    --faint:      #6E6A5E;
+    --accent:     #F5C010;
+    --accent-2:   #FFD43B;
+    --accent-dim: rgba(245,192,16,.13);
+    --accent-line:rgba(245,192,16,.30);
+    --green:      #88c9a1;
+    --green-dim:  rgba(136,201,161,.12);
+    --green-line: rgba(136,201,161,.30);
+
+    --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+    --font-mono: ui-monospace, "SF Mono", "JetBrains Mono", "Menlo", "Consolas", monospace;
+
+    --maxw: 1060px;
+    --step: clamp(2.4rem, 6vw, 4.5rem);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background:
+      radial-gradient(120% 80% at 80% -10%, rgba(245,192,16,.07), transparent 55%),
+      var(--ink);
+    color: var(--text);
+    font-family: var(--font-sans);
+    font-size: 17px; line-height: 1.6;
+    -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
+  }
+  ::selection { background: var(--accent-dim); color: var(--accent-2); }
+  .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 24px; }
+  a { color: var(--accent-2); text-decoration: none; }
+  a:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+  .eyebrow { font-family: var(--font-mono); font-size: .72rem; letter-spacing: .22em; text-transform: uppercase; color: var(--accent); margin: 0; }
+  .label { font-family: var(--font-mono); font-size: .68rem; letter-spacing: .18em; text-transform: uppercase; color: var(--faint); }
+  h1, h2, h3 { text-wrap: balance; font-weight: 650; letter-spacing: -.02em; line-height: 1.1; }
+  .mono { font-family: var(--font-mono); }
+
+  /* ===== top bar ===== */
+  .topbar { border-bottom: 1px solid var(--line-soft); position: sticky; top: 0; z-index: 30; background: rgba(11,11,13,.82); backdrop-filter: blur(10px); }
+  .topbar .wrap { display: flex; align-items: center; justify-content: space-between; height: 56px; }
+  .brand { display: flex; align-items: center; gap: 10px; font-family: var(--font-mono); font-size: .8rem; letter-spacing: .04em; color: var(--muted); }
+  .brand b { color: var(--text); font-weight: 600; }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 10px var(--accent); }
+  .topbar nav { display: flex; gap: 22px; }
+  .topbar nav a { color: var(--muted); font-family: var(--font-mono); font-size: .74rem; letter-spacing: .04em; }
+  .topbar nav a:hover { color: var(--text); text-decoration: none; }
+  @media (max-width: 720px){ .topbar nav { display: none; } }
+
+  /* ===== phase strip ===== */
+  .pipeline { border-bottom: 1px solid var(--line-soft); background: var(--ink-2); position: sticky; top: 56px; z-index: 25; }
+  .pipeline .wrap { display: flex; align-items: center; gap: 6px; overflow-x: auto; padding-top: 12px; padding-bottom: 12px; scrollbar-width: none; }
+  .pipeline .wrap::-webkit-scrollbar { display: none; }
+  .stage { display: inline-flex; align-items: baseline; gap: 8px; white-space: nowrap; font-family: var(--font-mono); font-size: .76rem; color: var(--faint); padding: 5px 11px; border-radius: 999px; border: 1px solid transparent; }
+  .stage .s-n { font-size: .66rem; opacity: .8; }
+  .stage:hover { color: var(--text); border-color: var(--accent-line); background: var(--accent-dim); }
+  .stage:hover .s-n { color: var(--accent); opacity: 1; }
+  .arr { color: var(--line); font-family: var(--font-mono); }
+
+  /* ===== hero ===== */
+  .hero { padding: var(--step) 0 calc(var(--step) * .65); }
+  .hero-grid { display: grid; grid-template-columns: 1.05fr .95fr; gap: 48px; align-items: center; }
+  @media (max-width: 880px){ .hero-grid { grid-template-columns: 1fr; gap: 36px; } }
+  .hero h1 { font-size: clamp(2.4rem, 6vw, 4rem); margin: 16px 0 0; }
+  .hero .lede { color: var(--muted); font-size: 1.1rem; max-width: 48ch; margin: 20px 0 0; }
+  .hero-meta { display: flex; flex-wrap: wrap; gap: 10px 26px; margin-top: 28px; font-family: var(--font-mono); font-size: .76rem; color: var(--muted); }
+  .hero-meta span b { color: var(--text); font-weight: 600; }
+
+  .scanner { position: relative; border: 1px solid var(--line); border-radius: 10px; background: linear-gradient(180deg, var(--surface), var(--ink-2)); overflow: hidden; box-shadow: 0 24px 60px -30px rgba(0,0,0,.8); }
+  .scanner-head { display: flex; align-items: center; gap: 8px; padding: 11px 14px; border-bottom: 1px solid var(--line-soft); font-family: var(--font-mono); font-size: .72rem; color: var(--faint); }
+  .tl { display: flex; gap: 6px; margin-right: 6px; }
+  .tl i { width: 9px; height: 9px; border-radius: 50%; background: var(--line); display: block; }
+  .scan-body { position: relative; }
+  pre.code { margin: 0; padding: 18px; font-family: var(--font-mono); font-size: .76rem; line-height: 1.7; color: #aeb9c5; overflow-x: auto; tab-size: 2; }
+  pre.code .k { color: #ffcf6a; } pre.code .s { color: #88c9a1; } pre.code .c { color: #56616e; font-style: italic; } pre.code .f { color: #e4d290; } pre.code .n { color: #d8a0d8; }
+  .scanline { position: absolute; left: 0; right: 0; top: 0; height: 38px; background: linear-gradient(180deg, transparent, rgba(245,192,16,.16) 70%, var(--accent-line)); border-bottom: 1px solid var(--accent); box-shadow: 0 0 22px 2px rgba(245,192,16,.25); pointer-events: none; animation: sweep 5.4s cubic-bezier(.6,0,.4,1) infinite; }
+  @keyframes sweep { 0%{transform:translateY(-40px);opacity:0;} 8%{opacity:1;} 72%{opacity:1;} 85%{transform:translateY(300px);opacity:0;} 100%{transform:translateY(300px);opacity:0;} }
+  @media (prefers-reduced-motion: reduce){ .scanline{ animation:none; opacity:.9; top:110px; } }
+
+  /* ===== generic section ===== */
+  .section { padding: calc(var(--step) * .7) 0; border-top: 1px solid var(--line-soft); }
+  .section-head { max-width: 58ch; margin-bottom: 34px; }
+  .section-head h2 { font-size: clamp(1.6rem, 3.2vw, 2.2rem); margin: 12px 0 0; }
+  .section-head p { color: var(--muted); margin: 14px 0 0; }
+  .prose p { color: var(--muted); max-width: 66ch; margin: 0 0 16px; }
+  .prose strong { color: var(--text); font-weight: 600; }
+
+  /* ===== agent index ===== */
+  .idx-phase { margin-top: 26px; }
+  .idx-phase > .label { display: block; margin-bottom: 12px; padding-left: 2px; }
+  .idx-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--line-soft); border: 1px solid var(--line-soft); border-radius: 12px; overflow: hidden; }
+  @media (max-width: 760px){ .idx-grid { grid-template-columns: repeat(2,1fr); } }
+  @media (max-width: 480px){ .idx-grid { grid-template-columns: 1fr; } }
+  .idx-card { background: var(--surface); padding: 16px 16px 18px; display: flex; flex-direction: column; gap: 5px; transition: background .16s ease; }
+  .idx-card:hover { background: var(--surface-2); text-decoration: none; }
+  .idx-card .ic-n { font-family: var(--font-mono); font-size: .68rem; color: var(--accent); letter-spacing: .1em; }
+  .idx-card .ic-name { color: var(--text); font-weight: 600; font-size: .98rem; }
+  .idx-card .ic-stage { font-family: var(--font-mono); font-size: .68rem; color: var(--faint); }
+
+  /* ===== agent section ===== */
+  .agent-sec { scroll-margin-top: 120px; }
+  .agent-head { max-width: 70ch; }
+  .agent-head h2 { font-size: clamp(1.7rem, 3.6vw, 2.5rem); margin: 12px 0 0; }
+  .gr { margin: 18px 0 0; border-left: 2px solid var(--accent); background: var(--accent-dim); padding: 12px 16px; border-radius: 0 8px 8px 0; }
+  .gr .label { display: block; margin-bottom: 3px; color: var(--accent); }
+  .gr span.t { color: var(--text); font-style: italic; }
+  .agent-head .lede { color: var(--muted); margin: 18px 0 0; max-width: 64ch; }
+
+  /* I/O flow */
+  .io-flow { display: grid; grid-template-columns: 1fr 40px 1fr; gap: 0; align-items: stretch; margin: 28px 0 6px; border: 1px solid var(--line-soft); border-radius: 12px; overflow: hidden; }
+  @media (max-width: 640px){ .io-flow { grid-template-columns: 1fr; } }
+  .io-col { background: var(--surface); padding: 16px 18px; }
+  .io-col.out { background: var(--ink-2); }
+  .io-col .label { display: block; margin-bottom: 9px; }
+  .io-col.out .label { color: var(--accent); }
+  .io-col ul { margin: 0; padding-left: 0; list-style: none; display: flex; flex-direction: column; gap: 6px; }
+  .io-col li { font-family: var(--font-mono); font-size: .76rem; color: var(--muted); padding-left: 14px; position: relative; }
+  .io-col li::before { content: "▸"; position: absolute; left: 0; color: var(--faint); }
+  .io-col.out li { color: var(--text); }
+  .io-col.out li::before { color: var(--accent); }
+  .io-mid { display: flex; align-items: center; justify-content: center; background: var(--surface-2); color: var(--accent); font-family: var(--font-mono); font-size: 1.1rem; }
+  @media (max-width: 640px){ .io-mid { padding: 6px; } }
+
+  .sub { font-size: 1.05rem; margin: 30px 0 14px; color: var(--text); }
+
+  /* capability grid */
+  .cap-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: var(--line-soft); border: 1px solid var(--line-soft); border-radius: 12px; overflow: hidden; }
+  @media (max-width: 640px){ .cap-grid { grid-template-columns: 1fr; } }
+  .cap { background: var(--surface); padding: 18px 18px 20px; display: flex; flex-direction: column; gap: 7px; transition: background .16s ease; }
+  .cap:hover { background: var(--surface-2); }
+  .cap .cap-id { font-family: var(--font-mono); font-size: .68rem; color: var(--accent); letter-spacing: .08em; }
+  .cap h4 { font-size: 1rem; margin: 0; font-weight: 600; }
+  .cap p { margin: 0; color: var(--muted); font-size: .9rem; line-height: 1.5; }
+
+  /* specs */
+  .specs { border: 1px solid var(--line-soft); border-radius: 12px; overflow: hidden; margin-top: 22px; }
+  .spec-row { display: grid; grid-template-columns: 190px 1fr; border-top: 1px solid var(--line-soft); }
+  .spec-row:first-child { border-top: none; }
+  .spec-row dt { padding: 12px 16px; background: var(--ink-2); font-family: var(--font-mono); font-size: .72rem; letter-spacing: .04em; color: var(--muted); }
+  .spec-row dd { margin: 0; padding: 12px 16px; color: var(--text); font-family: var(--font-mono); font-size: .78rem; }
+  @media (max-width: 560px){ .spec-row { grid-template-columns: 1fr; } .spec-row dd { padding-top: 0; } }
+
+  .tagrow { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 14px; }
+  .pill { font-family: var(--font-mono); font-size: .64rem; letter-spacing: .08em; text-transform: uppercase; padding: 3px 9px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); }
+  .pill.core { border-color: var(--accent-line); color: var(--accent); background: var(--accent-dim); }
+  .pill.gate { border-color: var(--green-line); color: var(--green); background: var(--green-dim); }
+  .pill.plan { border-color: var(--line); color: var(--faint); }
+
+  .backtop { font-family: var(--font-mono); font-size: .7rem; color: var(--faint); margin-top: 20px; display: inline-block; }
+
+  /* principles */
+  .principles { display: grid; grid-template-columns: repeat(3,1fr); gap: 18px; }
+  @media (max-width: 720px){ .principles { grid-template-columns: 1fr; } }
+  .principle { border-top: 2px solid var(--accent); padding-top: 16px; }
+  .principle h3 { font-size: 1.02rem; margin: 0 0 7px; }
+  .principle p { margin: 0; color: var(--muted); font-size: .9rem; }
+
+  footer.foot { border-top: 1px solid var(--line-soft); padding: 28px 0 48px; color: var(--faint); font-family: var(--font-mono); font-size: .72rem; }
+  footer.foot .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap">
+    <div class="brand"><span class="dot"></span> Migration&nbsp;<b>Orchestrator</b></div>
+    <nav>
+      <a href="/toolkit">Back to Engineering Agents</a>
+      <a href="#overview">Overview</a>
+      <a href="#index">Agents</a>
+      <a href="#principles">Principles</a>
+      <a href="#runtime">Runtime</a>
+    </nav>
+  </div>
+</header>
+
+<div class="pipeline">
+  <div class="wrap">
+    <a class="stage" href="#p0"><span class="s-n">00</span> Pre-analysis</a><span class="arr">→</span>
+    <a class="stage" href="#p1"><span class="s-n">01</span> Discovery</a><span class="arr">→</span>
+    <a class="stage" href="#p2"><span class="s-n">02</span> Architecture</a><span class="arr">→</span>
+    <a class="stage" href="#p3"><span class="s-n">03</span> Generation</a><span class="arr">→</span>
+    <a class="stage" href="#p4"><span class="s-n">04</span> UI</a><span class="arr">→</span>
+    <a class="stage" href="#p5"><span class="s-n">05</span> Equivalence</a><span class="arr">→</span>
+    <a class="stage" href="#p6"><span class="s-n">06</span> Validation</a><span class="arr">→</span>
+    <a class="stage" href="#p7"><span class="s-n">07</span> Rollout</a>
+  </div>
+</div>
+
+<main>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <p class="eyebrow">Agent Catalog · 26 agents · 8 phases</p>
+        <h1>The agents that migrated Send2</h1>
+        <p class="lede">An equivalence-first swarm that reads a legacy Kotlin/XML Android app, extracts its exact behavior, regenerates it as Jetpack Compose + MVVM, and then proves — screen by screen — that nothing changed.</p>
+        <div class="hero-meta">
+          <span>Engine&nbsp; <b>Claude Code CLI</b></span>
+          <span>Pipeline&nbsp; <b>32 stages</b></span>
+          <span>Shared state&nbsp; <b>Migration Knowledge Base</b></span>
+        </div>
+      </div>
+      <div class="scanner" aria-hidden="true">
+        <div class="scanner-head"><span class="tl"><i></i><i></i><i></i></span> legacy/feature/provider/ProviderDetailFragment.kt</div>
+        <div class="scan-body">
+          <div class="scanline"></div>
+<pre class="code"><span class="k">override fun</span> <span class="f">onViewCreated</span>(view: View, b: Bundle?) {
+    <span class="c">// legacy behavior — must be preserved exactly</span>
+    <span class="k">if</span> (session.isLoggedIn) {
+        viewModel.loadProvider(args.providerId)
+    } <span class="k">else</span> {
+        findNavController().navigate(R.id.<span class="n">login</span>)
+    }
+    binding.rateBtn.setOnClickListener {
+        <span class="k">if</span> (provider.allowsRating) showRateSheet()
+    }
+}</pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- OVERVIEW -->
+  <section class="section" id="overview">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">Overview</p>
+        <h2>How the swarm is wired</h2>
+      </div>
+      <div class="prose">
+        <p>The migration is not one model call — it is a pipeline of <strong>specialized, single-purpose agents</strong>. Each agent receives the previous agents' outputs plus a slice of shared memory, does one job, and writes a structured result back. Every agent obeys the same overriding constraint: <strong>preserve exact legacy behavior before any enhancement.</strong></p>
+        <p>Agents communicate through a hybrid <strong>Migration Knowledge Base</strong> (document + retrieval + graph links) appended to every prompt. Downstream agents raise <strong>upstream feedback requests</strong> when logic is unclear; the Feedback Loop agent routes them back to the knowledge owner. Human-in-the-loop gates sit between phases. Work-unit complexity drives the model tier — <span class="mono">low→fast</span>, <span class="mono">medium→balanced</span>, <span class="mono">high→deep</span>.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- INDEX -->
+  <section class="section" id="index">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">Directory</p>
+        <h2>All 26 agents</h2>
+        <p>Grouped by pipeline phase. Jump to any agent for its golden rule, inputs, outputs, and mechanics.</p>
+      </div>
+
+      <div class="idx-phase">
+        <span class="label">Phase 00 · Pre-analysis</span>
+        <div class="idx-grid">
+          <a class="idx-card" href="#a01"><span class="ic-n">01</span><span class="ic-name">Code Analysis</span><span class="ic-stage">code_analysis</span></a>
+        </div>
+      </div>
+      <div class="idx-phase">
+        <span class="label">Phase 01 · Discovery &amp; Comprehension</span>
+        <div class="idx-grid">
+          <a class="idx-card" href="#a02"><span class="ic-n">02</span><span class="ic-name">Discovery</span><span class="ic-stage">discovery</span></a>
+          <a class="idx-card" href="#a03"><span class="ic-n">03</span><span class="ic-name">Comprehension</span><span class="ic-stage">comprehension</span></a>
+          <a class="idx-card" href="#a04"><span class="ic-n">04</span><span class="ic-name">Rules</span><span class="ic-stage">rules</span></a>
+        </div>
+      </div>
+      <div class="idx-phase">
+        <span class="label">Phase 02 · Architecture &amp; Planning</span>
+        <div class="idx-grid">
+          <a class="idx-card" href="#a05"><span class="ic-n">05</span><span class="ic-name">Architecture</span><span class="ic-stage">architecture</span></a>
+          <a class="idx-card" href="#a06"><span class="ic-n">06</span><span class="ic-name">Integration Migration</span><span class="ic-stage">integration_migration</span></a>
+          <a class="idx-card" href="#a07"><span class="ic-n">07</span><span class="ic-name">Decomposition</span><span class="ic-stage">decomposition</span></a>
+          <a class="idx-card" href="#a08"><span class="ic-n">08</span><span class="ic-name">MWU Planning</span><span class="ic-stage">mwu_planner</span></a>
+        </div>
+      </div>
+      <div class="idx-phase">
+        <span class="label">Phase 03 · Code &amp; Test Generation</span>
+        <div class="idx-grid">
+          <a class="idx-card" href="#a09"><span class="ic-n">09</span><span class="ic-name">Code Generation</span><span class="ic-stage">code_generation · codegen.*</span></a>
+          <a class="idx-card" href="#a10"><span class="ic-n">10</span><span class="ic-name">Code Review</span><span class="ic-stage">code_review</span></a>
+          <a class="idx-card" href="#a11"><span class="ic-n">11</span><span class="ic-name">Data Migration</span><span class="ic-stage">data_migration</span></a>
+          <a class="idx-card" href="#a12"><span class="ic-n">12</span><span class="ic-name">Test Generation</span><span class="ic-stage">test_generation</span></a>
+        </div>
+      </div>
+      <div class="idx-phase">
+        <span class="label">Phase 04 · UI Migration</span>
+        <div class="idx-grid">
+          <a class="idx-card" href="#a13"><span class="ic-n">13</span><span class="ic-name">UI Migration</span><span class="ic-stage">ui_migration</span></a>
+          <a class="idx-card" href="#a14"><span class="ic-n">14</span><span class="ic-name">UI Spec</span><span class="ic-stage">ui.spec</span></a>
+        </div>
+      </div>
+      <div class="idx-phase">
+        <span class="label">Phase 05 · Equivalence Enforcement</span>
+        <div class="idx-grid">
+          <a class="idx-card" href="#a15"><span class="ic-n">15</span><span class="ic-name">Equivalence Audit</span><span class="ic-stage">equivalence.audit</span></a>
+          <a class="idx-card" href="#a16"><span class="ic-n">16</span><span class="ic-name">Equivalence Fix</span><span class="ic-stage">equivalence.fix</span></a>
+          <a class="idx-card" href="#a17"><span class="ic-n">17</span><span class="ic-name">UI Layout Match</span><span class="ic-stage">ui.layout.match</span></a>
+        </div>
+      </div>
+      <div class="idx-phase">
+        <span class="label">Phase 06 · Validation</span>
+        <div class="idx-grid">
+          <a class="idx-card" href="#a18"><span class="ic-n">18</span><span class="ic-name">Dual-Run Planning</span><span class="ic-stage">dualrun.plan</span></a>
+          <a class="idx-card" href="#a19"><span class="ic-n">19</span><span class="ic-name">Validation</span><span class="ic-stage">validation</span></a>
+          <a class="idx-card" href="#a20"><span class="ic-n">20</span><span class="ic-name">5-Layer Validation</span><span class="ic-stage">validation.5layer</span></a>
+        </div>
+      </div>
+      <div class="idx-phase">
+        <span class="label">Phase 07 · Rollout &amp; Delivery</span>
+        <div class="idx-grid">
+          <a class="idx-card" href="#a21"><span class="ic-n">21</span><span class="ic-name">Documentation</span><span class="ic-stage">documentation</span></a>
+          <a class="idx-card" href="#a22"><span class="ic-n">22</span><span class="ic-name">Orchestrator</span><span class="ic-stage">orchestrator.report</span></a>
+          <a class="idx-card" href="#a23"><span class="ic-n">23</span><span class="ic-name">Feedback Loop</span><span class="ic-stage">feedback.loop</span></a>
+          <a class="idx-card" href="#a24"><span class="ic-n">24</span><span class="ic-name">Delivery Pack</span><span class="ic-stage">delivery_pack</span></a>
+          <a class="idx-card" href="#a25"><span class="ic-n">25</span><span class="ic-name">Implementation Tasks</span><span class="ic-stage">implementation_tasks</span></a>
+          <a class="idx-card" href="#a26"><span class="ic-n">26</span><span class="ic-name">Traceability</span><span class="ic-stage">traceability</span></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =================== PHASE 00 =================== -->
+  <div id="p0"></div>
+
+  <section class="section agent-sec" id="a01">
+    <div class="wrap">
+      <div class="agent-head">
+        <p class="eyebrow">Stage 01 · Phase 00 — Pre-analysis</p>
+        <h2>Code Analysis Agent</h2>
+        <div class="tagrow"><span class="pill">tooling wrapper</span><span class="pill plan">seeds discovery</span></div>
+        <p class="gr"><span class="label">Golden rule</span><span class="t">Read the legacy source mechanically and faithfully — produce raw signal, not interpretation.</span></p>
+        <p class="lede">The first pass over the codebase. It walks the legacy tree file-by-file and produces a raw structural report — the unbiased substrate every downstream agent builds on.</p>
+      </div>
+      <div class="io-flow">
+        <div class="io-col"><span class="label">Inputs</span><ul><li>Legacy source tree (Kotlin/XML/Gradle)</li><li>Chunking config (max_files, chunk_chars)</li></ul></div>
+        <div class="io-mid">→</div>
+        <div class="io-col out"><span class="label">Outputs</span><ul><li>Raw code-analysis report</li><li>MKB stage document</li></ul></div>
+      </div>
+      <h3 class="sub">What it does</h3>
+      <div class="cap-grid">
+        <div class="cap"><span class="cap-id">/ walk</span><h4>File-by-file scan</h4><p>Chunks the source under configurable size limits so large files fit the context window without timing out.</p></div>
+        <div class="cap"><span class="cap-id">/ structure</span><h4>Structural extraction</h4><p>Surfaces classes, functions, and call relationships as raw findings before any business interpretation.</p></div>
+        <div class="cap"><span class="cap-id">/ seed</span><h4>Context seeding</h4><p>Writes the report into the Migration Knowledge Base so Discovery starts from analysed signal, not raw text.</p></div>
+        <div class="cap"><span class="cap-id">/ neutral</span><h4>No conclusions</h4><p>Deliberately avoids judgement — it reports what exists; later agents decide what it means.</p></div>
+      </div>
+      <dl class="specs">
+        <div class="spec-row"><dt>Stage</dt><dd>code_analysis (01 / 32)</dd></div>
+        <div class="spec-row"><dt>Consumes</dt><dd>Legacy source root</dd></div>
+        <div class="spec-row"><dt>Produces</dt><dd>Raw code-analysis report → MKB</dd></div>
+        <div class="spec-row"><dt>Feeds</dt><dd>Discovery Agent</dd></div>
+      </dl>
+      <a class="backtop" href="#index">← back to directory</a>
+    </div>
+  </section>
+
+  <!-- =================== PHASE 01 =================== -->
+  <div id="p1"></div>
+
+  <section class="section agent-sec" id="a02">
+    <div class="wrap">
+      <div class="agent-head">
+        <p class="eyebrow">Stage 02 · Phase 01 — Discovery</p>
+        <h2>Discovery Agent</h2>
+        <div class="tagrow"><span class="pill core">core agent</span></div>
+        <p class="gr"><span class="label">Golden rule</span><span class="t">Preserve exact business behavior before enhancement.</span></p>
+        <p class="lede">Reads legacy source the way a senior engineer does on day one — cataloging the business rules buried in the code, mapping dependencies, and flagging every ambiguity that still needs a human answer.</p>
+      </div>
+      <div class="io-flow">
+        <div class="io-col"><span class="label">Inputs</span><ul><li>Legacy context (code analysis)</li><li>Shared memory (MKB)</li></ul></div>
+        <div class="io-mid">→</div>
+        <div class="io-col out"><span class="label">Outputs</span><ul><li>Rules</li><li>Dependencies</li><li>Data Contracts</li><li>Open Questions</li></ul></div>
+      </div>
+      <h3 class="sub">What it extracts</h3>
+      <div class="cap-grid">
+        <div class="cap"><span class="cap-id">/ rules</span><h4>Business rules</h4><p>Extracts the rules and constraints encoded in legacy behavior — validations, calculations, decisions, workflows.</p></div>
+        <div class="cap"><span class="cap-id">/ dependencies</span><h4>External dependencies</h4><p>Identifies the systems, services, and data contracts the code depends on.</p></div>
+        <div class="cap"><span class="cap-id">/ contracts</span><h4>Data contracts</h4><p>Captures the shape of inputs and outputs that cross module and integration boundaries.</p></div>
+        <div class="cap"><span class="cap-id">/ open_questions</span><h4>Assumptions with uncertainty</h4><p>Produces an assumptions list with explicit uncertainty labels — never quietly guessing.</p></div>
+      </div>
+      <dl class="specs">
+        <div class="spec-row"><dt>Stage</dt><dd>discovery (02 / 32)</dd></div>
+        <div class="spec-row"><dt>Output format</dt><dd>Rules · Dependencies · Data Contracts · Open Questions</dd></div>
+        <div class="spec-row"><dt>Feeds</dt><dd>Comprehension · Rules · Data Migration</dd></div>
+      </dl>
+      <a class="backtop" href="#index">← back to directory</a>
+    </div>
+  </section>
+
+  <section class="section agent-sec" id="a03">
+    <div class="wrap">
+      <div class="agent-head">
+        <p class="eyebrow">Stage 03 · Phase 01 — Comprehension</p>
+        <h2>Comprehension Agent</h2>
+        <div class="tagrow"><span class="pill core">core agent</span></div>
+        <p class="gr"><span class="label">Golden rule</span><span class="t">Decode business logic exactly as implemented in legacy behavior.</span></p>
+        <p class="lede">Turns Discovery's raw findings into a structured catalog of what the app actually <em>does</em> — every decision path documented, every ambiguity routed back upstream for a human to resolve.</p>
+      </div>
+      <div class="io-flow">
+        <div class="io-col"><span class="label">Inputs</span><ul><li>Discovery output</li><li>Shared memory (MKB)</li></ul></div>
+        <div class="io-mid">→</div>
+        <div class="io-col out"><span class="label">Outputs</span><ul><li>Business Rule Catalog</li><li>Logic Flow Documentation</li><li>Ambiguities</li><li>Upstream Feedback (→ Discovery)</li></ul></div>
+      </div>
+      <h3 class="sub">What it does</h3>
+      <div class="cap-grid">
+        <div class="cap"><span class="cap-id">/ catalog</span><h4>Build the rule catalog</h4><p>Assembles a business rule catalog directly from discovery output — the canonical record of intended behavior.</p></div>
+        <div class="cap"><span class="cap-id">/ flows</span><h4>Document logic flow</h4><p>Maps decision paths and control flow so downstream agents can reason about branches and edge cases.</p></div>
+        <div class="cap"><span class="cap-id">/ ambiguity</span><h4>Identify ambiguous logic</h4><p>Marks logic it cannot confidently interpret and creates explicit upstream feedback requests.</p></div>
+      </div>
+      <dl class="specs">
+        <div class="spec-row"><dt>Stage</dt><dd>comprehension (03 / 32)</dd></div>
+        <div class="spec-row"><dt>Output format</dt><dd>Catalog · Logic Flow · Ambiguities · Upstream Feedback</dd></div>
+        <div class="spec-row"><dt>Feeds</dt><dd>Architecture · Test Generation · Equivalence Audit</dd></div>
+      </dl>
+      <a class="backtop" href="#index">← back to directory</a>
+    </div>
+  </section>
+
+  <section class="section agent-sec" id="a04">
+    <div class="wrap">
+      <div class="agent-head">
+        <p class="eyebrow">Stage 04 · Phase 01 — Rules</p>
+        <h2>Rules Agent</h2>
+        <div class="tagrow"><span class="pill plan">planning mode</span></div>
+        <p class="gr"><span class="label">Golden rule</span><span class="t">Preserve exact behavior and express it as verifiable rules.</span></p>
+        <p class="lede">Converts discovery findings into atomic, implementation-neutral rules — each one deterministic, traceable, and tagged with how confident the agent is and whether a human has verified it.</p>
+      </div>
+      <div class="io-flow">
+        <div class="io-col"><span class="label">Inputs</span><ul><li>Discovery output</li><li>Shared memory (MKB)</li></ul></div>
+        <div class="io-mid">→</div>
+        <div class="io-col out"><span class="label">Outputs</span><ul><li>RULE-### blocks</li><li>Confidence + verification status</li></ul></div>
+      </div>
+      <h3 class="sub">Anatomy of a rule</h3>
+      <div class="cap-grid">
+        <div class="cap"><span class="cap-id">/ trigger</span><h4>Trigger &amp; preconditions</h4><p>What event fires the rule and what must be true beforehand.</p></div>
+        <div class="cap"><span class="cap-id">/ logic</span><h4>Decision logic</h4><p>The deterministic, implementation-neutral statement of the rule's behavior.</p></div>
+        <div class="cap"><span class="cap-id">/ effect</span><h4>Output &amp; error behavior</h4><p>Side effects on success and the exact behavior on failure.</p></div>
+        <div class="cap"><span class="cap-id">/ evidence</span><h4>Legacy evidence + confidence</h4><p>The source proof for the rule, a High/Medium/Low confidence, and a pending human-verification flag.</p></div>
+      </div>
+      <dl class="specs">
+        <div class="spec-row"><dt>Stage</dt><dd>rules (planning / batch mode)</dd></div>
+        <div class="spec-row"><dt>Output format</dt><dd>RULE-001 … (statement, trigger, inputs, logic, output, errors, evidence, confidence)</dd></div>
+        <div class="spec-row"><dt>Feeds</dt><dd>MWU Planning · Delivery Pack · Implementation Tasks · Traceability</dd></div>
+      </dl>
+      <a class="backtop" href="#index">← back to directory</a>
+    </div>
+  </section>
+
+  <!-- =================== PHASE 02 =================== -->
+  <div id="p2"></div>
+
+  <section class="section agent-sec" id="a05">
+    <div class="wrap">
+      <div class="agent-head">
+        <p class="eyebrow">Stage 05 · Phase 02 — Architecture</p>
+        <h2>Architecture Agent</h2>
+        <div class="tagrow"><span class="pill core">core agent</span></div>
+        <p class="gr"><span class="label">Golden rule</span><span class="t">Target architecture must preserve discovered behavior.</span></p>
+        <p class="lede">Designs the target-state component model and maps every business rule onto it — explicitly flagging anything that risks behavioral drift and any decision a human must make.</p>
+      </div>
+      <div class="io-flow">
+        <div class="io-col"><span class="label">Inputs</span><ul><li>Business Rule Catalog (≥120 chars, required)</li><li>Shared memory (MKB)</li></ul></div>
+        <div class="io-mid">→</div>
+        <div class="io-col out"><span class="label">Outputs</span><ul><li>Proposed Components</li><li>Rule-to-Component Mapping</li><li>Drift Risks</li><li>Human Decisions Required</li><li>Upstream Feedback (→ Comprehension)</li></ul></div>
+      </div>
+      <h3 class="sub">What it does</h3>
+      <div class="cap-grid">
+        <div class="cap"><span class="cap-id">/ components</span><h4>Propose components &amp; interfaces</h4><p>Defines the target Clean-MVVM component and interface set for the migrated app.</p></div>
+        <div class="cap"><span class="cap-id">/ mapping</span><h4>Map rules to components</h4><p>Assigns each business rule a home in the new architecture so nothing is orphaned.</p></div>
+        <div class="cap"><span class="cap-id">/ drift</span><h4>Flag drift risks</h4><p>Calls out anything in the design that could subtly change behavior versus the legacy app.</p></div>
+        <div class="cap"><span class="cap-id">/ decisions</span><h4>Surface human decisions</h4><p>Lists architectural choices that require sign-off before codegen proceeds.</p></div>
+      </div>
+      <dl class="specs">
+        <div class="spec-row"><dt>Stage</dt><dd>architecture (04 / 32)</dd></div>
+        <div class="spec-row"><dt>Guard</dt><dd>Refuses empty / trivially short comprehension input</dd></div>
+        <div class="spec-row"><dt>Feeds</dt><dd>Integration · Decomposition · Code Generation</dd></div>
+      </dl>
+      <a class="backtop" href="#index">← back to directory</a>
+    </div>
+  </section>
+
+  <section class="section agent-sec" id="a06">
+    <div class="wrap">
+      <div class="agent-head">
+        <p class="eyebrow">Stage 06 · Phase 02 — Integration</p>
+        <h2>Integration Migration Agent</h2>
+        <div class="tagrow"><span class="pill">specialized</span><span class="pill plan">inline context · no tools</span></div>
+        <p class="gr"><span class="label">Golden rule</span><span class="t">Preserve integration behavior while enabling phased coexistence.</span></p>
+        <p class="lede">Designs the contract-first API layer for all 42 endpoints (Feeder REST + Strapi CMS) and the adapter strategy that lets legacy Fragment screens and new Compose screens run side-by-side during rollout.</p>
+      </div>
+      <div class="io-flow">
+        <div class="io-col"><span class="label">Inputs</span><ul><li>Architecture output</li><li>Shared memory (MKB)</li></ul></div>
+        <div class="io-mid">→</div>
+        <div class="io-col out"><span class="label">Outputs</span><ul><li>Target Contracts</li><li>Adapter Pattern Plan</li><li>Integration Coexistence Plan</li><li>Integration Contract Tests</li><li>Upstream Feedback</li></ul></div>
+      </div>
+      <h3 class="sub">What it does</h3>
+      <div class="cap-grid">
+        <div class="cap"><span class="cap-id">/ contracts</span><h4>Contract-first APIs</h4><p>Defines Retrofit-style service interfaces, request/response models, and auth for all 42 endpoints, referencing BR-* rule IDs.</p></div>
+        <div class="cap"><span class="cap-id">/ adapters</span><h4>Adapter layers</h4><p>Plans bridge interfaces so migrated and non-migrated modules communicate during phased rollout.</p></div>
+        <div class="cap"><span class="cap-id">/ coexistence</span><h4>Fragment → Compose coexistence</h4><p>Navigation bridging, shared state, and DI scoping so old and new screens live together.</p></div>
+        <div class="cap"><span class="cap-id">/ contract_tests</span><h4>Drift-detection tests</h4><p>Contract tests per integration point with preconditions, expected response, and drift assertions.</p></div>
+      </div>
+      <dl class="specs">
+        <div class="spec-row"><dt>Stage</dt><dd>integration_migration (05 / 32)</dd></div>
+        <div class="spec-row"><dt>Scope</dt><dd>42 v2.1 endpoints · Feeder REST + Strapi CMS</dd></div>
+        <div class="spec-row"><dt>Mode</dt><dd>Single-response, inline context, no external tool use</dd></div>
+      </dl>
+      <a class="backtop" href="#index">← back to directory</a>
+    </div>
+  </section>
+
+  <section class="section agent-sec" id="a07">
+    <div class="wrap">
+      <div class="agent-head">
+        <p class="eyebrow">Stage 07 · Phase 02 — Decomposition</p>
+        <h2>Decomposition Agent</h2>
+        <div class="tagrow"><span class="pill core">core agent</span></div>
+        <p class="gr"><span class="label">Golden rule</span><span class="t">Break migration into independently testable MWUs.</span></p>
+        <p class="lede">Slices the architecture and inventory into Migration Work Units — small, ordered, dependency-aware chunks, each with acceptance criteria, a risk level, and an explicit human-approval flag.</p>
+      </div>
+      <div class="io-flow">
+        <div class="io-col"><span class="label">Inputs</span><ul><li>Architecture output</li><li>Discovery output</li></ul></div>
+        <div class="io-mid">→</div>
+        <div class="io-col out"><span class="label">Outputs</span><ul><li>MWU backlog (JSON array)</li><li>Sequencing &amp; dependencies</li><li>Risk + HITL flags</li></ul></div>
+      </div>
+      <h3 class="sub">Each MWU carries</h3>
+      <div class="cap-grid">
+        <div class="cap"><span class="cap-id">/ scope</span><h4>Bounded scope</h4><p>A single, testable unit of migration with named source artifacts and target components.</p></div>
+        <div class="cap"><span class="cap-id">/ deps</span><h4>Dependencies &amp; order</h4><p>Explicit dependency edges and sequencing so foundational units migrate first.</p></div>
+        <div class="cap"><span class="cap-id">/ tests</span><h4>Required tests</h4><p>The unit / integration / business tests that must pass to accept the MWU.</p></div>
+        <div class="cap"><span class="cap-id">/ risk</span><h4>Risk &amp; approval</h4><p>A low/medium/high risk level and a human-approval-required flag for the HITL gate.</p></div>
+      </div>
+      <dl class="specs">
+        <div class="spec-row"><dt>Stage</dt><dd>decomposition (06 / 32)</dd></div>
+        <div class="spec-row"><dt>Output format</dt><dd>JSON array of MWU objects</dd></div>
+        <div class="spec-row"><dt>Feeds</dt><dd>Code Generation · Data Migration · Test Generation</dd></div>
+      </dl>
+      <a class="backtop" href="#index">← back to directory</a>
+    </div>
+  </section>
+
+  <section class="section agent-sec" id="a08">
+    <div class="wrap">
+      <div class="agent-head">
+        <p class="eyebrow">Stage 08 · Phase 02 — Planning</p>
+        <h2>MWU Planning Agent</h2>
+        <div class="tagrow"><span class="pill plan">planning mode</span></div>
+        <p class="gr"><span class="label">Golden rule</span><span class="t">Break migration into independently testable work units while preserving behavior.</span></p>
+        <p class="lede">The rules-driven counterpart to Decomposition: it converts the explicit RULE-### set into MWUs, keeping each one small, independently testable, and traceable back to the rules it covers.</p>
+      </div>
+      <div class="io-flow">
+        <div class="io-col"><span class="label">Inputs</span><ul><li>Explicit rules (RULE-###)</li><li>Shared memory (MKB)</li></ul></div>
+        <div class="io-mid">→</div>
+        <div class="io-col out"><span class="label">Outputs</span><ul><li>MWU backlog (JSON) with rule_ids</li><li>Execution order</li><li>Acceptance criteria</li></ul></div>
+      </div>
+      <h3 class="sub">What it does</h3>
+      <div class="cap-grid">
+        <div class="cap"><span class="cap-id">/ convert</span><h4>Rules → MWUs</h4><p>Each unit links the explicit rule IDs it implements, keeping a rule-to-work trace.</p></div>
+        <div class="cap"><span class="cap-id">/ size</span><h4>Keep units small</h4><p>Independently testable and dependency-aware so they can be merged one PR at a time.</p></div>
+        <div class="cap"><span class="cap-id">/ order</span><h4>Execution order</h4><p>Provides sequencing and per-unit acceptance criteria for the HITL merge gate.</p></div>
+      </div>
+      <dl class="specs">
+        <div class="spec-row"><dt>Stage</dt><dd>mwu_planner (planning / batch mode)</dd></div>
+        <div class="spec-row"><dt>Output format</dt><dd>JSON array — mwu_id, rule_ids, dependencies, tests, acceptance, risk</dd></div>
+      </dl>
+      <a class="backtop" href="#index">← back to directory</a>
+    </div>
+  </section>
+
+  <!-- =================== PHASE 03 =================== -->
+  <div id="p3"></div>
+
+  <section class="section agent-sec" id="a09">
+    <div class="wrap">
+      <div class="agent-head">
+        <p class="eyebrow">Stage 09 · Phase 03 — Generation</p>
+        <h2>Code Generation Agent</h2>
+        <div class="tagrow"><span class="pill core">core agent</span><span class="pill">12 codegen stages</span></div>
+        <p class="gr"><span class="label">Golden rule</span><span class="t">Generate target-state code and unit tests without behavior drift.</span></p>
+        <p class="lede">The workhorse. It runs in two modes — a planning pass that produces the per-MWU code plan, and the file-emitting passes that write real Kotlin across twelve codegen stages, from scaffold to the eleven feature modules.</p>
+      </div>
+      <div class="io-flow">
+        <div class="io-col"><span class="label">Inputs</span><ul><li>Decomposition / MWUs</li><li>Comprehension catalog</li><li>Architecture model</li><li>UI specs (for screens)</li></ul></div>
+        <div class="io-mid">→</div>
+        <div class="io-col out"><span class="label">Outputs</span><ul><li>Source Code Plan · Unit Test Plan</li><li>MWU Coverage</li><li>Real Kotlin files (### FILE: blocks)</li></ul></div>
+      </div>
+      <h3 class="sub">Two modes</h3>
+      <div class="cap-grid">
+        <div class="cap"><span class="cap-id">/ plan</span><h4>Planning pass</h4><p>Produces a code plan per MWU and a unit-test strategy per business rule, with MWU coverage.</p></div>
+        <div class="cap"><span class="cap-id">/ emit</span><h4>File-emitting pass</h4><p>Writes complete files using <span class="mono">### FILE:</span> markers — never diffs — that the orchestrator extracts to disk.</p></div>
+        <div class="cap"><span class="cap-id">/ modules</span><h4>11 feature modules</h4><p>auth · home · search · provider · ratealert · profile · notification · settings · content · quiz · misc.</p></div>
+        <div class="cap"><span class="cap-id">/ feedback</span><h4>Upstream feedback</h4><p>Raises requests to Comprehension / Architecture when a rule or component is underspecified.</p></div>
+      </div>
+      <dl class="specs">
+        <div class="spec-row"><dt>Stages</dt><dd>code_generation + scaffold · codegen.core/utils/services/features/mocks/navigation/app/buildconfig/assemble</dd></div>
+        <div class="spec-row"><dt>Output format</dt><dd>Plan sections · <span class="mono">### FILE: path</span> code blocks</dd></div>
+        <div class="spec-row"><dt>Feeds</dt><dd>Code Review · Equivalence Audit</dd></div>
+      </dl>
+      <a class="backtop" href="#index">← back to directory</a>
+    </div>
+  </section>
+
+  <section class="section agent-sec" id="a10">
+    <div class="wrap">
+      <div class="agent-head">
+        <p class="eyebrow">Stage 10 · Phase 03 — Review</p>
+        <h2>Code Review Agent</h2>
+        <div class="tagrow"><span class="pill">specialized</span></div>
+        <p class="gr"><span class="label">Golden rule</span><span class="t">Ensure generated code meets migration quality and equivalence constraints.</span></p>
+        <p class="lede">A reviewer that checks the generated code against the architecture and MWU scope before a human ever looks at it — producing findings, required changes, and a quality scorecard.</p>
+      </div>
+      <div class="io-flow">
+        <div class="io-col"><span class="label">Inputs</span><ul><li>Code Generation output</li><li>Architecture output</li><li>Decomposition output</li></ul></div>
+        <div class="io-mid">→</div>
+        <div class="io-col out"><span class="label">Outputs</span><ul><li>Review Findings</li><li>Required Changes</li><li>Quality Scorecard</li><li>Human Review Checklist</li><li>Upstream Feedback</li></ul></div>
+      </div>
+      <h3 class="sub">What it checks</h3>
+      <div class="cap-grid">
+        <div class="cap"><span class="cap-id">/ correctness</span><h4>Correctness &amp; security</h4><p>Reviews the generated plan for correctness, maintainability, and security concerns.</p></div>
+        <div class="cap"><span class="cap-id">/ alignment</span><h4>Scope alignment</h4><p>Confirms the code matches the architecture and stays inside the MWU's bounded scope.</p></div>
+        <div class="cap"><span class="cap-id">/ gate</span><h4>Pre-human gate</h4><p>Lists required changes and a human review checklist so the HITL reviewer starts from a triaged list.</p></div>
+      </div>
+      <dl class="specs">
+        <div class="spec-row"><dt>Stage</dt><dd>code_review (07 / 32)</dd></div>
+        <div class="spec-row"><dt>Output format</dt><dd>Findings · Required Changes · Scorecard · Checklist</dd></div>
+      </dl>
+      <a class="backtop" href="#index">← back to directory</a>
+    </div>
+  </section>
+
+  <section class="section agent-sec" id="a11">
+    <div class="wrap">
+      <div class="agent-head">
+        <p class="eyebrow">Stage 11 · Phase 03 — Data</p>
+        <h2>Data Migration Agent</h2>
+        <div class="tagrow"><span class="pill core">core agent</span></div>
+        <p class="gr"><span class="label">Golden rule</span><span class="t">Preserve data semantics and integrity during migration.</span></p>
+        <p class="lede">Owns the data layer: it maps source structures to the target schema, defines the ETL, and writes the validation rules that prove no data shifted meaning in transit.</p>
+      </div>
+      <div class="io-flow">
+        <div class="io-col"><span class="label">Inputs</span><ul><li>Discovery output</li><li>Decomposition output</li></ul></div>
+        <div class="io-mid">→</div>
+        <div class="io-col out"><span class="label">Outputs</span><ul><li>Source-to-Target Schema Mapping</li><li>ETL Script Plan</li><li>Data Validation Rules</li><li>Upstream Feedback</li></ul></div>
+      </div>
+      <h3 class="sub">What it does</h3>
+      <div class="cap-grid">
+        <div class="cap"><span class="cap-id">/ mapping</span><h4>Schema mapping</h4><p>Maps each source field to its target home, preserving type and meaning.</p></div>
+        <div class="cap"><span class="cap-id">/ etl</span><h4>ETL plan</h4><p>Defines extract/transform/load steps for moving data into the new model.</p></div>
+        <div class="cap"><span class="cap-id">/ validation</span><h4>Validation rules</h4><p>Data validation rules that detect loss or corruption, and feedback when semantics are ambiguous.</p></div>
+      </div>
+      <dl class="specs">
+        <div class="spec-row"><dt>Stage</dt><dd>data_migration (08 / 32)</dd></div>
+        <div class="spec-row"><dt>Note</dt><dd>Send2 keeps 35 legacy preference keys (HITL-002) — preservation over redesign</dd></div>
+      </dl>
+      <a class="backtop" href="#index">← back to directory</a>
+    </div>
+  </section>
+
+  <section class="section agent-sec" id="a12">
+    <div class="wrap">
+      <div class="agent-head">
+        <p class="eyebrow">Stage 12 · Phase 03 — Test</p>
+        <h2>Test Generation Agent</h2>
+        <div class="tagrow"><span class="pill core">core agent</span><span class="pill">codegen.tests</span></div>
+        <p class="gr"><span class="label">Golden rule</span><span class="t">Generate tests that prove equivalence and guard regressions.</span></p>
+        <p class="lede">Builds the test suites that turn "we think it's the same" into evidence — functional, regression, performance, and data-migration tests derived straight from the business rules.</p>
+      </div>
+      <div class="io-flow">
+        <div class="io-col"><span class="label">Inputs</span><ul><li>Comprehension catalog</li><li>Decomposition output</li><li>Data Migration output</li></ul></div>
+        <div class="io-mid">→</div>
+        <div class="io-col out"><span class="label">Outputs</span><ul><li>Functional Tests</li><li>Regression Tests</li><li>Performance Benchmarks</li><li>Data Migration Tests</li></ul></div>
+      </div>
+      <h3 class="sub">What it does</h3>
+      <div class="cap-grid">
+        <div class="cap"><span class="cap-id">/ functional</span><h4>Functional &amp; regression</h4><p>Derives test suites from the business rules so every rule has guarding coverage.</p></div>
+        <div class="cap"><span class="cap-id">/ perf</span><h4>Performance benchmarks</h4><p>Adds a benchmark plan for non-functional / NFR validation.</p></div>
+        <div class="cap"><span class="cap-id">/ data</span><h4>Data-migration tests</h4><p>Includes validation tests that confirm migrated data behaves identically.</p></div>
+      </div>
+      <dl class="specs">
+        <div class="spec-row"><dt>Stages</dt><dd>test_generation (09 / 32) · codegen.tests</dd></div>
+        <div class="spec-row"><dt>Realized as</dt><dd>38-scenario dual-run suite (test-dualrun module)</dd></div>
+      </dl>
+      <a class="backtop" href="#index">← back to directory</a>
+    </div>
+  </section>
+
+  <!-- =================== PHASE 04 =================== -->
+  <div id="p4"></div>
+
+  <section class="section agent-sec" id="a13">
+    <div class="wrap">
+      <div class="agent-head">
+        <p class="eyebrow">Stage 13 · Phase 04 — UI</p>
+        <h2>UI Migration Agent</h2>
+        <div class="tagrow"><span class="pill">specialized</span></div>
+        <p class="gr"><span class="label">Golden rule</span><span class="t">Preserve user-facing behavior while modernizing UI implementation safely.</span></p>
+        <p class="lede">Plans the screen migration: an inventory of every screen with its purpose and data bindings, a legacy→Compose component map, and the visual-regression and accessibility strategy.</p>
+      </div>
+      <div class="io-flow">
+        <div class="io-col"><span class="label">Inputs</span><ul><li>Discovery output</li><li>Comprehension output</li><li>Architecture output</li></ul></div>
+        <div class="io-mid">→</div>
+        <div class="io-col out"><span class="label">Outputs</span><ul><li>Screen Inventory</li><li>Component Mapping</li><li>Visual Regression Plan</li><li>Accessibility Uplift Checklist (WCAG)</li></ul></div>
+      </div>
+      <h3 class="sub">What it does</h3>
+      <div class="cap-grid">
+        <div class="cap"><span class="cap-id">/ inventory</span><h4>Screen inventory</h4><p>Catalogs each screen with its business purpose and data bindings.</p></div>
+        <div class="cap"><span class="cap-id">/ map</span><h4>Component mapping</h4><p>Maps legacy XML/Fragment components to their Compose equivalents.</p></div>
+        <div class="cap"><span class="cap-id">/ regression</span><h4>Visual regression + a11y</h4><p>Defines a visual-regression strategy and a WCAG accessibility uplift checklist.</p></div>
+      </div>
+      <dl class="specs">
+        <div class="spec-row"><dt>Stage</dt><dd>ui_migration (10 / 32)</dd></div>
+        <div class="spec-row"><dt>Scope</dt><dd>~74 legacy screens → 55 Composable screens</dd></div>
+      </dl>
+      <a class="backtop" href="#index">← back to directory</a>
+    </div>
+  </section>
+
+  <section class="section agent-sec" id="a14">
+    <div class="wrap">
+      <div class="agent-head">
+        <p class="eyebrow">Stage 14 · Phase 04 — UI Spec</p>
+        <h2>UI Spec Agent</h2>
+        <div class="tagrow"><span class="pill">specialized</span><span class="pill plan">per feature module</span></div>
+        <p class="gr"><span class="label">Golden rule</span><span class="t">Extract a faithful, structured spec from the legacy layout — invent nothing.</span></p>
+        <p class="lede">Reads the legacy Android XML layout and drawable files for a feature module and emits a structured JSON UI spec — the machine-readable ground truth the codegen and layout-match agents build against.</p>
+      </div>
+      <div class="io-flow">
+        <div class="io-col"><span class="label">Inputs</span><ul><li>Legacy layout XMLs</li><li>Drawable XMLs</li><li>Resource tables</li></ul></div>
+        <div class="io-mid">→</div>
+        <div class="io-col out"><span class="label">Outputs</span><ul><li>Structured JSON UI spec (per module)</li></ul></div>
+      </div>
+      <h3 class="sub">What it does</h3>
+      <div class="cap-grid">
+        <div class="cap"><span class="cap-id">/ parse</span><h4>Parse legacy layouts</h4><p>Reads the XML layout hierarchy, drawables, and resource tables for one feature module.</p></div>
+        <div class="cap"><span class="cap-id">/ structure</span><h4>Emit a structured spec</h4><p>Produces a JSON description of views, hierarchy, and bindings — not free text.</p></div>
+        <div class="cap"><span class="cap-id">/ ground</span><h4>Ground truth for codegen</h4><p>Becomes the reference the Code Generation and UI Layout Match agents compare against.</p></div>
+      </div>
+      <dl class="specs">
+        <div class="spec-row"><dt>Stage</dt><dd>ui.spec (11 / 32)</dd></div>
+        <div class="spec-row"><dt>Output format</dt><dd>Structured JSON UI spec per module</dd></div>
+      </dl>
+      <a class="backtop" href="#index">← back to directory</a>
+    </div>
+  </section>
+
+  <!-- =================== PHASE 05 =================== -->
+  <div id="p5"></div>
+
+  <section class="section agent-sec" id="a15">
+    <div class="wrap">
+      <div class="agent-head">
+        <p class="eyebrow">Stage 15 · Phase 05 — Equivalence</p>
+        <h2>Equivalence Audit Agent</h2>
+        <div class="tagrow"><span class="pill gate">equivalence gate</span></div>
+        <p class="gr"><span class="label">Golden rule</span><span class="t">Find every functional mismatch between the legacy app and the generated app.</span></p>
+        <p class="lede">The auditor. It compares legacy and generated feature-by-feature and produces a five-section report — including a mismatch table, severities, and an overall equivalence score with a Go / No-Go call.</p>
+      </div>
+      <div class="io-flow">
+        <div class="io-col"><span class="label">Inputs</span><ul><li>Legacy source context (≤20k)</li><li>Generated source (screens + VMs + nav)</li><li>Comprehension report (≤8k)</li></ul></div>
+        <div class="io-mid">→</div>
+        <div class="io-col out"><span class="label">Outputs</span><ul><li>Legacy + Generated Feature Inventories</li><li>Mismatch Table</li><li>Action Items</li><li>Summary + equivalence score</li></ul></div>
+      </div>
+      <h3 class="sub">Mismatch taxonomy</h3>
+      <div class="cap-grid">
+        <div class="cap"><span class="cap-id">/ invented</span><h4>INVENTED_LOGIC</h4><p>Logic present in generated but absent from legacy — always CRITICAL or HIGH.</p></div>
+        <div class="cap"><span class="cap-id">/ missing</span><h4>MISSING_FEATURE</h4><p>A legacy feature dropped or not implemented in the generated app.</p></div>
+        <div class="cap"><span class="cap-id">/ drift</span><h4>BEHAVIOR_DRIFT</h4><p>Present in both but behaves differently — wrong condition, param, or target.</p></div>
+        <div class="cap"><span class="cap-id">/ ui</span><h4>UI_MISMATCH</h4><p>Layout or visual difference only — color, spacing, component.</p></div>
+      </div>
+      <dl class="specs">
+        <div class="spec-row"><dt>Stage</dt><dd>equivalence.audit</dd></div>
+        <div class="spec-row"><dt>Severity</dt><dd>CRITICAL · HIGH · MEDIUM · LOW</dd></div>
+        <div class="spec-row"><dt>Output</dt><dd>5-section report · equivalence score 0–100% · Go/No-Go</dd></div>
+        <div class="spec-row"><dt>Stance</dt><dd>No benefit of the doubt — flag anything that differs</dd></div>
+      </dl>
+      <a class="backtop" href="#index">← back to directory</a>
+    </div>
+  </section>
+
+  <section class="section agent-sec" id="a16">
+    <div class="wrap">
+      <div class="agent-head">
+        <p class="eyebrow">Stage 16 · Phase 05 — Equivalence</p>
+        <h2>Equivalence Fix Agent</h2>
+        <div class="tagrow"><span class="pill gate">equivalence gate</span><span class="pill">writes files</span></div>
+        <p class="gr"><span class="label">Golden rule</span><span class="t">Fix ONLY what the audit identified. Do not change anything else.</span></p>
+        <p class="lede">The surgeon. It takes the audit's CRITICAL and HIGH findings and rewrites exactly those files — under a strict no-invented-logic, pixel-accurate-UI contract — emitting complete files, never diffs.</p>
+      </div>
+      <div class="io-flow">
+        <div class="io-col"><span class="label">Inputs</span><ul><li>Fix group + description</li><li>Existing generated files</li><li>Legacy source context (≤15k)</li><li>Audit report · drawable inventory</li></ul></div>
+        <div class="io-mid">→</div>
+        <div class="io-col out"><span class="label">Outputs</span><ul><li>Complete corrected files (### FILE:)</li><li>Removed-screen tombstones</li></ul></div>
+      </div>
+      <h3 class="sub">The rules it works under</h3>
+      <div class="cap-grid">
+        <div class="cap"><span class="cap-id">/ scope</span><h4>Audit-scoped only</h4><p>Touches no file not named in the fix description — surgical, not sweeping.</p></div>
+        <div class="cap"><span class="cap-id">/ logic</span><h4>Strict logic equivalence</h4><p>Adds no navigation, auth, validation, or business logic that isn't in the legacy source.</p></div>
+        <div class="cap"><span class="cap-id">/ ui</span><h4>Strict UI replication</h4><p>1:1 visual replica — legacy drawables, colors, spacing; no redesign, no icon swaps.</p></div>
+        <div class="cap"><span class="cap-id">/ format</span><h4>Complete files</h4><p>Outputs whole files via <span class="mono">### FILE:</span>; invented screens overwritten with a removal tombstone.</p></div>
+      </div>
+      <dl class="specs">
+        <div class="spec-row"><dt>Stage</dt><dd>equivalence.fix</dd></div>
+        <div class="spec-row"><dt>Applies</dt><dd>CRITICAL + HIGH mismatches only</dd></div>
+        <div class="spec-row"><dt>Drawables</dt><dd>Names restricted to the supplied drawable inventory</dd></div>
+      </dl>
+      <a class="backtop" href="#index">← back to directory</a>
+    </div>
+  </section>
+
+  <section class="section agent-sec" id="a17">
+    <div class="wrap">
+      <div class="agent-head">
+        <p class="eyebrow">Stage 17 · Phase 05 — Equivalence</p>
+        <h2>UI Layout Match Agent</h2>
+        <div class="tagrow"><span class="pill gate">equivalence gate</span><span class="pill">writes files</span></div>
+        <p class="gr"><span class="label">Golden rule</span><span class="t">The legacy XML layout is the single source of truth for visual structure.</span></p>
+        <p class="lede">Rewrites generated Compose screens to match the legacy XML exactly — same hierarchy depth, element order, margins, and padding — adding nothing the XML doesn't contain and removing nothing it does.</p>
+      </div>
+      <div class="io-flow">
+        <div class="io-col"><span class="label">Inputs</span><ul><li>Legacy XML layouts (ground truth)</li><li>Existing generated Compose files</li><li>Drawable inventory</li></ul></div>
+        <div class="io-mid">→</div>
+        <div class="io-col out"><span class="label">Outputs</span><ul><li>Rewritten Compose screens (### FILE:)</li></ul></div>
+      </div>
+      <h3 class="sub">How it matches</h3>
+      <div class="cap-grid">
+        <div class="cap"><span class="cap-id">/ hierarchy</span><h4>Match the hierarchy</h4><p>Replicates view-hierarchy depth, element order, margins, and padding from the XML.</p></div>
+        <div class="cap"><span class="cap-id">/ images</span><h4>Image rules</h4><p>Coil <span class="mono">AsyncImage</span> for URL images (logos, banners, avatars, ads); <span class="mono">painterResource</span> for static drawables.</p></div>
+        <div class="cap"><span class="cap-id">/ inventory</span><h4>Inventory-only drawables</h4><p>Never invents a drawable name — falls back to a Material Icon when none matches.</p></div>
+        <div class="cap"><span class="cap-id">/ identity</span><h4>Same package &amp; class</h4><p>Keeps the existing package and class names so wiring stays intact.</p></div>
+      </div>
+      <dl class="specs">
+        <div class="spec-row"><dt>Stage</dt><dd>ui.layout.match</dd></div>
+        <div class="spec-row"><dt>Output format</dt><dd>Complete Compose files via <span class="mono">### FILE:</span></dd></div>
+      </dl>
+      <a class="backtop" href="#index">← back to directory</a>
+    </div>
+  </section>
+
+  <!-- =================== PHASE 06 =================== -->
+  <div id="p6"></div>
+
+  <section class="section agent-sec" id="a18">
+    <div class="wrap">
+      <div class="agent-head">
+        <p class="eyebrow">Stage 18 · Phase 06 — Validation</p>
+        <h2>Dual-Run Planning Agent</h2>
+        <div class="tagrow"><span class="pill">specialized</span></div>
+        <p class="gr"><span class="label">Golden rule</span><span class="t">Compare legacy and modern outputs with identical inputs to prove equivalence.</span></p>
+        <p class="lede">Designs the dual-run experiment: the scenarios, the identical input sets fed to both apps, the rules for comparing their outputs, and the triage and sign-off process for any mismatch.</p>
+      </div>
+      <div class="io-flow">
+        <div class="io-col"><span class="label">Inputs</span><ul><li>Comprehension catalog</li><li>Test Generation output</li></ul></div>
+        <div class="io-mid">→</div>
+        <div class="io-col out"><span class="label">Outputs</span><ul><li>Dual-Run Scenarios · Input Sets</li><li>Comparison Rules · Tolerances</li><li>Mismatch Triage Workflow</li><li>Human Sign-Off Checklist</li></ul></div>
+      </div>
+      <h3 class="sub">What it defines</h3>
+      <div class="cap-grid">
+        <div class="cap"><span class="cap-id">/ scenarios</span><h4>Scenarios &amp; inputs</h4><p>The test scenarios and the identical input data sets fed to legacy and modern.</p></div>
+        <div class="cap"><span class="cap-id">/ compare</span><h4>Comparison &amp; tolerances</h4><p>Exact output-comparison criteria and the tolerances within which outputs count as equivalent.</p></div>
+        <div class="cap"><span class="cap-id">/ triage</span><h4>Triage &amp; sign-off</h4><p>The workflow for handling mismatches and the human sign-off checklist.</p></div>
+      </div>
+      <dl class="specs">
+        <div class="spec-row"><dt>Stage</dt><dd>dualrun.plan</dd></div>
+        <div class="spec-row"><dt>Realized as</dt><dd>38 dual-run scenarios — all passing (phone + tablet)</dd></div>
+      </dl>
+      <a class="backtop" href="#index">← back to directory</a>
+    </div>
+  </section>
+
+  <section class="section agent-sec" id="a19">
+    <div class="wrap">
+      <div class="agent-head">
+        <p class="eyebrow">Stage 19 · Phase 06 — Validation</p>
+        <h2>Validation Agent</h2>
+        <div class="tagrow"><span class="pill core">core agent</span></div>
+        <p class="gr"><span class="label">Golden rule</span><span class="t">Prove equivalence before enhancement.</span></p>
+        <p class="lede">The gatekeeper. It cross-checks code, tests, and data migration for equivalence, logs every gap and defect, and issues a Go / No-Go recommendation with the HITL checkpoints and escalation triggers attached.</p>
+      </div>
+      <div class="io-flow">
+        <div class="io-col"><span class="label">Inputs</span><ul><li>Legacy context</li><li>Code Generation · Data Migration</li><li>Test Generation · Dual-Run plan</li></ul></div>
+        <div class="io-mid">→</div>
+        <div class="io-col out"><span class="label">Outputs</span><ul><li>Equivalence Checklist · Gap Analysis</li><li>Defect Log</li><li>HITL Checkpoints · Escalation Triggers</li><li>Go/No-Go Recommendation</li></ul></div>
+      </div>
+      <h3 class="sub">What it does</h3>
+      <div class="cap-grid">
+        <div class="cap"><span class="cap-id">/ verify</span><h4>Cross-artifact equivalence</h4><p>Verifies equivalence across code, tests, and data migration together.</p></div>
+        <div class="cap"><span class="cap-id">/ gaps</span><h4>Gaps &amp; defects</h4><p>Produces a gap analysis and a defect log of everything still off-spec.</p></div>
+        <div class="cap"><span class="cap-id">/ gate</span><h4>Go / No-Go</h4><p>Lists mandatory HITL checkpoints and escalation triggers, then makes the call.</p></div>
+      </div>
+      <dl class="specs">
+        <div class="spec-row"><dt>Stage</dt><dd>validation</dd></div>
+        <div class="spec-row"><dt>Output format</dt><dd>Checklist · Gaps · Defects · Triggers · Go/No-Go</dd></div>
+      </dl>
+      <a class="backtop" href="#index">← back to directory</a>
+    </div>
+  </section>
+
+  <section class="section agent-sec" id="a20">
+    <div class="wrap">
+      <div class="agent-head">
+        <p class="eyebrow">Stage 20 · Phase 06 — Validation</p>
+        <h2>5-Layer Validation Agent</h2>
+        <div class="tagrow"><span class="pill">specialized</span></div>
+        <p class="gr"><span class="label">Golden rule</span><span class="t">Prove equivalence using layered evidence.</span></p>
+        <p class="lede">Assembles a validation pack across five layers of evidence — unit through user-acceptance — with concrete objectives and pass/fail evidence requirements, flagging anything missing that blocks go-live.</p>
+      </div>
+      <div class="io-flow">
+        <div class="io-col"><span class="label">Inputs</span><ul><li>Comprehension catalog</li><li>Validation output</li></ul></div>
+        <div class="io-mid">→</div>
+        <div class="io-col out"><span class="label">Outputs</span><ul><li>Layers 1–5 evidence pack</li><li>Blocking Gaps</li><li>Overall Equivalence Readiness</li></ul></div>
+      </div>
+      <h3 class="sub">The five layers</h3>
+      <div class="cap-grid">
+        <div class="cap"><span class="cap-id">/ L1–L2</span><h4>Unit &amp; Integration</h4><p>Component-level and cross-component evidence.</p></div>
+        <div class="cap"><span class="cap-id">/ L3</span><h4>Business Process</h4><p>End-to-end business flows behave identically.</p></div>
+        <div class="cap"><span class="cap-id">/ L4</span><h4>Non-Functional</h4><p>Performance, scalability, and other NFR evidence.</p></div>
+        <div class="cap"><span class="cap-id">/ L5</span><h4>User Acceptance</h4><p>UAT-level confirmation, plus blocking-gap flags.</p></div>
+      </div>
+      <dl class="specs">
+        <div class="spec-row"><dt>Stage</dt><dd>validation.5layer</dd></div>
+        <div class="spec-row"><dt>Realized as</dt><dd>176 validation test specs</dd></div>
+      </dl>
+      <a class="backtop" href="#index">← back to directory</a>
+    </div>
+  </section>
+
+  <!-- =================== PHASE 07 =================== -->
+  <div id="p7"></div>
+
+  <section class="section agent-sec" id="a21">
+    <div class="wrap">
+      <div class="agent-head">
+        <p class="eyebrow">Stage 21 · Phase 07 — Rollout</p>
+        <h2>Documentation Agent</h2>
+        <div class="tagrow"><span class="pill core">core agent</span></div>
+        <p class="gr"><span class="label">Golden rule</span><span class="t">Produce complete migration and operational documentation for traceability.</span></p>
+        <p class="lede">Consumes every upstream agent's output and produces the human-facing record: a migration runbook, operational handoff docs, and an end-to-end traceability matrix across all core agents.</p>
+      </div>
+      <div class="io-flow">
+        <div class="io-col"><span class="label">Inputs</span><ul><li>All upstream outputs (discovery → dual-run)</li></ul></div>
+        <div class="io-mid">→</div>
+        <div class="io-col out"><span class="label">Outputs</span><ul><li>Migration Runbook</li><li>Operational Documentation</li><li>Traceability Matrix</li><li>HITL Approval Matrix</li><li>Open Risks &amp; Assumptions</li></ul></div>
+      </div>
+      <h3 class="sub">What it produces</h3>
+      <div class="cap-grid">
+        <div class="cap"><span class="cap-id">/ runbook</span><h4>Runbook &amp; ops docs</h4><p>The migration runbook and operational handoff documentation.</p></div>
+        <div class="cap"><span class="cap-id">/ trace</span><h4>Traceability matrix</h4><p>An end-to-end matrix linking rules through implementation and tests across all agents.</p></div>
+        <div class="cap"><span class="cap-id">/ approvals</span><h4>Approval evidence</h4><p>The HITL approval matrix and the open risks and assumptions list.</p></div>
+      </div>
+      <dl class="specs">
+        <div class="spec-row"><dt>Stage</dt><dd>documentation</dd></div>
+        <div class="spec-row"><dt>Inputs</dt><dd>Outputs of all 9 upstream core agents</dd></div>
+      </dl>
+      <a class="backtop" href="#index">← back to directory</a>
+    </div>
+  </section>
+
+  <section class="section agent-sec" id="a22">
+    <div class="wrap">
+      <div class="agent-head">
+        <p class="eyebrow">Stage 22 · Phase 07 — Rollout</p>
+        <h2>Orchestrator Agent</h2>
+        <div class="tagrow"><span class="pill core">core agent</span></div>
+        <p class="gr"><span class="label">Golden rule</span><span class="t">Coordinate agents, manage context passing, and report workflow state.</span></p>
+        <p class="lede">The conductor. It summarizes pipeline progress per agent, lists blocked dependencies and escalation triggers, and surfaces the feedback loops that downstream agents have raised to their upstream owners.</p>
+      </div>
+      <div class="io-flow">
+        <div class="io-col"><span class="label">Inputs</span><ul><li>All agent outputs (truncated digest)</li></ul></div>
+        <div class="io-mid">→</div>
+        <div class="io-col out"><span class="label">Outputs</span><ul><li>Workflow State</li><li>Progress Report</li><li>Escalation Triggers</li><li>Feedback Loop Queue</li><li>Next HITL Actions</li></ul></div>
+      </div>
+      <h3 class="sub">What it does</h3>
+      <div class="cap-grid">
+        <div class="cap"><span class="cap-id">/ progress</span><h4>Progress per agent</h4><p>Summarizes completion status across every core agent in the pipeline.</p></div>
+        <div class="cap"><span class="cap-id">/ escalate</span><h4>Escalations &amp; blocks</h4><p>Lists escalation triggers and blocked dependencies needing attention.</p></div>
+        <div class="cap"><span class="cap-id">/ route</span><h4>Feedback routing</h4><p>Surfaces downstream feedback to upstream owners and the next HITL actions.</p></div>
+      </div>
+      <dl class="specs">
+        <div class="spec-row"><dt>Stage</dt><dd>orchestrator.report</dd></div>
+        <div class="spec-row"><dt>Output format</dt><dd>State · Progress · Escalations · Feedback Queue · Next Actions</dd></div>
+      </dl>
+      <a class="backtop" href="#index">← back to directory</a>
+    </div>
+  </section>
+
+  <section class="section agent-sec" id="a23">
+    <div class="wrap">
+      <div class="agent-head">
+        <p class="eyebrow">Stage 23 · Phase 07 — Rollout</p>
+        <h2>Feedback Loop Resolution Agent</h2>
+        <div class="tagrow"><span class="pill">specialized</span></div>
+        <p class="gr"><span class="label">Golden rule</span><span class="t">Resolve downstream ambiguity by routing issues to upstream knowledge owners.</span></p>
+        <p class="lede">The pipeline's escalation router. It collects the feedback that downstream agents raised, groups it by the upstream agent that owns the answer, and produces a prioritized resolution queue for the orchestrator.</p>
+      </div>
+      <div class="io-flow">
+        <div class="io-col"><span class="label">Inputs</span><ul><li>Legacy context</li><li>Discovery + Comprehension output</li><li>Actionable feedback list</li></ul></div>
+        <div class="io-mid">→</div>
+        <div class="io-col out"><span class="label">Outputs</span><ul><li>Feedback Grouped by Upstream Agent</li><li>Required Clarifications</li><li>Priority</li><li>Resolution Queue</li></ul></div>
+      </div>
+      <h3 class="sub">What it does</h3>
+      <div class="cap-grid">
+        <div class="cap"><span class="cap-id">/ group</span><h4>Group by owner</h4><p>Sorts feedback by target upstream agent — Discovery / Comprehension / Architecture.</p></div>
+        <div class="cap"><span class="cap-id">/ clarify</span><h4>Propose clarifications</h4><p>States the concrete upstream clarifications each item requires.</p></div>
+        <div class="cap"><span class="cap-id">/ queue</span><h4>Resolution queue</h4><p>Produces a prioritized queue the orchestrator works through.</p></div>
+      </div>
+      <dl class="specs">
+        <div class="spec-row"><dt>Stage</dt><dd>feedback.loop</dd></div>
+        <div class="spec-row"><dt>Routes to</dt><dd>Discovery · Comprehension · Architecture</dd></div>
+      </dl>
+      <a class="backtop" href="#index">← back to directory</a>
+    </div>
+  </section>
+
+  <section class="section agent-sec" id="a24">
+    <div class="wrap">
+      <div class="agent-head">
+        <p class="eyebrow">Stage 24 · Phase 07 — Delivery</p>
+        <h2>Delivery Pack Agent</h2>
+        <div class="tagrow"><span class="pill plan">planning mode</span></div>
+        <p class="gr"><span class="label">Golden rule</span><span class="t">Compile only equivalence-first deliverables without enhancement work.</span></p>
+        <p class="lede">Bundles architecture, codegen, and validation into one execution-ready delivery pack — stating exact scope boundaries, what's deferred, and the human approvals required before merge.</p>
+      </div>
+      <div class="io-flow">
+        <div class="io-col"><span class="label">Inputs</span><ul><li>Explicit rules</li><li>Architecture · Codegen · Validation</li></ul></div>
+        <div class="io-mid">→</div>
+        <div class="io-col out"><span class="label">Outputs</span><ul><li>Scope Summary</li><li>Approved Rule Set Reference</li><li>Delivery Artifacts</li><li>Deferred Items</li><li>Human Approval Checklist</li></ul></div>
+      </div>
+      <h3 class="sub">What it does</h3>
+      <div class="cap-grid">
+        <div class="cap"><span class="cap-id">/ consolidate</span><h4>One delivery pack</h4><p>Consolidates architecture, codegen, and validation into a single execution-ready bundle.</p></div>
+        <div class="cap"><span class="cap-id">/ boundaries</span><h4>Scope &amp; deferrals</h4><p>States exact scope boundaries and the items deferred — no enhancement before equivalence.</p></div>
+        <div class="cap"><span class="cap-id">/ approvals</span><h4>Required approvals</h4><p>Lists the human approvals required before anything merges.</p></div>
+      </div>
+      <dl class="specs">
+        <div class="spec-row"><dt>Stage</dt><dd>delivery_pack (planning / batch mode)</dd></div>
+      </dl>
+      <a class="backtop" href="#index">← back to directory</a>
+    </div>
+  </section>
+
+  <section class="section agent-sec" id="a25">
+    <div class="wrap">
+      <div class="agent-head">
+        <p class="eyebrow">Stage 25 · Phase 07 — Delivery</p>
+        <h2>Implementation Tasks Agent</h2>
+        <div class="tagrow"><span class="pill plan">planning mode</span></div>
+        <p class="gr"><span class="label">Golden rule</span><span class="t">Produce concrete, file-level implementation tasks that preserve behavior exactly.</span></p>
+        <p class="lede">Turns rules, architecture, and codegen into a checklist of concrete code-change tasks — each with the rule IDs it covers, the tests to add, acceptance criteria, and whether an agent or a human owns it.</p>
+      </div>
+      <div class="io-flow">
+        <div class="io-col"><span class="label">Inputs</span><ul><li>Explicit rules</li><li>Architecture · Codegen · Validation</li></ul></div>
+        <div class="io-mid">→</div>
+        <div class="io-col out"><span class="label">Outputs</span><ul><li>Per-task: target files, change, rule IDs, tests, acceptance, owner</li></ul></div>
+      </div>
+      <h3 class="sub">Each task carries</h3>
+      <div class="cap-grid">
+        <div class="cap"><span class="cap-id">/ change</span><h4>Target files &amp; change</h4><p>The files/modules to touch and the precise change to make.</p></div>
+        <div class="cap"><span class="cap-id">/ coverage</span><h4>Rules &amp; tests</h4><p>The rule IDs covered and the tests to add or update, with acceptance criteria.</p></div>
+        <div class="cap"><span class="cap-id">/ owner</span><h4>Agent or human</h4><p>Marks each task Agent-Executable or Human-Approval-Required.</p></div>
+      </div>
+      <dl class="specs">
+        <div class="spec-row"><dt>Stage</dt><dd>implementation_tasks (planning / batch mode)</dd></div>
+      </dl>
+      <a class="backtop" href="#index">← back to directory</a>
+    </div>
+  </section>
+
+  <section class="section agent-sec" id="a26">
+    <div class="wrap">
+      <div class="agent-head">
+        <p class="eyebrow">Stage 26 · Phase 07 — Delivery</p>
+        <h2>Traceability Agent</h2>
+        <div class="tagrow"><span class="pill plan">planning mode</span></div>
+        <p class="gr"><span class="label">Golden rule</span><span class="t">Every explicit rule must map to implementation and tests.</span></p>
+        <p class="lede">Closes the loop. It builds the traceability matrix — one row per rule — mapping each to its target component, implementation tasks, and test IDs, and flags any rule left unmapped or without evidence.</p>
+      </div>
+      <div class="io-flow">
+        <div class="io-col"><span class="label">Inputs</span><ul><li>Explicit rules</li><li>Architecture output</li><li>Implementation Tasks output</li></ul></div>
+        <div class="io-mid">→</div>
+        <div class="io-col out"><span class="label">Outputs</span><ul><li>Traceability matrix (Markdown table)</li><li>Unmapped-rule flags</li></ul></div>
+      </div>
+      <h3 class="sub">Matrix columns</h3>
+      <div class="cap-grid">
+        <div class="cap"><span class="cap-id">/ rule</span><h4>Rule → component</h4><p>Each RULE-### mapped to the target component/method that implements it.</p></div>
+        <div class="cap"><span class="cap-id">/ tests</span><h4>Tasks &amp; tests</h4><p>Implementation task IDs and test IDs proving the rule.</p></div>
+        <div class="cap"><span class="cap-id">/ evidence</span><h4>Evidence &amp; verification</h4><p>Evidence status and human-verification state; flags unmapped rules.</p></div>
+      </div>
+      <dl class="specs">
+        <div class="spec-row"><dt>Stage</dt><dd>traceability (planning / batch mode)</dd></div>
+        <div class="spec-row"><dt>Output format</dt><dd>Markdown table — Rule ID · Component · Tasks · Tests · Evidence · Verification</dd></div>
+      </dl>
+      <a class="backtop" href="#index">← back to directory</a>
+    </div>
+  </section>
+
+  <!-- PRINCIPLES -->
+  <section class="section" id="principles">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">Operating principles</p>
+        <h2>The rules every agent works by</h2>
+      </div>
+      <div class="principles">
+        <div class="principle"><h3>Equivalence before enhancement</h3><p>If a behavior exists in the legacy app, implement it exactly. If it doesn't exist, never add it.</p></div>
+        <div class="principle"><h3>No silent guessing</h3><p>Uncertainty is documented and routed upstream for a human — never resolved quietly inside an agent.</p></div>
+        <div class="principle"><h3>Only legacy evidence counts</h3><p>"It makes sense to add" is not a valid reason. "The legacy app does it" is the only valid reason.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- RUNTIME -->
+  <section class="section" id="runtime">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">Engine &amp; runtime</p>
+        <h2>How the agents actually run</h2>
+        <p>Every agent is a prompt executed through one shared runtime — there are no Semantic-Kernel plugins or skills; the swarm is pure prompt-chained agents over a shared knowledge base.</p>
+      </div>
+      <dl class="specs">
+        <div class="spec-row"><dt>Backend</dt><dd>claude_code (Claude Code CLI) · or anthropic_api (Semantic Kernel invoke_prompt)</dd></div>
+        <div class="spec-row"><dt>CLI invocation</dt><dd>claude -p --output-format stream-json --max-turns N --permission-mode …</dd></div>
+        <div class="spec-row"><dt>Model</dt><dd>Configurable via --claude-model · tiered by MWU complexity (fast / balanced / deep)</dd></div>
+        <div class="spec-row"><dt>Timeout</dt><dd>1800s (30 min) per invocation · auto prompt-reduction on overflow</dd></div>
+        <div class="spec-row"><dt>Shared state</dt><dd>MigrationKnowledgeBase — hybrid document + retrieval + graph memory</dd></div>
+        <div class="spec-row"><dt>File output</dt><dd>### FILE: &lt;path&gt; markers extracted and written to the Compose project</dd></div>
+        <div class="spec-row"><dt>HITL gates</dt><dd>A — artifacts · B — rulebook · C — each MWU PR · D — phase validation</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <div class="wrap">
+      <span>Migration Orchestrator · Agent Catalog · 26 agents / 8 phases</span>
+      <span>Generated from orchestrator.py prompt definitions &amp; STAGE_SEQUENCE</span>
+    </div>
+  </footer>
+
+</main>
+</body>
+</html>
