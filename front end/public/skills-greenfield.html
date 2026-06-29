@@ -1,0 +1,1030 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Skill Catalog — Client Onboarding Portal</title>
+<meta name="description" content="The 12 capability skills of the Client Onboarding Portal AI pipeline — each with capabilities, mechanics, output schema, evaluation criteria, and specs.">
+
+<style>
+  :root {
+    --ink:#0B0B0D; --ink-2:#111218; --surface:#15171F; --surface-2:#1B1E27;
+    --line:#2B2E38; --line-soft:#20222B; --text:#E7E3D6; --muted:#A6A296; --faint:#6E6A5E;
+    --accent:#F2C94C; --accent-2:#F7DC84; --accent-dim:rgba(242,201,76,.13); --accent-line:rgba(242,201,76,.30); --glow:rgba(242,201,76,.06);
+    --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+    --font-mono: ui-monospace, "SF Mono", "JetBrains Mono", "Menlo", "Consolas", monospace;
+    --maxw:1060px; --step:clamp(2.4rem,6vw,4.5rem);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin:0;
+    background: radial-gradient(120% 80% at 80% -10%, var(--glow), transparent 55%), var(--ink);
+    color:var(--text); font-family:var(--font-sans); font-size:17px; line-height:1.6;
+    -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility; transition:background .4s ease;
+  }
+  ::selection { background:var(--accent-dim); color:var(--accent-2); }
+  .wrap { max-width:var(--maxw); margin:0 auto; padding:0 24px; }
+  a { color:var(--accent-2); text-decoration:none; }
+  a:hover { text-decoration:underline; text-underline-offset:3px; }
+
+  .eyebrow { font-family:var(--font-mono); font-size:.72rem; letter-spacing:.22em; text-transform:uppercase; color:var(--accent); margin:0; }
+  .label { font-family:var(--font-mono); font-size:.68rem; letter-spacing:.18em; text-transform:uppercase; color:var(--faint); }
+  h1,h2,h3 { text-wrap:balance; font-weight:650; letter-spacing:-.02em; line-height:1.08; }
+  .mono { font-family:var(--font-mono); }
+
+  .topbar { border-bottom:1px solid var(--line-soft); position:sticky; top:0; z-index:20; background:rgba(11,11,13,.82); backdrop-filter:blur(10px); }
+  .topbar .wrap { display:flex; align-items:center; justify-content:space-between; height:56px; }
+  .brand { display:flex; align-items:center; gap:10px; font-family:var(--font-mono); font-size:.8rem; letter-spacing:.04em; color:var(--muted); }
+  .brand b { color:var(--text); font-weight:600; }
+  .dot { width:7px; height:7px; border-radius:50%; background:var(--accent); box-shadow:0 0 10px var(--accent); transition:background .4s ease, box-shadow .4s ease; }
+  .topbar nav { display:flex; gap:22px; }
+  .topbar nav a { color:var(--muted); font-family:var(--font-mono); font-size:.74rem; letter-spacing:.04em; }
+  .topbar nav a:hover { color:var(--text); text-decoration:none; }
+  @media (max-width:760px){ .topbar nav { display:none; } }
+
+  .pipeline { border-bottom:1px solid var(--line-soft); background:var(--ink-2); }
+  .pipeline .wrap { display:flex; align-items:center; gap:4px; overflow-x:auto; padding-top:12px; padding-bottom:12px; scrollbar-width:thin; scrollbar-color:var(--line) transparent; }
+  .pipeline .wrap::-webkit-scrollbar { height:5px; }
+  .pipeline .wrap::-webkit-scrollbar-thumb { background:var(--line); border-radius:4px; }
+  .stage { display:inline-flex; align-items:baseline; gap:8px; white-space:nowrap; font-family:var(--font-mono); font-size:.76rem; color:var(--faint); padding:5px 11px; border-radius:999px; border:1px solid transparent; cursor:pointer; background:none; transition:color .15s ease, background .15s ease, border-color .15s ease; }
+  .stage:hover { color:var(--text); }
+  .stage .s-n { font-size:.66rem; opacity:.8; }
+  .stage.active { color:var(--text); border-color:var(--accent-line); background:var(--accent-dim); }
+  .stage.active .s-n { color:var(--accent); opacity:1; }
+  .stage.done { color:var(--muted); }
+  .arr { color:var(--line); font-family:var(--font-mono); font-size:.7rem; }
+
+  .hero { padding:var(--step) 0 calc(var(--step) * .7); }
+  .hero-grid { display:grid; grid-template-columns:1.05fr .95fr; gap:48px; align-items:center; }
+  @media (max-width:920px){ .hero-grid { grid-template-columns:1fr; gap:36px; } }
+  .hero h1 { font-size:clamp(2.4rem,5.8vw,3.9rem); margin:16px 0 0; }
+  .hero-status { display:flex; gap:8px; margin-top:14px; flex-wrap:wrap; }
+  .pill { font-family:var(--font-mono); font-size:.64rem; letter-spacing:.12em; text-transform:uppercase; padding:3px 9px; border-radius:5px; border:1px solid var(--line); color:var(--muted); background:var(--surface); }
+  .pill.accent { color:var(--accent); border-color:var(--accent-line); background:var(--accent-dim); }
+  .hero .lede { color:var(--muted); font-size:1.1rem; max-width:48ch; margin:18px 0 0; }
+  .hero-meta { display:flex; flex-wrap:wrap; gap:10px 26px; margin-top:26px; font-family:var(--font-mono); font-size:.76rem; color:var(--muted); }
+  .hero-meta span b { color:var(--text); font-weight:600; }
+
+  .scanner { position:relative; border:1px solid var(--line); border-radius:10px; background:linear-gradient(180deg,var(--surface),var(--ink-2)); overflow:hidden; box-shadow:0 24px 60px -30px rgba(0,0,0,.8); }
+  .scanner-head { display:flex; align-items:center; gap:8px; padding:11px 14px; border-bottom:1px solid var(--line-soft); font-family:var(--font-mono); font-size:.71rem; color:var(--faint); }
+  .tl { display:flex; gap:6px; margin-right:6px; }
+  .tl i { width:9px; height:9px; border-radius:50%; background:var(--line); display:block; }
+  .scan-body { position:relative; }
+  pre.code { margin:0; padding:18px 18px 20px; font-family:var(--font-mono); font-size:.77rem; line-height:1.7; color:#aeb9c5; overflow-x:auto; tab-size:2; }
+  pre.code .k { color:#ffd86b; } pre.code .s { color:#88c9a1; } pre.code .c { color:#56616e; font-style:italic; }
+  pre.code .f { color:#e4d290; } pre.code .n { color:#d8a0d8; } pre.code .x { color:#ff7a7a; }
+
+  .scanline { position:absolute; left:0; right:0; top:0; height:38px; background:linear-gradient(180deg,transparent,var(--accent-dim) 70%,var(--accent-line)); border-bottom:1px solid var(--accent); box-shadow:0 0 22px 2px var(--accent-dim); pointer-events:none; animation:sweep 5.6s cubic-bezier(.6,0,.4,1) infinite; }
+  @keyframes sweep { 0%{transform:translateY(-40px);opacity:0;} 8%{opacity:1;} 70%{opacity:1;} 85%{transform:translateY(300px);opacity:0;} 100%{transform:translateY(300px);opacity:0;} }
+
+  .findings { border-top:1px solid var(--line-soft); padding:14px; display:flex; flex-direction:column; gap:8px; background:var(--ink-2); }
+  .finding { display:flex; align-items:center; gap:10px; font-family:var(--font-mono); font-size:.72rem; padding:8px 11px; border-radius:7px; border:1px solid var(--line-soft); background:var(--surface); opacity:0; transform:translateX(8px); animation:pop .5s ease forwards; }
+  .finding .tag { font-size:.6rem; letter-spacing:.08em; text-transform:uppercase; padding:2px 7px; border-radius:4px; color:var(--ink); background:var(--accent); font-weight:700; flex-shrink:0; }
+  .finding .tag.alt { background:transparent; color:var(--accent); border:1px solid var(--accent-line); }
+  .finding .txt { color:var(--text); }
+  .finding .meta { margin-left:auto; color:var(--faint); flex-shrink:0; }
+  .finding:nth-child(1){ animation-delay:1.0s; } .finding:nth-child(2){ animation-delay:1.5s; }
+  .finding:nth-child(3){ animation-delay:2.0s; } .finding:nth-child(4){ animation-delay:2.5s; }
+  @keyframes pop { to { opacity:1; transform:translateX(0); } }
+
+  @media (prefers-reduced-motion:reduce) { .scanline{ animation:none; opacity:.85; top:110px; } .finding{ animation:none; opacity:1; transform:none; } body,.dot{ transition:none; } }
+
+  .section { padding:calc(var(--step) * .72) 0; border-top:1px solid var(--line-soft); }
+  .section-head { max-width:56ch; margin-bottom:34px; }
+  .section-head h2 { font-size:clamp(1.6rem,3.2vw,2.3rem); margin:12px 0 0; }
+  .section-head p { color:var(--muted); margin:14px 0 0; }
+  .prose p { color:var(--muted); max-width:64ch; margin:0 0 16px; }
+  .prose strong { color:var(--text); font-weight:600; }
+
+  .cap-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--line-soft); border:1px solid var(--line-soft); border-radius:12px; overflow:hidden; }
+  @media (max-width:820px){ .cap-grid { grid-template-columns:repeat(2,1fr); } }
+  @media (max-width:540px){ .cap-grid { grid-template-columns:1fr; } }
+  .cap { background:var(--surface); padding:20px 20px 22px; display:flex; flex-direction:column; gap:8px; transition:background .18s ease; }
+  .cap:hover { background:var(--surface-2); }
+  .cap .cap-id { font-family:var(--font-mono); font-size:.68rem; color:var(--accent); letter-spacing:.08em; }
+  .cap h3 { font-size:1rem; margin:0; }
+  .cap p { margin:0; color:var(--muted); font-size:.88rem; line-height:1.5; }
+
+  .steps { display:flex; flex-direction:column; }
+  .step { display:grid; grid-template-columns:56px 1fr; gap:20px; padding:20px 0; border-top:1px solid var(--line-soft); }
+  .step:first-child { border-top:none; }
+  .step .st-n { font-family:var(--font-mono); font-size:1.4rem; color:var(--accent); font-variant-numeric:tabular-nums; line-height:1; padding-top:2px; }
+  .step h3 { font-size:1.05rem; margin:0 0 6px; }
+  .step p { margin:0; color:var(--muted); font-size:.93rem; max-width:62ch; }
+
+  .schema { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; }
+  @media (max-width:720px){ .schema { grid-template-columns:1fr; } }
+  .field { border:1px solid var(--line-soft); border-radius:9px; padding:14px 16px; background:var(--surface); display:flex; flex-direction:column; gap:5px; }
+  .field .fname { font-family:var(--font-mono); font-size:.84rem; color:var(--text); }
+  .field .fname .br { color:var(--accent); }
+  .field .fdesc { font-size:.84rem; color:var(--muted); }
+
+  .conf { margin-top:24px; border:1px solid var(--accent-line); border-radius:10px; background:var(--accent-dim); padding:16px 20px; display:flex; align-items:center; gap:18px; flex-wrap:wrap; }
+  .conf .meter { display:flex; gap:4px; }
+  .conf .seg { width:24px; height:10px; border-radius:2px; background:var(--line); }
+  .conf .seg.on { background:var(--accent); }
+  .conf .conf-txt { font-family:var(--font-mono); font-size:.78rem; color:var(--muted); }
+  .conf .conf-txt b { color:var(--text); }
+
+  .esc-list { display:flex; flex-direction:column; gap:8px; }
+  .esc-row { border-left:2px solid var(--accent); background:var(--surface); border-radius:0 8px 8px 0; padding:12px 16px; font-size:.9rem; color:var(--text); }
+  .esc-row .to { color:var(--accent); font-family:var(--font-mono); font-weight:700; }
+  .esc-note { margin-top:18px; color:var(--faint); font-size:.85rem; max-width:72ch; }
+  .esc-note code { color:var(--muted); font-family:var(--font-mono); }
+
+  .principles { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; }
+  @media (max-width:720px){ .principles { grid-template-columns:1fr; } }
+  .principle { border-top:2px solid var(--accent); padding-top:14px; }
+  .principle h3 { font-size:1rem; margin:0 0 7px; }
+  .principle p { margin:0; color:var(--muted); font-size:.89rem; }
+
+  .specs { border:1px solid var(--line-soft); border-radius:12px; overflow:hidden; }
+  .spec-row { display:grid; grid-template-columns:200px 1fr; border-top:1px solid var(--line-soft); }
+  .spec-row:first-child { border-top:none; }
+  .spec-row dt { padding:13px 18px; background:var(--ink-2); font-family:var(--font-mono); font-size:.74rem; letter-spacing:.03em; color:var(--muted); }
+  .spec-row dd { margin:0; padding:13px 18px; color:var(--text); font-family:var(--font-mono); font-size:.8rem; word-break:break-word; }
+  @media (max-width:560px){ .spec-row { grid-template-columns:1fr; } .spec-row dd { padding-top:0; } }
+
+  .next { border-top:1px solid var(--line-soft); padding:var(--step) 0; }
+  .next-card { display:flex; align-items:center; justify-content:space-between; gap:20px; border:1px solid var(--line); border-radius:12px; padding:22px 26px; background:var(--surface); flex-wrap:wrap; }
+  .next-card .nx-l .label { display:block; margin-bottom:6px; }
+  .next-card h3 { font-size:1.3rem; margin:0; }
+  .next-card button.go { font-family:var(--font-mono); font-size:.82rem; color:var(--accent); border:1px solid var(--accent-line); border-radius:8px; padding:11px 18px; background:var(--accent-dim); cursor:pointer; transition:background .15s ease; }
+  .next-card button.go:hover { background:var(--accent-line); }
+
+  footer.foot { border-top:1px solid var(--line-soft); padding:26px 0 48px; color:var(--faint); font-family:var(--font-mono); font-size:.72rem; }
+  footer.foot .wrap { display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap; }
+
+  .fade { animation:fadein .35s ease; }
+  @keyframes fadein { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:none; } }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap">
+    <div class="brand"><span class="dot"></span> Onboarding&nbsp;Portal&nbsp;<b>· Skill Catalog</b></div>
+    <nav>
+      <a href="/toolkit">Back to Engineering Agents</a>
+      <a href="#what">Overview</a>
+      <a href="#caps">Capabilities</a>
+      <a href="#how">Mechanics</a>
+      <a href="#output">Output</a>
+      <a href="#specs">Specs</a>
+    </nav>
+  </div>
+</header>
+
+<div class="pipeline"><div class="wrap" id="switcher"></div></div>
+
+<main id="app"></main>
+
+<footer class="foot">
+  <div class="wrap">
+    <span>Generated from ai/skills/*/SKILL.md + ai/REGISTRY.md · all skills v0.1.0 draft / built-from-scratch</span>
+    <span id="foot-pos">Skill 01 / 12</span>
+  </div>
+</footer>
+
+<script>
+/* ---------- category accents (collapsed to the yellow skill theme) ---------- */
+const YELLOW = "#F2C94C", YELLOW2 = "#F7DC84";
+const CATS = {
+  gen:    { label: "Generation",    accent: YELLOW, accent2: YELLOW2 },
+  review: { label: "Review",        accent: YELLOW, accent2: YELLOW2 },
+  reason: { label: "Reasoning",     accent: YELLOW, accent2: YELLOW2 },
+  docs:   { label: "Documentation", accent: YELLOW, accent2: YELLOW2 },
+};
+
+const ORDER = [
+  "backend-generation","frontend-generation","workflow-engine","dynamic-form-engine",
+  "xlsx-processing","rbac-implementation","architecture-review","reviewer",
+  "security-review","audit-engine","state-machine","documentation"
+];
+
+const SKILLS = {
+
+"backend-generation": {
+  num:"01", short:"Backend", name:"Backend Generation", cat:"gen", runtime:true,
+  lede:"It scaffolds a feature inside one bounded context the way a service owner would — entities with behavior, use cases, handlers and events — and ships the authorization, in-transaction audit, and the full negative-path test matrix as part of the same output.",
+  meta:[["Inputs","feature spec + module"],["Output","files + tests"],["Invoked by","backend-agent"]],
+  specimen:{ file:"spec: create_case use case → generate", code:
+`<span class="k">export async function</span> <span class="f">createCase</span>(cmd, ctx) {
+  authz.<span class="f">assertCan</span>(ctx.actor, <span class="s">"case.create"</span>, null)
+  <span class="k">return</span> <span class="f">tx</span>(<span class="k">async</span> (t) =&gt; {        <span class="c">// generated</span>
+    <span class="k">const</span> c = Case.<span class="f">open</span>(cmd, ctx.actor)
+    <span class="k">await</span> repo.<span class="f">save</span>(c, t)
+    <span class="k">await</span> outbox.<span class="f">emit</span>(CaseOpened, t)  <span class="c">// audit</span>
+  })
+}`,
+    findings:[
+      {tag:"Gen",alt:false,txt:"5 files generated",meta:"FILES"},
+      {tag:"Gen",alt:false,txt:"assertCan + audit in tx",meta:"SAFE"},
+      {tag:"Test",alt:true,txt:"happy · bad actor · idempotent",meta:"5 CASES"},
+      {tag:"Flag",alt:true,txt:"migration? → escalate",meta:"DB"} ] },
+  overview:[
+    "Given a feature spec and a target module, the Backend Generation skill produces the code for one bounded context — domain entities with behavior, use cases, repositories, HTTP handlers, jobs, events — together with the tests. It is the capability the <strong>backend-agent</strong> reaches for when implementing a feature.",
+    "Three guarantees are baked in: every state-changing endpoint calls the central <strong>AuthorizationService</strong>, every state change emits a domain event and an audit record inside the same transaction, and the test matrix covers the negative paths. Schema migrations are emitted but flagged for escalation."],
+  caps:[
+    ["entities","Domain entities","Entities with behavior, plus use cases and repositories."],
+    ["handlers","Handlers & jobs","HTTP endpoints and background jobs for the feature."],
+    ["events","Events & audit","Domain events on the outbox; audit emitted in-transaction."],
+    ["authz","Authorization","assertCan at every state-changing endpoint."],
+    ["tests","Test matrix","Happy, invalid actor, invalid precondition, idempotency, audit."],
+    ["migrations","Migrations (flagged)","DB migration files, flagged for escalation."]],
+  steps:[
+    ["Receives a spec","Takes a feature spec + target module within one bounded context."],
+    ["Loads context","Architecture, engineering, rbac, security, and testing guidelines."],
+    ["Generates the layers","Entities, use cases, repos, handlers, jobs, and events."],
+    ["Wires safety & tests","Authz, in-transaction audit, and the five-case test matrix."],
+    ["Emits the diff","Files + events + audit events + a PR-ready summary."]],
+  output:[
+    ["files",false,"Created / modified files with full paths."],
+    ["events",false,"New domain events emitted."],
+    ["audit_events",true,"New audit events emitted."],
+    ["migrations",true,"DB migration files (flagged)."],
+    ["tests",false,"Test files alongside the code."],
+    ["diff_summary",false,"PR-ready summary."]],
+  gate:"Generated code must pass tsc/mypy, ESLint/Ruff, dependency-cruiser and the full test matrix; coverage delta ≥ 0.",
+  evaluation:[
+    "Passes tsc/mypy, ESLint/Ruff, dependency-cruiser, naming checks.",
+    "assertCan at every state-changing endpoint.",
+    "Audit event emitted within the transaction; subscriber wired.",
+    "Tests cover happy, invalid actor, invalid precondition, idempotency, audit.",
+    "No god classes, inline RBAC, sync notifications, or magic strings."],
+  principles:[
+    ["Layered, always","interfaces → application → domain → infrastructure; no cross-module imports."],
+    ["Safety in the transaction","Authz at the door, audit inside the tx."],
+    ["Tests are part of the code","The negative-path matrix ships with the feature."]],
+  specs:[
+    ["Skill type","Generation"],["Version","0.1.0"],
+    ["Status","draft · runtime-wired (.claude/skills)"],["Source","built-from-scratch"],
+    ["Invoked by","backend-agent"],
+    ["Triggers","apps/api/** · 'new endpoint' · 'new use case'"],
+    ["Required context","architecture · engineering · rbac · security · testing guidelines"],
+    ["Output","code generation (no envelope)"]]
+},
+
+"frontend-generation": {
+  num:"02", short:"Frontend", name:"Frontend Generation", cat:"gen", runtime:false,
+  lede:"It generates a feature slice the way a design-system-disciplined engineer would — every template through the form engine, every color a token, every permission read from the server, and accessibility asserted in the tests it writes.",
+  meta:[["Inputs","spec + API contract"],["Output","components + a11y"],["Invoked by","frontend-agent"]],
+  specimen:{ file:"spec: case section nav → generate", code:
+`<span class="k">export function</span> <span class="f">SectionNav</span>({ sections }) {
+  <span class="k">const</span> { can } = <span class="f">usePermissions</span>()   <span class="c">// server</span>
+  <span class="k">return</span> (
+    &lt;<span class="f">FormEngine</span>
+      template={tpl}               <span class="c">// form-engine-core</span>
+      tone={tokens.color.surface}  <span class="c">// token</span>
+    /&gt;
+  )
+}`,
+    findings:[
+      {tag:"Gen",alt:false,txt:"component + hook",meta:"FILES"},
+      {tag:"Gen",alt:false,txt:"form-engine-core used",meta:"ENGINE"},
+      {tag:"Test",alt:true,txt:"axe-core: 0 violations",meta:"A11Y"},
+      {tag:"Gen",alt:true,txt:"Storybook story",meta:"STORY"} ] },
+  overview:[
+    "The Frontend Generation skill produces React components, hooks, and form-engine bindings within a single feature slice, applying design tokens and consuming server-supplied permissions. It includes component tests, a11y assertions, and Storybook stories for design-system components.",
+    "It never invents authorization rules client-side and never hand-rolls rendering for template-driven content — that always goes through <strong>form-engine-core</strong>. The <strong>frontend-agent</strong> invokes it to render a slice against an API contract."],
+  caps:[
+    ["components","Components & hooks","PascalCase components, use* hooks, typed props."],
+    ["forms","Form-engine bindings","Template-driven UI via form-engine-core."],
+    ["tokens","Design tokens","No hardcoded colors or spacing."],
+    ["rbac","Server-driven gates","Permissions consumed from the server, not invented."],
+    ["a11y","Accessibility tests","axe-core assertions; query by role / label."],
+    ["stories","Storybook","Stories for design-system components."]],
+  steps:[
+    ["Receives a spec","Feature spec + API contract + target slice."],
+    ["Loads context","Engineering guidelines, rbac-rules, and the glossary."],
+    ["Generates UI","Components, hooks, and form-engine bindings, styled with tokens."],
+    ["Asserts quality","Component, a11y, and (where relevant) Storybook tests."],
+    ["Emits the diff","Files within the slice + a summary."]],
+  output:[
+    ["components",false,"Components, hooks, types."],
+    ["tests",false,"Component (RTL) + a11y (axe-core) tests."],
+    ["stories",false,"Storybook stories for design-system components."],
+    ["diff_summary",false,"PR-ready summary."]],
+  gate:"TypeScript strict, ESLint, Stylelint and axe-core must all be clean; zero accessibility violations.",
+  evaluation:[
+    "TypeScript strict mode clean; ESLint + Stylelint clean.",
+    "A11y violations = 0.",
+    "No hardcoded colors / spacing — design tokens only.",
+    "Template-driven content uses form-engine-core.",
+    "Permissions consumed from server, not invented.",
+    "Snapshot stability; queries by role / label preferred."],
+  principles:[
+    ["Tokens, not hex","All theming comes from design tokens."],
+    ["Server owns permissions","The client renders gates, never invents them."],
+    ["Accessible by default","Zero axe-core violations is the bar."]],
+  specs:[
+    ["Skill type","Generation"],["Version","0.1.0"],
+    ["Status","draft · spec only"],["Source","built-from-scratch"],
+    ["Invoked by","frontend-agent"],
+    ["Triggers","apps/web/** · 'new screen' · 'component' · 'form'"],
+    ["Required context","engineering-guidelines · rbac-rules · domain-glossary"],
+    ["Output","code generation (no envelope)"]]
+},
+
+"workflow-engine": {
+  num:"03", short:"Workflow", name:"Workflow Engine", cat:"gen", runtime:false,
+  lede:"It turns a transition spec into working state-machine code — config added as data, handlers and audit subscribers wired, and a property-tested guarantee that no state is orphaned and no approval jumps the queue.",
+  meta:[["Inputs","transition spec + FSM"],["Output","config + tests"],["Invoked by","workflow-engine-agent"]],
+  specimen:{ file:"transition_spec: submit_for_approval", code:
+`<span class="k">- name:</span> submit_for_approval
+  <span class="k">from:</span> [draft, reworking]
+  <span class="k">to:</span> submitted_for_approval
+  <span class="k">actor_roles:</span> [implementation_lead]
+  <span class="k">side_effects:</span> [ApprovalRequested]
+  <span class="k">audit_event:</span> CASE_SUBMITTED`,
+    findings:[
+      {tag:"Gen",alt:false,txt:"config (additive) + handler",meta:"FSM"},
+      {tag:"Gen",alt:false,txt:"audit subscriber wired",meta:"AUDIT"},
+      {tag:"Test",alt:true,txt:"5-case matrix",meta:"TESTS"},
+      {tag:"Test",alt:true,txt:"reachability · no orphans",meta:"PROPERTY"} ] },
+  overview:[
+    "The Workflow Engine skill generates FSM configuration entries plus their matching handlers, side-effect emitters, and transition tests — preserving the lifecycle's invariants. Each transition declares allowed roles, composable preconditions, emitted events, and an audit event.",
+    "Config is added <strong>additively</strong>; new top-level states require an ADR and escalate. Property tests check reachability, orphan states, audit completeness, and version monotonicity. It backs the <strong>workflow-engine-agent</strong>."],
+  caps:[
+    ["config","FSM config","Transition entries added as data."],
+    ["handlers","Handlers","Transition handlers + side-effect emitters."],
+    ["audit","Audit wiring","A subscriber for each new event."],
+    ["tests","Transition tests","Five-case matrix per transition."],
+    ["property","Property tests","Reachability, no orphans, version monotonicity."],
+    ["invariants","Invariants","Sequential approval & versioning preserved."]],
+  steps:[
+    ["Receives a transition spec","name, from/to, roles, preconditions, effects, audit."],
+    ["Loads context","workflow-rules + architecture + rbac + testing."],
+    ["Edits the machine","Adds config additively; handlers; audit subscriber."],
+    ["Proves invariants","Property tests + the five-case matrix per transition."],
+    ["Emits the diff","Config + handlers + tests + summary."]],
+  output:[
+    ["fsm_config",false,"Updated config (additive)."],
+    ["handlers",false,"Handler code."],
+    ["audit_wiring",true,"Subscriber wiring for new events."],
+    ["tests",false,"Transition + property tests."],
+    ["diff_summary",false,"PR-ready summary."]],
+  gate:"FSM property tests must pass and every transition must carry all five required test cases.",
+  evaluation:[
+    "Property tests pass: reachability, no orphans, audit completeness, monotonicity.",
+    "Every transition has all five required test cases.",
+    "No sequential-approval violation.",
+    "Approval-versioning behavior correct.",
+    "No state added without an ADR (escalation)."],
+  principles:[
+    ["Logic is data","Transitions live in config, never hardcoded."],
+    ["Every move is audited","No transition exists without an audit event."],
+    ["Additive only","New states need an ADR; config grows, never mutates semantics."]],
+  specs:[
+    ["Skill type","Generation"],["Version","0.1.0"],
+    ["Status","draft · spec only"],["Source","built-from-scratch"],
+    ["Invoked by","workflow-engine-agent"],
+    ["Triggers","cases/** · approvals/** · state-machine/** · 'FSM'"],
+    ["Required context","workflow-rules · architecture-principles · rbac-rules · testing-guidelines"],
+    ["Output","agent-output-contract envelope (JSON)"]]
+},
+
+"dynamic-form-engine": {
+  num:"04", short:"Form Engine", name:"Dynamic Form Engine", cat:"gen", runtime:false,
+  lede:"It builds the metadata that drives every form — sections, fields, validators, and Smart Client mappings — so the renderer stays a pure function and not a line of form behavior is ever hardcoded.",
+  meta:[["Inputs","change request + metadata"],["Output","metadata + validators"],["Invoked by","backend · frontend"]],
+  specimen:{ file:"change: add Velocity Limits table → metadata", code:
+`{ <span class="k">"type"</span>: <span class="s">"repeatable_table"</span>,
+  <span class="k">"id"</span>: <span class="s">"velocity_limits"</span>,
+  <span class="k">"fields"</span>: [
+    { <span class="k">"id"</span>: <span class="s">"window"</span>, <span class="k">"validator"</span>: <span class="s">"duration"</span> },
+    { <span class="k">"id"</span>: <span class="s">"amount"</span>, <span class="k">"validator"</span>: <span class="s">"money"</span> }
+  ],
+  <span class="k">"sync"</span>: <span class="s">"additive"</span> }`,
+    findings:[
+      {tag:"Gen",alt:false,txt:"metadata diff",meta:"TEMPLATE"},
+      {tag:"Gen",alt:false,txt:"validators mapped",meta:"RULES"},
+      {tag:"Gen",alt:true,txt:"mapping metadata",meta:"SMART CLIENT"},
+      {tag:"Test",alt:true,txt:"renderer preview",meta:"SNAPSHOT"} ] },
+  overview:[
+    "The Dynamic Form Engine skill generates and modifies template metadata — sections, fields, repeatable tables — along with field validators, ownership / visibility rules, and Smart Client mapping metadata. The template renderer stays a pure function of (template, values, actor).",
+    "All form behavior is driven by metadata, never hardcoded. It is invoked by the <strong>backend</strong> and <strong>frontend</strong> agents (and the Template Builder UI) when implementing template or mapping changes."],
+  caps:[
+    ["metadata","Template metadata","Sections, fields, repeatable tables."],
+    ["validators","Validators","Type-specific validation rule configs."],
+    ["ownership","Ownership & visibility","Field ownership and editability rules."],
+    ["mapping","Smart Client mapping","Inbound + outbound + sync behavior."],
+    ["renderer","Pure renderer","(template, values, actor) → UI; metadata-driven."],
+    ["tests","Tests","For new validators and mappings."]],
+  steps:[
+    ["Receives a change request","Template id (or 'new') + current metadata."],
+    ["Loads context","Glossary + architecture-principles + workflow-rules."],
+    ["Generates metadata","Sections, fields, validators, and mapping metadata."],
+    ["Verifies","Schema validation + round-trip mapping + a renderer preview."],
+    ["Emits the diff","Metadata diff + validator / mapping tests."]],
+  output:[
+    ["metadata_diff",false,"Template metadata diff (JSON)."],
+    ["validators",false,"Validator rule mappings."],
+    ["mapping",true,"Mapping metadata + sync behavior per field."],
+    ["preview",false,"Renderer preview snapshot."],
+    ["tests",false,"Tests for new validators / mappings."]],
+  gate:"Generated metadata must validate against the template schema; round-trip mapping must lose no value.",
+  evaluation:[
+    "Generated metadata validates against the template schema.",
+    "Validators produce expected results on test inputs.",
+    "Round-trip integrity: inbound + outbound mapping → no value loss.",
+    "No hardcoded field names in generated code."],
+  principles:[
+    ["Metadata drives everything","No hardcoded field names or statuses."],
+    ["Pure renderer","(template, values, actor) → UI."],
+    ["Round-trip safe","Mapping loses no value, inbound to outbound."]],
+  specs:[
+    ["Skill type","Generation"],["Version","0.1.0"],
+    ["Status","draft · spec only"],["Source","built-from-scratch"],
+    ["Invoked by","backend-agent · frontend-agent · Template Builder UI"],
+    ["Triggers","form-engine-core/** · templates/** · 'template' · 'mapping metadata'"],
+    ["Required context","domain-glossary · architecture-principles · workflow-rules"],
+    ["Output","template metadata (no envelope)"]]
+},
+
+"xlsx-processing": {
+  num:"05", short:"XLSX", name:"XLSX Processing", cat:"gen", runtime:false,
+  lede:"It generates the parsers, exporters, and sync logic that bridge Smart Client — mapping by explicit metadata, processing off the request path, and computing a delta that can never silently overwrite an approved value.",
+  meta:[["Inputs","spec + mapping + fixtures"],["Output","parsers + delta"],["Invoked by","xlsx-integration-agent"]],
+  specimen:{ file:"feature: final sync flow → generate", code:
+`<span class="k">function</span> <span class="f">syncDelta</span>(incoming, current) {
+  <span class="k">return</span> incoming.<span class="f">filter</span>((v) =&gt;
+    !current[v.field]?.approved &amp;&amp;   <span class="c">// protect</span>
+    current[v.field]?.value !== v.value)
+}`,
+    findings:[
+      {tag:"Gen",alt:false,txt:"parser + exporter",meta:"FILES"},
+      {tag:"Gen",alt:false,txt:"additive-only delta",meta:"RULE"},
+      {tag:"Test",alt:true,txt:"round-trip integrity",meta:"FIXTURE"},
+      {tag:"Test",alt:true,txt:"10k rows in budget",meta:"PERF"} ] },
+  overview:[
+    "The XLSX Processing skill generates parsers, exporters, mapping engines, and sync-delta logic for Smart Client integration. Processing is asynchronous and applied atomically at the end of validation — no partial mutation on failure.",
+    "Its hard rule is that <strong>approved values are never silently overwritten</strong>: the sync delta is additive-only. Tests run against real fixtures and include a 10k-row performance check. It backs the <strong>xlsx-integration-agent</strong>."],
+  caps:[
+    ["parse","Parsers","Read Smart Client extracts into validated structures."],
+    ["export","Exporters","Emit XLSX from canonical case data."],
+    ["delta","Sync delta","Pure additive-only delta function."],
+    ["validate","Validation reports","Errors and warnings."],
+    ["protect","Approved-value protection","Approved values never silently overwritten."],
+    ["fixtures","Fixture tests","Valid / malformed / edge + a 10k-row perf test."]],
+  steps:[
+    ["Receives a feature","Spec + template mapping config + fixture refs."],
+    ["Loads context","Architecture + security + workflow-rules."],
+    ["Builds the pipeline","Parser, exporter, mapping engine, and sync delta."],
+    ["Proves safety","Round-trip, malformed, approved-value protection, 10k perf."],
+    ["Emits the diff","Code + validation report + fixture tests."]],
+  output:[
+    ["parser",false,"Parser code."],
+    ["exporter",false,"Exporter code."],
+    ["sync_delta",true,"Pure additive-only delta function."],
+    ["validation_report",false,"Errors / warnings structure."],
+    ["tests",false,"Fixture-driven valid / malformed / edge + perf."]],
+  gate:"Round-trip integrity holds, approved values stay protected, and a 10k-row file parses within budget.",
+  evaluation:[
+    "Round-trip integrity (export → re-parse → values match).",
+    "Malformed input rejected cleanly without corrupting case state.",
+    "Approved values protected on sync.",
+    "Performance: 10k rows within budget.",
+    "All operations idempotent."],
+  principles:[
+    ["Approved means protected","A sync never silently overwrites an approved value."],
+    ["Map by metadata","Field mapping is explicit — never a best guess."],
+    ["Atomic & async","Processed off the request path, applied all-or-nothing."]],
+  specs:[
+    ["Skill type","Generation"],["Version","0.1.0"],
+    ["Status","draft · spec only"],["Source","built-from-scratch"],
+    ["Invoked by","xlsx-integration-agent"],
+    ["Triggers","xlsx/** · fixtures/xlsx/** · 'XLSX' · 'sync delta' · 'Smart Client'"],
+    ["Required context","architecture-principles · security-guidelines · workflow-rules"],
+    ["Output","code generation (no envelope)"]]
+},
+
+"rbac-implementation": {
+  num:"06", short:"RBAC", name:"RBAC Implementation", cat:"gen", runtime:false,
+  lede:"It treats authorization as a matrix to be covered — a central assertCan at every endpoint, a parameterized test for every role-action pair, and policy data verified line-for-line against the rules.",
+  meta:[["Inputs","endpoint spec"],["Output","authz + matrix tests"],["Invoked by","rbac-agent"]],
+  specimen:{ file:"endpoint: POST case/:id/approve → authz", code:
+`authz.<span class="f">assertCan</span>(actor, <span class="s">"case.approve"</span>, id) <span class="c">// generated</span>
+
+it.<span class="f">each</span>(ROLES)(<span class="s">"%s → case.approve"</span>, …)   <span class="c">// sweep</span>
+<span class="f">it</span>(<span class="s">"denies deactivated / expired / unscoped"</span>, …)`,
+    findings:[
+      {tag:"Gen",alt:false,txt:"assertCan + import",meta:"RBAC"},
+      {tag:"Test",alt:true,txt:"role × action sweep",meta:"MATRIX"},
+      {tag:"Test",alt:true,txt:"negatives covered",meta:"NEGATIVE"},
+      {tag:"Gen",alt:true,txt:"policy matches matrix",meta:"POLICY"} ] },
+  overview:[
+    "The RBAC Implementation skill generates authorization checks so that every endpoint calls <strong>authz.assertCan(actor, action, resource)</strong>, and produces a parameterized test sweep over the full (role × action × resource) matrix plus the negative cases.",
+    "It verifies that policy data in shared/rbac/policies matches the rbac-rules.md matrix and that frontend gates consume server permissions. It is invoked by the <strong>rbac-agent</strong> and the <strong>backend-agent</strong>."],
+  caps:[
+    ["assertCan","Authorization checks","One-line assertCan + import per endpoint."],
+    ["matrix","Matrix tests","Role × action × resource sweep."],
+    ["negatives","Negative tests","Deactivated, expired, unscoped, no session."],
+    ["policy","Policy data","Verified against the rbac-rules matrix."],
+    ["frontend","Frontend gates","Consume server permissions."],
+    ["detect","Inline-check detection","Flags if (role === …) for refactor."]],
+  steps:[
+    ["Receives an endpoint spec","method, path, action, resource extractor."],
+    ["Loads the matrix","rbac-rules + security-guidelines."],
+    ["Generates checks","assertCan + a parameterized role sweep."],
+    ["Covers negatives","Deactivated / expired / unscoped / no-session."],
+    ["Emits the diff","Authz code + tests + policy updates."]],
+  output:[
+    ["authz_checks",false,"assertCan + import per endpoint."],
+    ["matrix_tests",true,"Parameterized role × action × resource sweep."],
+    ["negative_tests",false,"Deactivated, expired, unscoped, no-session."],
+    ["policy_updates",false,"Policy data aligned to the matrix."]],
+  gate:"Every state-changing endpoint calls assertCan; policy data matches the rbac-rules matrix exactly.",
+  evaluation:[
+    "Every state-changing endpoint has assertCan at top.",
+    "No inline role checks introduced.",
+    "Tests cover all roles + negative scenarios.",
+    "Policy data matches rbac-rules.md exactly.",
+    "Frontend gates consume server permissions."],
+  principles:[
+    ["Central, never inline","All authorization via the AuthorizationService."],
+    ["Cover the whole grid","Every role-action pair tested, including denials."],
+    ["Match the matrix","Policy data equals rbac-rules.md."]],
+  specs:[
+    ["Skill type","Generation"],["Version","0.1.0"],
+    ["Status","draft · spec only"],["Source","built-from-scratch"],
+    ["Invoked by","rbac-agent · backend-agent"],
+    ["Triggers","shared/rbac/** · modules/*/interfaces/** · apps/web/src/** · 'RBAC'"],
+    ["Required context","rbac-rules · security-guidelines"],
+    ["Output","agent-output-contract envelope (JSON)"]]
+},
+
+"architecture-review": {
+  num:"07", short:"Arch Review", name:"Architecture Review", cat:"review", runtime:false,
+  lede:"It reads a design proposal the way a principal engineer reviews an RFC — pressure-testing it against the principles, naming the boundary violations, and drafting the ADR the change should have come with.",
+  meta:[["Inputs","design doc + ADRs"],["Output","verdict + ADRs"],["Invoked by","architecture-agent"]],
+  specimen:{ file:"design_doc: realtime-sync.md → review", code:
+`<span class="c">## Proposal: live Smart-Client sync</span>
+xlsx will call the cases service
+<span class="x">directly</span> on upload — <span class="x">bypassing the bus</span>.
+<span class="c"># No ADR — treated as impl detail.</span>`,
+    findings:[
+      {tag:"Concern",alt:false,txt:"Direct cross-module write · P7",meta:"BLOCKING"},
+      {tag:"ADR",alt:true,txt:"latency vs consistency",meta:"REQUIRED"},
+      {tag:"Concern",alt:true,txt:"side-effect on request path",meta:"MAJOR"},
+      {tag:"Verdict",alt:true,txt:"approve_with_conditions",meta:"VERDICT"} ] },
+  overview:[
+    "The Architecture Review skill evaluates a design proposal against architecture-principles.md — bounded-context integrity, layered architecture, event-driven boundaries, scalability and evolvability — and flags non-trivial decisions that lack an ADR.",
+    "It outputs a structured report with a verdict, severity-tagged concerns, required ADRs, and module impact. The <strong>architecture-agent</strong> uses it as its primary tool, and the <strong>reviewer-agent</strong> draws on it for design-touching PRs."],
+  caps:[
+    ["verdict","Verdict","approve / reject / approve_with_conditions."],
+    ["concerns","Concerns","Severity-tagged, principle-referenced."],
+    ["adr","Required ADRs","Drafted to the repo template."],
+    ["coupling","Coupling checks","Bounded-context & layering violations."],
+    ["scalability","Scalability notes","Evolvability risks surfaced."],
+    ["impact","Module impact","Which contexts the change touches."]],
+  steps:[
+    ["Receives a design","design_doc + affected modules + related ADRs."],
+    ["Loads the rules","architecture-principles + glossary + workflow-rules."],
+    ["Evaluates","Bounded contexts, layering, events, scalability, ADR presence."],
+    ["Drafts ADRs","Required decision records to the template."],
+    ["Emits the envelope","Verdict + concerns + required ADRs + impact."]],
+  output:[
+    ["verdict",true,"approve / reject / approve_with_conditions."],
+    ["strengths",false,"What the design gets right."],
+    ["concerns",true,"severity · principle · rationale · suggestion."],
+    ["required_adrs",true,"Drafted decision records."],
+    ["module_impact",false,"Per-module impact of the change."],
+    ["scalability_notes",false,"Forward-looking risks."]],
+  gate:"Catches ≥ 90% of seeded anti-patterns with a false-positive rate under 15%.",
+  evaluation:[
+    "Catches ≥ 90% of seeded anti-patterns (inline RBAC, sync cross-module calls, mutable versions).",
+    "False positive rate < 15%.",
+    "Required ADRs follow the ADR template."],
+  principles:[
+    ["Decisions get recorded","Non-trivial choices become ADRs."],
+    ["Boundaries are sacred","No hidden cross-context coupling."],
+    ["Don't over-architect","False-positive rate kept low on simple changes."]],
+  specs:[
+    ["Skill type","Review"],["Version","0.1.0"],
+    ["Status","draft · spec only"],["Source","built-from-scratch"],
+    ["Invoked by","architecture-agent · reviewer-agent"],
+    ["Triggers","docs/architecture/** · docs/adr/** · 'architecture review'"],
+    ["Required context","architecture-principles · domain-glossary · workflow-rules"],
+    ["Output","agent-output-contract envelope (JSON)"]]
+},
+
+"reviewer": {
+  num:"08", short:"Reviewer", name:"Reviewer", cat:"review", runtime:false,
+  lede:"It reads a pull request the way a senior reviewer with an adversarial streak does — twelve checklist items, every finding tied to severity and a fix, and a hard rule that never rubber-stamps.",
+  meta:[["Inputs","PR diff"],["Output","findings envelope"],["Invoked by","reviewer-agent"]],
+  specimen:{ file:"diff: PR #482 bulk-approve → review", code:
+`<span class="k">+ async function</span> <span class="f">bulkApprove</span>(ids, actor) {
+<span class="k">+</span>   <span class="k">for</span> (<span class="k">const</span> id <span class="k">of</span> ids)
+<span class="k">+</span>     <span class="k">await</span> <span class="f">approve</span>(id, actor)   <span class="x">// no authz</span>
+<span class="k">+</span> }                            <span class="x">// no audit</span>`,
+    findings:[
+      {tag:"Finding",alt:false,txt:"missing authz on bulk path",meta:"CRITICAL"},
+      {tag:"Finding",alt:false,txt:"no audit event emitted",meta:"HIGH"},
+      {tag:"Finding",alt:true,txt:"no negative-path test",meta:"MEDIUM"},
+      {tag:"Verdict",alt:true,txt:"block",meta:"VERDICT"} ] },
+  overview:[
+    "The Reviewer skill runs a PR diff against a twelve-point engineering checklist — naming, forbidden patterns, error handling, transactions, RBAC, audit, tests, dead code, the 'why', ADR presence, coverage, and type discipline — and produces structured, severity-tagged findings.",
+    "It is <strong>adversarial and never rubber-stamps</strong>; findings are capped at thirty and prioritized. It backs the <strong>reviewer-agent</strong> and follows the standard output contract."],
+  caps:[
+    ["checklist","12-point checklist","From naming to type discipline."],
+    ["forbidden","Forbidden patterns","God classes, anemic models, inline RBAC, magic strings."],
+    ["severity","Severity findings","Tagged with rationale + suggestion."],
+    ["coverage","Checklist coverage","Per-item pass / fail / n_a."],
+    ["verdict","Verdict","approve / request_changes / block."],
+    ["cap","Finding cap","≤ 30, prioritized by severity."]],
+  steps:[
+    ["Receives a PR","diff + title + description + affected modules."],
+    ["Loads the rules","engineering + architecture + severity standards."],
+    ["Walks the checklist","All twelve items, read-only."],
+    ["Tallies severity","severity_counts equal the finding tally."],
+    ["Emits the envelope","Verdict + findings + checklist coverage."]],
+  output:[
+    ["verdict",true,"approve / request_changes / block."],
+    ["findings",true,"severity · category · file · issue · suggestion."],
+    ["severity_counts",false,"critical / high / medium / low tallies."],
+    ["checklist_coverage",false,"Per-item pass / fail / n_a."]],
+  gate:"Catches ≥ 85% of seeded blocking issues; false-positive rate under 15%; no more than 30 findings.",
+  evaluation:[
+    "Catches ≥ 85% of seeded blocking-class issues.",
+    "False positive rate < 15% on validated PRs.",
+    "Findings actionable (suggestion + rationale).",
+    "No more than 30 findings (highest severity first)."],
+  principles:[
+    ["Never rubber-stamp","Findings aren't suppressed to be helpful."],
+    ["Actionable only","Every finding carries a fix and a rationale."],
+    ["Severity is the gate","Blocking issues block."]],
+  specs:[
+    ["Skill type","Review"],["Version","0.1.0"],
+    ["Status","draft · spec only"],["Source","built-from-scratch"],
+    ["Invoked by","reviewer-agent"],
+    ["Triggers","'review PR' · 'code review'"],
+    ["Required context","engineering · architecture · workflow · rbac"],
+    ["Output","agent-output-contract envelope (JSON)"]]
+},
+
+"security-review": {
+  num:"09", short:"Security", name:"Security Review", cat:"review", runtime:false,
+  lede:"It reviews the parts of a diff that can hurt you — auth, uploads, state changes, secrets — and maps each finding to the OWASP Top 10, tuned to almost never miss a real vulnerability.",
+  meta:[["Inputs","diff (sensitive paths)"],["Output","OWASP findings"],["Invoked by","security-agent"]],
+  specimen:{ file:"diff: reset-password.ts → scan", code:
+`<span class="k">const</span> token = req.query.token   <span class="x">// in URL</span>
+user.password = body.password   <span class="x">// unhashed</span>
+logger.<span class="f">info</span>(<span class="s">"reset"</span>, { email }) <span class="x">// PII</span>`,
+    findings:[
+      {tag:"Finding",alt:false,txt:"password stored unhashed",meta:"A02 · CRITICAL"},
+      {tag:"Finding",alt:false,txt:"secret/token in URL",meta:"A02 · HIGH"},
+      {tag:"Finding",alt:true,txt:"PII (email) in log",meta:"A09 · HIGH"},
+      {tag:"Verdict",alt:true,txt:"block",meta:"VERDICT"} ] },
+  overview:[
+    "The Security Review skill runs a targeted, OWASP-aware pass over auth, upload, state-change, secret, and audit paths, working through a checklist that spans input validation, injection, token handling, uploads, authn, and mass-assignment.",
+    "Each finding is tagged with a severity and an OWASP category, with an actionable fix. Tuned for a <strong>false-negative rate under 5%</strong> on seeded vulnerable code, it backs the <strong>security-agent</strong>."],
+  caps:[
+    ["validation","Input validation","Schema-first at every entry."],
+    ["injection","Injection vectors","Parameterized queries; no command injection."],
+    ["tokens","Token & secret hygiene","Signed, short-lived; no secrets in logs / URLs."],
+    ["uploads","Upload validation","Type, size, content, sanitization."],
+    ["authn","Authn & mass-assignment","Argon2id/bcrypt; DTO allowlists."],
+    ["owasp","OWASP mapping","Findings tagged to OWASP categories."]],
+  steps:[
+    ["Receives a diff","Same diff input; sensitive paths trigger it."],
+    ["Loads the rules","security-guidelines + rbac-rules."],
+    ["Walks the checklist","Input, injection, tokens, uploads, authn, mass-assignment."],
+    ["Maps to OWASP","Tags findings and tallies severity."],
+    ["Emits the envelope","Verdict + OWASP-tagged findings."]],
+  output:[
+    ["verdict",true,"approve / request_changes / block."],
+    ["findings",true,"severity · owasp_category · issue · fix."],
+    ["severity_counts",false,"critical / high / medium / low tallies."],
+    ["checklist_coverage",false,"Per-item pass / fail / n_a."]],
+  gate:"False-negative rate under 5% on seeded vulnerable code samples; OWASP category accurate.",
+  evaluation:[
+    "False negative rate < 5% on seeded vulnerable code samples.",
+    "OWASP category accurate where applicable.",
+    "Suggested fixes actionable."],
+  principles:[
+    ["Assume hostile input","Schema-first validation everywhere."],
+    ["Secrets stay secret","No PII or secrets in logs; no tokens in URLs."],
+    ["Low false-negatives","Under 5% on seeded vulnerable code."]],
+  specs:[
+    ["Skill type","Review"],["Version","0.1.0"],
+    ["Status","draft · spec only"],["Source","built-from-scratch"],
+    ["Invoked by","security-agent"],
+    ["Triggers","auth/** · users/** · xlsx/** · shared/rbac/** · **/*.env*"],
+    ["Required context","security-guidelines · rbac-rules"],
+    ["Output","agent-output-contract envelope (JSON)"]]
+},
+
+"audit-engine": {
+  num:"10", short:"Audit", name:"Audit Engine", cat:"review", runtime:false,
+  lede:"It makes sure history can't be rewritten — pairing every state-changing operation with an audit event, wiring the subscribers, and refusing any change that weakens the append-only invariant.",
+  meta:[["Inputs","diff + event registry"],["Output","audit findings"],["Invoked by","audit-versioning-agent"]],
+  specimen:{ file:"diff → audit completeness", code:
+`<span class="k">for</span> (<span class="k">const</span> op <span class="k">of</span> <span class="f">stateChangingOps</span>(diff)) {
+  <span class="k">if</span> (!<span class="f">auditEvent</span>(op))
+    <span class="f">flag</span>(op, <span class="s">"MISSING_AUDIT"</span>)   <span class="x">// finding</span>
+}
+<span class="f">assert</span>(auditTable.grants === <span class="s">"INSERT"</span>) <span class="c">// append-only</span>`,
+    findings:[
+      {tag:"Gen",alt:false,txt:"ops detected: 4",meta:"SCAN"},
+      {tag:"Flag",alt:false,txt:"1 op missing audit",meta:"FINDING"},
+      {tag:"Gen",alt:true,txt:"subscriber wired",meta:"AUDIT"},
+      {tag:"Gen",alt:true,txt:"append-only verified",meta:"IMMUTABLE"} ] },
+  overview:[
+    "The Audit Engine skill identifies every state-changing operation in a diff or feature, matches each to a required audit event, and generates or verifies the subscriber wiring and audit-emission tests.",
+    "It verifies append-only invariants on audit storage and never lets a proposal weaken immutability or store PII. It backs the <strong>audit-versioning-agent</strong> and supports the <strong>backend-agent</strong>."],
+  caps:[
+    ["detect","Op detection","Finds state-changing operations in a diff."],
+    ["match","Event matching","Maps each to a required audit event."],
+    ["subscribers","Subscriber wiring","Generates / verifies wiring."],
+    ["tests","Audit tests","Assert a row after each state change."],
+    ["immutability","Append-only","Verifies immutability invariants."],
+    ["pii","PII safety","No PII / secrets in audit records."]],
+  steps:[
+    ["Receives a diff","diff + optional spec + audit-event registry."],
+    ["Loads context","architecture + security + workflow-rules."],
+    ["Scans for ops","Identifies every state-changing operation."],
+    ["Matches & wires","Maps to audit events; wires missing subscribers."],
+    ["Emits findings","Ops + audit mapping + wiring + tests."]],
+  output:[
+    ["state_changes",false,"State-changing operations detected."],
+    ["audit_mapping",true,"Each op → audit event + subscriber status."],
+    ["code_additions",false,"Code for missing audit emissions."],
+    ["tests",false,"Audit-emission assertions."],
+    ["diff_summary",false,"Summary."]],
+  gate:"Known-incomplete diffs must trigger findings; no proposal may weaken append-only invariants.",
+  evaluation:[
+    "Known-incomplete diffs must trigger findings.",
+    "Generated audit events never store PII or secrets.",
+    "Tests assert audit row presence after each state change.",
+    "No proposal weakens immutability or append-only invariants."],
+  principles:[
+    ["History is append-only","Audit rows are never updated or deleted."],
+    ["Completeness is mandatory","Every state change maps to an audit event."],
+    ["No secrets in the ledger","Audit records carry no PII."]],
+  specs:[
+    ["Skill type","Review"],["Version","0.1.0"],
+    ["Status","draft · spec only"],["Source","built-from-scratch"],
+    ["Invoked by","audit-versioning-agent · backend-agent"],
+    ["Triggers","modules/audit/** · 'audit emission' · 'audit event'"],
+    ["Required context","architecture-principles · security-guidelines · workflow-rules"],
+    ["Output","agent-output-contract envelope (JSON)"]]
+},
+
+"state-machine": {
+  num:"11", short:"State Machine", name:"State Machine", cat:"reason", runtime:false,
+  lede:"It answers one question with total precision: given a state, an event, and an actor, is this transition allowed — and if so, what happens next? Pure reasoning, no code, the same answer every time.",
+  meta:[["Inputs","(state, event, actor)"],["Output","decision JSON"],["Invoked by","workflow-engine-agent"]],
+  specimen:{ file:"(state, event, actor) → decision", code:
+`{ <span class="k">"current_state"</span>: <span class="s">"submitted_for_approval"</span>,
+  <span class="k">"event"</span>: <span class="s">"edit_field"</span>,
+  <span class="k">"actor"</span>: { <span class="k">"role"</span>: <span class="s">"client"</span> } }
+→ { <span class="k">"allowed"</span>: <span class="x">false</span>,
+    <span class="k">"reason"</span>: <span class="s">"fields frozen at this stage"</span>,
+    <span class="k">"next_state"</span>: null }`,
+    findings:[
+      {tag:"Verdict",alt:false,txt:"allowed: false",meta:"DENY"},
+      {tag:"Verdict",alt:true,txt:"reason returned",meta:"EXPLAINED"},
+      {tag:"Gen",alt:true,txt:"next_state: null",meta:"PURE"},
+      {tag:"Gen",alt:true,txt:"no code written",meta:"REASONING"} ] },
+  overview:[
+    "The State Machine skill is pure-function reasoning over the case FSM: given a state, an event, and an actor context, it returns whether the transition is allowed, the next state, and the side-effects — and it <strong>writes no code</strong>.",
+    "Other skills and agents use it to validate a hypothetical transition before generating code; it also powers the MCP <strong>validate_transition</strong> tool. Being pure, the same inputs always yield the same output."],
+  caps:[
+    ["decide","Allow / deny","A boolean decision for a (state, event, actor)."],
+    ["next","Next state","The resulting state, or null."],
+    ["effects","Side-effects","Events, notifications, snapshots, audit."],
+    ["reason","Reasoning","A clear string explaining a rejection."],
+    ["pure","Pure function","Same inputs → same outputs; writes no code."],
+    ["validate","Pre-gen validation","Checks a transition before code generation."]],
+  steps:[
+    ["Receives a query","(current_state, event, actor, case_context)."],
+    ["Loads workflow-rules","The single source of FSM truth."],
+    ["Reasons","Pure-function evaluation of the transition."],
+    ["Decides","allowed + reason + next_state + side-effects."],
+    ["Returns","A structured decision — no code written."]],
+  output:[
+    ["allowed",true,"Boolean decision."],
+    ["reason",false,"Explanation string."],
+    ["next_state",true,"Resulting state, or null."],
+    ["side_effects",false,"event_emit / notification / snapshot / audit."]],
+  gate:"Pure function — identical inputs always produce identical outputs; matches every (state, event) pair in the eval set.",
+  evaluation:[
+    "Matches expected outcome on every (state, event) pair in the eval set.",
+    "Pure function: same inputs → same outputs.",
+    "Reasoning string explains rejections clearly."],
+  principles:[
+    ["Pure reasoning","No side effects, no code — just a decision."],
+    ["Deterministic","Same inputs always yield the same output."],
+    ["Explains itself","Every denial comes with a reason."]],
+  specs:[
+    ["Skill type","Reasoning"],["Version","0.1.0"],
+    ["Status","draft · spec only"],["Source","built-from-scratch"],
+    ["Invoked by","workflow-engine-agent · reviewer-agent · MCP validate_transition"],
+    ["Triggers","'validate transition' · 'can I do X' · 'next state'"],
+    ["Required context","workflow-rules"],
+    ["Output","pure reasoning (decision JSON)"]]
+},
+
+"documentation": {
+  num:"12", short:"Docs", name:"Documentation", cat:"docs", runtime:true,
+  lede:"It keeps the docs honest after the code moves — refreshing domain docs, READMEs and runbooks, growing the glossary as new terms appear, and routing anything ADR-worthy rather than writing it.",
+  meta:[["Inputs","merged diff"],["Output","doc diffs + glossary"],["Invoked by","documentation-agent"]],
+  specimen:{ file:"merged_diff → docs update", code:
+`<span class="c">## Bulk approval</span>
+<span class="k">+</span> A lead can approve many cases at once.
+<span class="k">+</span> Each emits CASE_APPROVED.
+glossary += <span class="s">"Bulk Approval"</span>   <span class="c">// new term</span>
+<span class="x"># ADR-worthy? → architecture</span>`,
+    findings:[
+      {tag:"Gen",alt:false,txt:"domain doc updated",meta:"DOCS"},
+      {tag:"Gen",alt:false,txt:"glossary term added",meta:"GLOSSARY"},
+      {tag:"Flag",alt:true,txt:"no synonym collision",meta:"OK"},
+      {tag:"Flag",alt:true,txt:"ADR-worthy → architecture",meta:"HANDOFF"} ] },
+  overview:[
+    "The Documentation skill updates docs after a change — domain docs, glossary entries, READMEs, runbook drafts, and API-reference snippets — keeping documentation in sync with the code that merged.",
+    "It deliberately does <strong>not</strong> modify ADRs or the core context files (architecture-principles, workflow-rules, rbac-rules); ADR-worthy changes are flagged for the architecture-agent. It backs the <strong>documentation-agent</strong>."],
+  caps:[
+    ["domain","Domain docs","docs/domain and docs/workflows."],
+    ["glossary","Glossary","New terms; synonym / collision flags."],
+    ["readme","READMEs","Updated for touched modules."],
+    ["runbooks","Runbook drafts","For new operational scenarios."],
+    ["apiref","API references","Snippets from code annotations."],
+    ["scope","Scope guard","Never touches ADRs or core context files."]],
+  steps:[
+    ["Receives a merged diff","diff + PR title / description + optional targets."],
+    ["Loads context","domain-glossary + project-context."],
+    ["Syncs docs","Domain docs, READMEs, and runbook drafts."],
+    ["Tends the glossary","New terms; uniqueness and link checks."],
+    ["Routes the rest","Flags ADR-worthy changes for the architecture-agent."]],
+  output:[
+    ["doc_diffs",false,"Updated documentation."],
+    ["glossary",true,"Additions and refinements."],
+    ["runbooks",false,"Drafted operational entries."],
+    ["readme",false,"README updates on touched modules."]],
+  gate:"Docs build clean (link check, glossary uniqueness); new code terms appear in the glossary.",
+  evaluation:[
+    "Docs build clean (link check, no broken references).",
+    "Glossary uniqueness preserved (no synonyms).",
+    "New terms introduced in code appear in the glossary.",
+    "README accuracy on touched modules.",
+    "ADR-worthy changes flagged for the architecture-agent."],
+  principles:[
+    ["Docs follow code","Documentation is updated to match what merged."],
+    ["One term, one meaning","Glossary uniqueness is preserved — no synonyms."],
+    ["Stay in lane","No ADR edits, no core context-file changes."]],
+  specs:[
+    ["Skill type","Documentation"],["Version","0.1.0"],
+    ["Status","draft · runtime-wired (.claude/skills)"],["Source","built-from-scratch"],
+    ["Invoked by","documentation-agent"],
+    ["Triggers","'update docs' · 'glossary' · 'runbook'"],
+    ["Required context","domain-glossary · project-context"],
+    ["Output","agent-output-contract envelope (JSON)"]]
+},
+
+};
+
+/* ---------- rendering ---------- */
+function rgba(hex, a){
+  const n = parseInt(hex.slice(1), 16);
+  return "rgba(" + ((n>>16)&255) + "," + ((n>>8)&255) + "," + (n&255) + "," + a + ")";
+}
+function applyAccent(cat){
+  const c = CATS[cat], r = document.documentElement.style;
+  r.setProperty("--accent", c.accent);
+  r.setProperty("--accent-2", c.accent2);
+  r.setProperty("--accent-dim", rgba(c.accent, .13));
+  r.setProperty("--accent-line", rgba(c.accent, .30));
+  r.setProperty("--glow", rgba(c.accent, .06));
+}
+
+function buildSwitcher(active){
+  const el = document.getElementById("switcher");
+  const ai = ORDER.indexOf(active);
+  let html = "";
+  ORDER.forEach((slug, i) => {
+    const s = SKILLS[slug];
+    const cls = slug === active ? "stage active" : (i < ai ? "stage done" : "stage");
+    html += '<button class="' + cls + '" data-slug="' + slug + '">' +
+            '<span class="s-n">' + s.num + '</span> ' + s.short + '</button>';
+    if (i < ORDER.length - 1) html += '<span class="arr">▸</span>';
+  });
+  el.innerHTML = html;
+  el.querySelectorAll(".stage").forEach(b =>
+    b.addEventListener("click", () => show(b.dataset.slug)));
+}
+
+function render(slug){
+  const a = SKILLS[slug];
+  const cat = CATS[a.cat];
+
+  const meta = a.meta.map(m => '<span>' + m[0] + '&nbsp; <b>' + m[1] + '</b></span>').join("");
+  const findings = a.specimen.findings.map(f =>
+    '<div class="finding"><span class="tag' + (f.alt ? ' alt' : '') + '">' + f.tag +
+    '</span><span class="txt">' + f.txt + '</span><span class="meta">' + f.meta + '</span></div>').join("");
+  const overview = a.overview.map(p => '<p>' + p + '</p>').join("");
+  const caps = a.caps.map(c =>
+    '<div class="cap"><span class="cap-id">/ ' + c[0] + '</span><h3>' + c[1] + '</h3><p>' + c[2] + '</p></div>').join("");
+  const steps = a.steps.map((s, i) =>
+    '<div class="step"><div class="st-n">' + String(i+1).padStart(2,"0") +
+    '</div><div><h3>' + s[0] + '</h3><p>' + s[1] + '</p></div></div>').join("");
+  const fields = a.output.map(o =>
+    '<div class="field"><span class="fname">' + (o[1] ? '<span class="br">' + o[0] + '</span>' : o[0]) +
+    '</span><span class="fdesc">' + o[2] + '</span></div>').join("");
+  const evals = a.evaluation.map(e =>
+    '<div class="esc-row"><span class="to">✓</span>&nbsp; ' + e + '</div>').join("");
+  const principles = a.principles.map(p =>
+    '<div class="principle"><h3>' + p[0] + '</h3><p>' + p[1] + '</p></div>').join("");
+  const specs = a.specs.map(s =>
+    '<div class="spec-row"><dt>' + s[0] + '</dt><dd>' + s[1] + '</dd></div>').join("");
+
+  const ni = (ORDER.indexOf(slug) + 1) % ORDER.length;
+  const nextSlug = ORDER[ni];
+  const next = SKILLS[nextSlug];
+  const nextLabel = ni === 0 ? "Back to start ▸" : "Next skill";
+
+  const runtimePill = a.runtime
+    ? '<span class="pill accent">runtime-wired</span>'
+    : '<span class="pill">spec only</span>';
+
+  document.getElementById("app").innerHTML =
+  '<section class="hero fade"><div class="wrap hero-grid"><div>' +
+    '<p class="eyebrow">Skill ' + a.num + ' · ' + cat.label + '</p>' +
+    '<h1>' + a.name + '</h1>' +
+    '<div class="hero-status"><span class="pill">v0.1.0</span><span class="pill">draft</span>' + runtimePill +
+      '<span class="pill accent">' + cat.label + '</span></div>' +
+    '<p class="lede">' + a.lede + '</p>' +
+    '<div class="hero-meta">' + meta + '</div>' +
+  '</div>' +
+    '<div class="scanner" aria-hidden="true"><div class="scanner-head">' +
+      '<span class="tl"><i></i><i></i><i></i></span>' + a.specimen.file + '</div>' +
+      '<div class="scan-body"><div class="scanline"></div><pre class="code">' + a.specimen.code + '</pre></div>' +
+      '<div class="findings">' + findings + '</div>' +
+    '</div>' +
+  '</div></section>' +
+
+  '<section class="section" id="what"><div class="wrap">' +
+    '<div class="section-head"><p class="eyebrow">Overview</p><h2>What it does</h2></div>' +
+    '<div class="prose">' + overview + '</div></div></section>' +
+
+  '<section class="section" id="caps"><div class="wrap">' +
+    '<div class="section-head"><p class="eyebrow">Capabilities</p><h2>What it produces</h2></div>' +
+    '<div class="cap-grid">' + caps + '</div></div></section>' +
+
+  '<section class="section" id="how"><div class="wrap">' +
+    '<div class="section-head"><p class="eyebrow">Mechanics</p><h2>How it works</h2>' +
+    '<p>From input to structured output, invoked by its owning agent.</p></div>' +
+    '<div class="steps">' + steps + '</div></div></section>' +
+
+  '<section class="section" id="output"><div class="wrap">' +
+    '<div class="section-head"><p class="eyebrow">Deliverable</p><h2>The output</h2>' +
+    '<p>Key fields of what the skill returns.</p></div>' +
+    '<div class="schema">' + fields + '</div>' +
+    '<div class="conf"><div class="meter">' +
+      '<span class="seg on"></span><span class="seg on"></span><span class="seg on"></span>' +
+      '<span class="seg on"></span><span class="seg on"></span><span class="seg on"></span>' +
+      '<span class="seg"></span><span class="seg"></span><span class="seg"></span><span class="seg"></span></div>' +
+      '<span class="conf-txt">Quality bar &mdash; ' + a.gate + '</span>' +
+    '</div></div></section>' +
+
+  '<section class="section"><div class="wrap">' +
+    '<div class="section-head"><p class="eyebrow">Quality</p><h2>Evaluation criteria</h2>' +
+    '<p>The bar a generated output must clear before it is trusted.</p></div>' +
+    '<div class="esc-list">' + evals + '</div>' +
+    '<p class="esc-note">All twelve skills are <b>v0.1.0 drafts</b> — per-skill <code>input-schema.json</code>, ' +
+    '<code>output-schema.json</code>, worked examples, and eval datasets are still being seeded (each SKILL.md tracks its own TODO). ' +
+    'Source of truth: <code>ai/REGISTRY.md</code>.</p></div></section>' +
+
+  '<section class="section"><div class="wrap">' +
+    '<div class="section-head"><p class="eyebrow">Operating principles</p><h2>The rules it works by</h2></div>' +
+    '<div class="principles">' + principles + '</div></div></section>' +
+
+  '<section class="section" id="specs"><div class="wrap">' +
+    '<div class="section-head"><p class="eyebrow">Technical specifications</p><h2>At a glance</h2></div>' +
+    '<dl class="specs">' + specs + '</dl></div></section>' +
+
+  '<section class="next"><div class="wrap"><div class="next-card">' +
+    '<div class="nx-l"><span class="label">' + nextLabel + '</span>' +
+    '<h3>' + next.name + ' →</h3></div>' +
+    '<button class="go" data-slug="' + nextSlug + '">Skill ' + next.num + '</button>' +
+  '</div></div></section>';
+
+  document.querySelector(".next-card .go").addEventListener("click", e => show(e.target.dataset.slug));
+  document.getElementById("foot-pos").textContent = "Skill " + a.num + " / 12";
+}
+
+function show(slug){
+  if (!SKILLS[slug]) slug = ORDER[0];
+  applyAccent(SKILLS[slug].cat);
+  buildSwitcher(slug);
+  render(slug);
+  if (location.hash.slice(1) !== slug) history.replaceState(null, "", "#" + slug);
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+window.addEventListener("hashchange", () => show(location.hash.slice(1)));
+show(location.hash.slice(1) || ORDER[0]);
+</script>
+
+</body>
+</html>

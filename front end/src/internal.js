@@ -24,61 +24,41 @@ export function openInternal(item, navigate) {
     navigate(`/internal/${item.slug}`)
   }
 }
+// One flat list of engineering agents — no agent/sub-agent nesting.
 export const INTERNAL_AGENTS = [
   {
-    name: 'Orchestration Manager',
-    slug: 'orchestration-manager',
-    icon: '🧭',
+    name: 'Migration Pipeline',
+    slug: 'migration-pipeline',
+    icon: '🔄',
     accent: '#F5C010',
-    short: 'Placeholder — internal manager agent. Content to be added.',
-    subAgents: [
-      { name: 'Discovery', slug: 'discovery', href: '/discovery-agent.html' },
-      { name: 'Executor', slug: 'executor' },
-      { name: 'Evaluator', slug: 'evaluator' },
-    ],
+    short: 'Migrates legacy applications to a modern stack while preserving exact behavior.',
+    href: '/migration-agents.html',
   },
   {
-    name: 'Data Pipeline Agent',
-    slug: 'data-pipeline-agent',
-    icon: '🛠️',
+    name: 'Onboarding Portal',
+    slug: 'onboarding-portal',
+    icon: '🚪',
     accent: '#FBD75B',
-    short: 'Placeholder — internal agent. Content to be added.',
-    subAgents: [
-      { name: 'Ingest', slug: 'ingest' },
-      { name: 'Transform', slug: 'transform' },
-      { name: 'Load', slug: 'load' },
-    ],
+    short: 'Delivers features from architecture through review and documentation.',
+    href: '/onboarding-agents.html',
   },
   {
-    name: 'Knowledge Base Agent',
-    slug: 'knowledge-base-agent',
-    icon: '📚',
-    accent: '#E0A40C',
-    short: 'Placeholder — internal agent. Content to be added.',
-    subAgents: [],
+    name: 'Discovery',
+    slug: 'discovery',
+    icon: '🔍',
+    accent: '#FBD75B',
+    short: 'Analyzes legacy source code and catalogs its business rules and dependencies.',
+    href: '/discovery-agent.html',
   },
 ]
 
 export const INTERNAL_SKILLS = [
   {
-    name: 'Document Parser',
-    slug: 'document-parser',
-    icon: '📄',
-    accent: '#C8920A',
-    short: 'Placeholder — internal skill. Content to be added.',
-  },
-  {
-    name: 'PII Redactor',
-    slug: 'pii-redactor',
-    icon: '🛡️',
-    accent: '#EAB308',
-    short: 'Placeholder — internal skill. Content to be added.',
-  },
-  {
-    name: 'Sentiment Scorer',
-    slug: 'sentiment-scorer',
-    icon: '📊',
-    accent: '#D9A41A',
-    short: 'Placeholder — internal skill. Content to be added.',
+    name: 'Greenfield Skills',
+    slug: 'greenfield-skills',
+    icon: '🧰',
+    accent: '#F2C94C',
+    short: 'Reusable capabilities spanning code generation, review, reasoning and documentation.',
+    href: '/skills-greenfield.html',
   },
 ]

@@ -13,7 +13,6 @@ function spotlight(e) {
 // set, otherwise the in-app /internal/<slug> overview page.
 function ToolkitCard({ item }) {
   const navigate = useNavigate()
-  const subCount = item.subAgents ? item.subAgents.length : 0
   const isExternal = !!item.href && /^https?:/i.test(item.href)
   const open = () => openInternal(item, navigate)
   return (
@@ -36,7 +35,6 @@ function ToolkitCard({ item }) {
       <p className="card-desc">{item.short}</p>
 
       <div className="card-tags">
-        {subCount > 0 && <span className="pill pill-blue">{subCount} sub-agents</span>}
         {isExternal && <span className="pill pill-blue">External ↗</span>}
       </div>
     </div>
@@ -60,7 +58,7 @@ export default function ToolkitHub() {
         <h2 className="apps-title">
           Explore our <span className="grad">{HUB_NAME}</span>
         </h2>
-        <p className="apps-sub">Internal agents, sub-agents and skills that power the platform.</p>
+        <p className="apps-sub">Internal agents and skills that power the platform.</p>
 
         <div className="cat-zone">
           <motion.div

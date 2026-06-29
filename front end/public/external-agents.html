@@ -47,7 +47,7 @@ body{
 .hero-back:hover{background:rgba(255,255,255,.13)}
 
 /* CONTROLS */
-.controls{position:sticky;top:0;z-index:40;background:rgba(5,5,6,.88);backdrop-filter:blur(12px);border-bottom:1px solid var(--bdr-soft);padding:14px 24px}
+.controls{position:static;background:transparent;border-bottom:none;padding:28px 24px 4px}
 .ctrl-inner{max-width:1200px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:13px}
 .search-wrap{position:relative;width:100%;max-width:560px}
 .search-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);opacity:.5;pointer-events:none}
@@ -55,10 +55,10 @@ body{
 .search::placeholder{color:var(--dim)}
 .search:focus{border-color:var(--gold)}
 .chips{display:flex;flex-wrap:wrap;justify-content:center;gap:10px}
-.chip{cursor:pointer;user-select:none;display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:600;padding:8px 15px;border-radius:999px;border:1px solid var(--bdr);background:rgba(255,255,255,.04);color:var(--muted);transition:color .2s,background .2s,border-color .2s,transform .2s;white-space:nowrap}
-.chip:hover{color:var(--white);border-color:rgba(245,192,16,.45);transform:translateY(-1px)}
-.chip.active{background:var(--gold);border-color:var(--gold);color:#0b0b0d;box-shadow:0 8px 22px -10px rgba(245,192,16,.7)}
-.chip .c{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:18px;padding:0 6px;border-radius:999px;font-size:11px;font-weight:700;color:var(--gold);background:rgba(245,192,16,.16)}
+.chip{cursor:pointer;user-select:none;display:inline-flex;align-items:center;gap:8px;padding:9px 16px;border-radius:999px;font-family:Arial,Helvetica,sans-serif;font-size:14px;font-weight:600;letter-spacing:.1px;color:#cfcfd6;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);transition:color .2s ease,background .2s ease,border-color .2s ease,transform .2s ease;white-space:nowrap}
+.chip:hover{color:#fff;border-color:rgba(245,192,16,.45);transform:translateY(-1px)}
+.chip.active{color:#0b0b0d;background:#f5c010;border-color:#f5c010;box-shadow:0 8px 22px -10px rgba(245,192,16,.7)}
+.chip .c{display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:20px;padding:0 6px;border-radius:999px;font-size:12px;font-weight:700;color:#f5c010;background:rgba(245,192,16,.16)}
 .chip.active .c{color:#0b0b0d;background:rgba(0,0,0,.18)}
 .meta{font-size:12px;color:var(--dim);text-align:center}
 
@@ -122,7 +122,6 @@ mark{background:rgba(245,192,16,.3);color:#fff;border-radius:3px;padding:0 2px}
       <input class="search" id="search" type="text" placeholder="Search skills — try 'kafka', 'kubernetes', 'stripe', 'postgres'…"/>
     </div>
     <div class="chips" id="chips"></div>
-    <div class="meta" id="meta"></div>
   </div>
 </div>
 
@@ -299,7 +298,7 @@ function mkChip(lbl,cnt,val){
   return el;
 }
 chEl.appendChild(mkChip("All",total,"All"));
-cats.forEach(c=>chEl.appendChild(mkChip(DATA[c].icon+" "+c,DATA[c].items.length,c)));
+cats.forEach(c=>chEl.appendChild(mkChip(c,DATA[c].items.length,c)));
 chEl.addEventListener("click",e=>{
   const ch=e.target.closest(".chip");if(!ch)return;
   activeCat=ch.dataset.cat||"All";
@@ -360,10 +359,6 @@ function render(){
     container.appendChild(grid);
   }
   document.getElementById("empty").style.display=shown===0?"block":"none";
-  const parts=[`${shown} skill${shown!==1?"s":""}`];
-  if(activeCat!=="All")parts.push("in "+activeCat);
-  if(query)parts.push(`matching "${query}"`);
-  document.getElementById("meta").textContent="Showing "+parts.join(" · ");
 }
 render();
 </script>

@@ -60,7 +60,7 @@ export default function App() {
             <button className="gw-card" style={{ '--accent': '#FBD75B' }} onMouseMove={onMove} onClick={() => navigate(HUB_PATH)}>
               <span className="gw-icon"><img src="/gateway/internal-agents.png" alt="" /></span>
               <h3 className="gw-title">{HUB_NAME}</h3>
-              <p className="gw-desc">Internal agents, sub-agents and skills that power the platform.</p>
+              <p className="gw-desc">Internal agents and skills that power the platform.</p>
               <span className="gw-cta">Open {HUB_NAME}</span>
             </button>
             <button className="gw-card" style={{ '--accent': '#E0A40C' }} onMouseMove={onMove} onClick={() => { window.location.href = '/external-agents.html' }}>
