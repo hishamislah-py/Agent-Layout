@@ -183,7 +183,7 @@
 <header class="topbar">
   <div class="wrap">
     <div class="bar-left" style="display:flex;align-items:center;gap:18px">
-      <a href="/toolkit" style="display:inline-flex;align-items:center;gap:6px;padding:7px 15px;border-radius:9px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:.8rem;font-weight:600;text-decoration:none;white-space:nowrap">← Back</a>
+      <a href="/toolkit?cat=Migration%20Pipeline" style="display:inline-flex;align-items:center;gap:6px;padding:7px 15px;border-radius:9px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:.8rem;font-weight:600;text-decoration:none;white-space:nowrap">← Back</a>
       <div class="brand"><span class="dot"></span> Migration&nbsp;<b>Orchestrator</b></div>
     </div>
     <nav>
@@ -207,34 +207,6 @@
         <span>Engine&nbsp; <b>Claude Code CLI</b></span>
         <span>Pipeline&nbsp; <b>32 stages</b></span>
         <span>Shared state&nbsp; <b>Migration Knowledge Base</b></span>
-      </div>
-    </div>
-  </section>
-
-  <!-- SPECIMEN -->
-  <section class="section" id="specimen">
-    <div class="wrap">
-      <div class="section-head">
-        <p class="eyebrow">Legacy specimen</p>
-        <h2>What the swarm reads</h2>
-        <p>Every agent starts from the legacy source — the exact behavior that must survive the migration untouched.</p>
-      </div>
-      <div class="scanner" aria-hidden="true">
-        <div class="scanner-head"><span class="tl"><i></i><i></i><i></i></span> legacy/feature/provider/ProviderDetailFragment.kt</div>
-        <div class="scan-body">
-          <div class="scanline"></div>
-<pre class="code"><span class="k">override fun</span> <span class="f">onViewCreated</span>(view: View, b: Bundle?) {
-    <span class="c">// legacy behavior — must be preserved exactly</span>
-    <span class="k">if</span> (session.isLoggedIn) {
-        viewModel.loadProvider(args.providerId)
-    } <span class="k">else</span> {
-        findNavController().navigate(R.id.<span class="n">login</span>)
-    }
-    binding.rateBtn.setOnClickListener {
-        <span class="k">if</span> (provider.allowsRating) showRateSheet()
-    }
-}</pre>
-        </div>
       </div>
     </div>
   </section>
@@ -1154,7 +1126,7 @@
    to the directory. State lives entirely in location.hash, so deep links and
    the browser back/forward buttons work. */
 (function () {
-  var DIRECTORY = ['.hero', '#specimen', '#overview', '#index', '#principles', '#runtime'];
+  var DIRECTORY = ['.hero', '#overview', '#index', '#principles', '#runtime'];
   var agents = Array.prototype.slice.call(document.querySelectorAll('.agent-sec'));
 
   function dirEls() {

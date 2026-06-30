@@ -375,7 +375,7 @@
 
 <main>
   <section class="hero">
-    <div class="wrap hero-grid">
+    <div class="wrap">
       <div>
         <p class="eyebrow">Pipeline Stage 01 · Inventory &amp; Catalog</p>
         <h1>Discovery Agent</h1>
@@ -384,31 +384,6 @@
           <span>Engine&nbsp; <b>claude --print</b></span>
           <span>Model&nbsp; <b>Sonnet 4.6</b></span>
           <span>Output&nbsp; <b>MKB entry (JSON)</b></span>
-        </div>
-      </div>
-
-      <div class="scanner" aria-hidden="true">
-        <div class="scanner-head">
-          <span class="tl"><i></i><i></i><i></i></span>
-          legacy/billing/payout.py
-        </div>
-        <div class="scan-body">
-          <div class="scanline"></div>
-<pre class="code"><span class="k">def</span> <span class="f">calculate_payout</span>(amount, tier, region):
-    <span class="c"># legacy rule — origin unknown</span>
-    fee = amount * <span class="n">0.029</span> + <span class="n">0.30</span>
-    <span class="k">if</span> tier == <span class="s">"gold"</span>:
-        fee = fee * <span class="n">0.5</span>
-    <span class="k">if</span> region <span class="k">in</span> (<span class="s">"EU"</span>, <span class="s">"UK"</span>):
-        fee += amount * <span class="n">0.004</span>   <span class="c"># ??? undocumented</span>
-    payout = amount - fee
-    <span class="k">return</span> round(payout, <span class="n">2</span>)</pre>
-        </div>
-        <div class="findings">
-          <div class="finding"><span class="tag">Rule</span><span class="txt">BR-BILLIN-001 · Processing fee</span><span class="meta">HIGH</span></div>
-          <div class="finding"><span class="tag">Rule</span><span class="txt">BR-BILLIN-002 · Gold tier discount</span><span class="meta">HIGH</span></div>
-          <div class="finding"><span class="tag alt">Flag</span><span class="txt">EU/UK surcharge — undocumented</span><span class="meta">AMBIG.</span></div>
-          <div class="finding"><span class="tag alt">Dep</span><span class="txt">internal · none external</span><span class="meta">LOW</span></div>
         </div>
       </div>
     </div>

@@ -62,6 +62,25 @@
   .idx-card .ic-stage { font-family:var(--font-mono); font-size:.68rem; color:var(--faint); }
   [data-hidden] { display:none !important; }
 
+  .scanner { position:relative; border:1px solid var(--line); border-radius:10px; background:linear-gradient(180deg,var(--surface),var(--ink-2)); overflow:hidden; box-shadow:0 24px 60px -30px rgba(0,0,0,.8); }
+  .agent-grid { display:grid; grid-template-columns:1.05fr .95fr; gap:40px; align-items:start; }
+  @media (max-width:920px){ .agent-grid { grid-template-columns:1fr; gap:28px; } }
+  .scanner-head { display:flex; align-items:center; gap:8px; padding:11px 14px; border-bottom:1px solid var(--line-soft); font-family:var(--font-mono); font-size:.71rem; color:var(--faint); }
+  .scanner .tl { display:flex; gap:6px; margin-right:6px; }
+  .scanner .tl i { width:9px; height:9px; border-radius:50%; background:var(--line); display:block; }
+  .scan-body { position:relative; }
+  pre.code { margin:0; padding:18px 18px 20px; font-family:var(--font-mono); font-size:.77rem; line-height:1.7; color:#aeb9c5; overflow-x:auto; tab-size:2; }
+  pre.code .k { color:#ffd86b; } pre.code .s { color:#88c9a1; } pre.code .c { color:#56616e; font-style:italic; }
+  pre.code .f { color:#e4d290; } pre.code .n { color:#d8a0d8; } pre.code .x { color:#ff7a7a; }
+  .scanline { position:absolute; left:0; right:0; top:0; height:38px; background:linear-gradient(180deg,transparent,var(--accent-dim) 70%,var(--accent-line)); border-bottom:1px solid var(--accent); box-shadow:0 0 22px 2px var(--accent-dim); pointer-events:none; animation:sweep 5.6s cubic-bezier(.6,0,.4,1) infinite; }
+  @keyframes sweep { 0%{transform:translateY(-40px);opacity:0;} 8%{opacity:1;} 70%{opacity:1;} 85%{transform:translateY(300px);opacity:0;} 100%{transform:translateY(300px);opacity:0;} }
+  @media (prefers-reduced-motion:reduce){ .scanline{ animation:none; opacity:.85; top:110px; } }
+  .findings { border-top:1px solid var(--line-soft); padding:14px; display:flex; flex-direction:column; gap:8px; background:var(--ink-2); }
+  .finding { display:flex; align-items:center; gap:10px; font-family:var(--font-mono); font-size:.72rem; padding:8px 11px; border-radius:7px; border:1px solid var(--line-soft); background:var(--surface); }
+  .finding .tag { font-size:.6rem; letter-spacing:.08em; text-transform:uppercase; padding:2px 7px; border-radius:4px; color:var(--ink); background:var(--accent); font-weight:700; flex-shrink:0; }
+  .finding .tag.alt { background:transparent; color:var(--accent); border:1px solid var(--accent-line); }
+  .finding .txt { color:var(--text); }
+  .finding .meta { margin-left:auto; color:var(--faint); flex-shrink:0; }
   .agent-sec { scroll-margin-top:120px; }
   .agent-head { max-width:70ch; }
   .agent-head h2 { font-size:clamp(1.7rem, 3.6vw, 2.5rem); margin:12px 0 0; }
@@ -88,7 +107,7 @@
 <header class="topbar">
   <div class="wrap">
     <div class="bar-left" style="display:flex;align-items:center;gap:18px">
-      <a href="/internal-skills" style="display:inline-flex;align-items:center;gap:6px;padding:7px 15px;border-radius:9px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:.8rem;font-weight:600;text-decoration:none;white-space:nowrap">← Back</a>
+      <a href="/internal-skills?cat=CQA%20Skills" style="display:inline-flex;align-items:center;gap:6px;padding:7px 15px;border-radius:9px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:.8rem;font-weight:600;text-decoration:none;white-space:nowrap">← Back</a>
       <div class="brand"><span class="dot"></span> CQA&nbsp;Pipeline&nbsp;<b>· Skills Catalog</b></div>
     </div>
     <nav>
@@ -173,6 +192,8 @@
   <!-- s01 -->
   <section class="section agent-sec" id="s01">
     <div class="wrap">
+      <div class="agent-grid">
+        <div>
       <div class="agent-head">
         <p class="eyebrow">cqa-final-core · 01</p>
         <h2>CQA Orchestrator</h2>
@@ -184,6 +205,27 @@
         <div class="spec-row"><dt>Role</dt><dd>Pipeline coordination &amp; output</dd></div>
         <div class="spec-row"><dt>Produces</dt><dd>Canonical assessment.json · composite score · top_priorities</dd></div>
       </dl>
+        </div>
+        <div class="scanner" aria-hidden="true">
+          <div class="scanner-head"><span class="tl"><i></i><i></i><i></i></span>spec: case section nav → generate</div>
+          <div class="scan-body"><div class="scanline"></div><pre class="code"><span class="k">export function</span> <span class="f">SectionNav</span>({ sections }) {
+  <span class="k">const</span> { can } = <span class="f">usePermissions</span>()   <span class="c">// server</span>
+  <span class="k">return</span> (
+    &lt;<span class="f">FormEngine</span>
+      template={tpl}               <span class="c">// form-engine-core</span>
+      tone={tokens.color.surface}  <span class="c">// token</span>
+    /&gt;
+  )
+}</pre></div>
+          <div class="findings">
+            <div class="finding"><span class="tag">Gen</span><span class="txt">component + hook</span><span class="meta">FILES</span></div>
+            <div class="finding"><span class="tag">Gen</span><span class="txt">form-engine-core used</span><span class="meta">ENGINE</span></div>
+            <div class="finding"><span class="tag alt">Test</span><span class="txt">axe-core: 0 violations</span><span class="meta">A11Y</span></div>
+            <div class="finding"><span class="tag alt">Gen</span><span class="txt">Storybook story</span><span class="meta">STORY</span></div>
+          </div>
+        </div>
+      </div>
+
       <a class="backtop" href="#index">← back to directory</a>
     </div>
   </section>
@@ -191,6 +233,8 @@
   <!-- s02 -->
   <section class="section agent-sec" id="s02">
     <div class="wrap">
+      <div class="agent-grid">
+        <div>
       <div class="agent-head">
         <p class="eyebrow">cqa-final-core · 02</p>
         <h2>Build Samples</h2>
@@ -201,6 +245,27 @@
         <div class="spec-row"><dt>Package</dt><dd>cqa-final-core</dd></div>
         <div class="spec-row"><dt>Produces</dt><dd>Per-agent findings slices · samples manifests (≤ 50 files)</dd></div>
       </dl>
+        </div>
+        <div class="scanner" aria-hidden="true">
+          <div class="scanner-head"><span class="tl"><i></i><i></i><i></i></span>spec: case section nav → generate</div>
+          <div class="scan-body"><div class="scanline"></div><pre class="code"><span class="k">export function</span> <span class="f">SectionNav</span>({ sections }) {
+  <span class="k">const</span> { can } = <span class="f">usePermissions</span>()   <span class="c">// server</span>
+  <span class="k">return</span> (
+    &lt;<span class="f">FormEngine</span>
+      template={tpl}               <span class="c">// form-engine-core</span>
+      tone={tokens.color.surface}  <span class="c">// token</span>
+    /&gt;
+  )
+}</pre></div>
+          <div class="findings">
+            <div class="finding"><span class="tag">Gen</span><span class="txt">component + hook</span><span class="meta">FILES</span></div>
+            <div class="finding"><span class="tag">Gen</span><span class="txt">form-engine-core used</span><span class="meta">ENGINE</span></div>
+            <div class="finding"><span class="tag alt">Test</span><span class="txt">axe-core: 0 violations</span><span class="meta">A11Y</span></div>
+            <div class="finding"><span class="tag alt">Gen</span><span class="txt">Storybook story</span><span class="meta">STORY</span></div>
+          </div>
+        </div>
+      </div>
+
       <a class="backtop" href="#index">← back to directory</a>
     </div>
   </section>
@@ -208,6 +273,8 @@
   <!-- s03 -->
   <section class="section agent-sec" id="s03">
     <div class="wrap">
+      <div class="agent-grid">
+        <div>
       <div class="agent-head">
         <p class="eyebrow">cqa-final-core · 03</p>
         <h2>Preflight Gate</h2>
@@ -218,6 +285,27 @@
         <div class="spec-row"><dt>Package</dt><dd>cqa-final-core</dd></div>
         <div class="spec-row"><dt>Produces</dt><dd>Per-dimension proceed / downgrade / abort decisions</dd></div>
       </dl>
+        </div>
+        <div class="scanner" aria-hidden="true">
+          <div class="scanner-head"><span class="tl"><i></i><i></i><i></i></span>spec: case section nav → generate</div>
+          <div class="scan-body"><div class="scanline"></div><pre class="code"><span class="k">export function</span> <span class="f">SectionNav</span>({ sections }) {
+  <span class="k">const</span> { can } = <span class="f">usePermissions</span>()   <span class="c">// server</span>
+  <span class="k">return</span> (
+    &lt;<span class="f">FormEngine</span>
+      template={tpl}               <span class="c">// form-engine-core</span>
+      tone={tokens.color.surface}  <span class="c">// token</span>
+    /&gt;
+  )
+}</pre></div>
+          <div class="findings">
+            <div class="finding"><span class="tag">Gen</span><span class="txt">component + hook</span><span class="meta">FILES</span></div>
+            <div class="finding"><span class="tag">Gen</span><span class="txt">form-engine-core used</span><span class="meta">ENGINE</span></div>
+            <div class="finding"><span class="tag alt">Test</span><span class="txt">axe-core: 0 violations</span><span class="meta">A11Y</span></div>
+            <div class="finding"><span class="tag alt">Gen</span><span class="txt">Storybook story</span><span class="meta">STORY</span></div>
+          </div>
+        </div>
+      </div>
+
       <a class="backtop" href="#index">← back to directory</a>
     </div>
   </section>
@@ -225,6 +313,8 @@
   <!-- s04 -->
   <section class="section agent-sec" id="s04">
     <div class="wrap">
+      <div class="agent-grid">
+        <div>
       <div class="agent-head">
         <p class="eyebrow">cqa-final-core · 04</p>
         <h2>Report Builder</h2>
@@ -235,6 +325,27 @@
         <div class="spec-row"><dt>Package</dt><dd>cqa-final-core</dd></div>
         <div class="spec-row"><dt>Produces</dt><dd>Branded .docx assessment report</dd></div>
       </dl>
+        </div>
+        <div class="scanner" aria-hidden="true">
+          <div class="scanner-head"><span class="tl"><i></i><i></i><i></i></span>spec: case section nav → generate</div>
+          <div class="scan-body"><div class="scanline"></div><pre class="code"><span class="k">export function</span> <span class="f">SectionNav</span>({ sections }) {
+  <span class="k">const</span> { can } = <span class="f">usePermissions</span>()   <span class="c">// server</span>
+  <span class="k">return</span> (
+    &lt;<span class="f">FormEngine</span>
+      template={tpl}               <span class="c">// form-engine-core</span>
+      tone={tokens.color.surface}  <span class="c">// token</span>
+    /&gt;
+  )
+}</pre></div>
+          <div class="findings">
+            <div class="finding"><span class="tag">Gen</span><span class="txt">component + hook</span><span class="meta">FILES</span></div>
+            <div class="finding"><span class="tag">Gen</span><span class="txt">form-engine-core used</span><span class="meta">ENGINE</span></div>
+            <div class="finding"><span class="tag alt">Test</span><span class="txt">axe-core: 0 violations</span><span class="meta">A11Y</span></div>
+            <div class="finding"><span class="tag alt">Gen</span><span class="txt">Storybook story</span><span class="meta">STORY</span></div>
+          </div>
+        </div>
+      </div>
+
       <a class="backtop" href="#index">← back to directory</a>
     </div>
   </section>
@@ -242,6 +353,8 @@
   <!-- s05 -->
   <section class="section agent-sec" id="s05">
     <div class="wrap">
+      <div class="agent-grid">
+        <div>
       <div class="agent-head">
         <p class="eyebrow">cqa-final-tooling · 05</p>
         <h2>Scan Runner</h2>
@@ -252,6 +365,27 @@
         <div class="spec-row"><dt>Package</dt><dd>cqa-final-tooling</dd></div>
         <div class="spec-row"><dt>Produces</dt><dd>Raw tool output for the lite-scan phase</dd></div>
       </dl>
+        </div>
+        <div class="scanner" aria-hidden="true">
+          <div class="scanner-head"><span class="tl"><i></i><i></i><i></i></span>spec: case section nav → generate</div>
+          <div class="scan-body"><div class="scanline"></div><pre class="code"><span class="k">export function</span> <span class="f">SectionNav</span>({ sections }) {
+  <span class="k">const</span> { can } = <span class="f">usePermissions</span>()   <span class="c">// server</span>
+  <span class="k">return</span> (
+    &lt;<span class="f">FormEngine</span>
+      template={tpl}               <span class="c">// form-engine-core</span>
+      tone={tokens.color.surface}  <span class="c">// token</span>
+    /&gt;
+  )
+}</pre></div>
+          <div class="findings">
+            <div class="finding"><span class="tag">Gen</span><span class="txt">component + hook</span><span class="meta">FILES</span></div>
+            <div class="finding"><span class="tag">Gen</span><span class="txt">form-engine-core used</span><span class="meta">ENGINE</span></div>
+            <div class="finding"><span class="tag alt">Test</span><span class="txt">axe-core: 0 violations</span><span class="meta">A11Y</span></div>
+            <div class="finding"><span class="tag alt">Gen</span><span class="txt">Storybook story</span><span class="meta">STORY</span></div>
+          </div>
+        </div>
+      </div>
+
       <a class="backtop" href="#index">← back to directory</a>
     </div>
   </section>
@@ -259,6 +393,8 @@
   <!-- s06 -->
   <section class="section agent-sec" id="s06">
     <div class="wrap">
+      <div class="agent-grid">
+        <div>
       <div class="agent-head">
         <p class="eyebrow">cqa-final-tooling · 06</p>
         <h2>Tech Stack Detector</h2>
@@ -269,6 +405,27 @@
         <div class="spec-row"><dt>Package</dt><dd>cqa-final-tooling</dd></div>
         <div class="spec-row"><dt>Produces</dt><dd>repository.tech_stack · precheck.json</dd></div>
       </dl>
+        </div>
+        <div class="scanner" aria-hidden="true">
+          <div class="scanner-head"><span class="tl"><i></i><i></i><i></i></span>spec: case section nav → generate</div>
+          <div class="scan-body"><div class="scanline"></div><pre class="code"><span class="k">export function</span> <span class="f">SectionNav</span>({ sections }) {
+  <span class="k">const</span> { can } = <span class="f">usePermissions</span>()   <span class="c">// server</span>
+  <span class="k">return</span> (
+    &lt;<span class="f">FormEngine</span>
+      template={tpl}               <span class="c">// form-engine-core</span>
+      tone={tokens.color.surface}  <span class="c">// token</span>
+    /&gt;
+  )
+}</pre></div>
+          <div class="findings">
+            <div class="finding"><span class="tag">Gen</span><span class="txt">component + hook</span><span class="meta">FILES</span></div>
+            <div class="finding"><span class="tag">Gen</span><span class="txt">form-engine-core used</span><span class="meta">ENGINE</span></div>
+            <div class="finding"><span class="tag alt">Test</span><span class="txt">axe-core: 0 violations</span><span class="meta">A11Y</span></div>
+            <div class="finding"><span class="tag alt">Gen</span><span class="txt">Storybook story</span><span class="meta">STORY</span></div>
+          </div>
+        </div>
+      </div>
+
       <a class="backtop" href="#index">← back to directory</a>
     </div>
   </section>
@@ -276,6 +433,8 @@
   <!-- s07 -->
   <section class="section agent-sec" id="s07">
     <div class="wrap">
+      <div class="agent-grid">
+        <div>
       <div class="agent-head">
         <p class="eyebrow">cqa-final-tooling · 07</p>
         <h2>Tool Adapters</h2>
@@ -286,6 +445,27 @@
         <div class="spec-row"><dt>Package</dt><dd>cqa-final-tooling</dd></div>
         <div class="spec-row"><dt>Produces</dt><dd>Canonical-schema findings from each tool</dd></div>
       </dl>
+        </div>
+        <div class="scanner" aria-hidden="true">
+          <div class="scanner-head"><span class="tl"><i></i><i></i><i></i></span>spec: case section nav → generate</div>
+          <div class="scan-body"><div class="scanline"></div><pre class="code"><span class="k">export function</span> <span class="f">SectionNav</span>({ sections }) {
+  <span class="k">const</span> { can } = <span class="f">usePermissions</span>()   <span class="c">// server</span>
+  <span class="k">return</span> (
+    &lt;<span class="f">FormEngine</span>
+      template={tpl}               <span class="c">// form-engine-core</span>
+      tone={tokens.color.surface}  <span class="c">// token</span>
+    /&gt;
+  )
+}</pre></div>
+          <div class="findings">
+            <div class="finding"><span class="tag">Gen</span><span class="txt">component + hook</span><span class="meta">FILES</span></div>
+            <div class="finding"><span class="tag">Gen</span><span class="txt">form-engine-core used</span><span class="meta">ENGINE</span></div>
+            <div class="finding"><span class="tag alt">Test</span><span class="txt">axe-core: 0 violations</span><span class="meta">A11Y</span></div>
+            <div class="finding"><span class="tag alt">Gen</span><span class="txt">Storybook story</span><span class="meta">STORY</span></div>
+          </div>
+        </div>
+      </div>
+
       <a class="backtop" href="#index">← back to directory</a>
     </div>
   </section>
@@ -293,6 +473,8 @@
   <!-- s08 -->
   <section class="section agent-sec" id="s08">
     <div class="wrap">
+      <div class="agent-grid">
+        <div>
       <div class="agent-head">
         <p class="eyebrow">cqa-final-tooling · 08</p>
         <h2>Heavy Tool Runners</h2>
@@ -303,6 +485,27 @@
         <div class="spec-row"><dt>Package</dt><dd>cqa-final-tooling</dd></div>
         <div class="spec-row"><dt>Produces</dt><dd>Coverage, mutation, type-check and quality evidence (Phase 3)</dd></div>
       </dl>
+        </div>
+        <div class="scanner" aria-hidden="true">
+          <div class="scanner-head"><span class="tl"><i></i><i></i><i></i></span>spec: case section nav → generate</div>
+          <div class="scan-body"><div class="scanline"></div><pre class="code"><span class="k">export function</span> <span class="f">SectionNav</span>({ sections }) {
+  <span class="k">const</span> { can } = <span class="f">usePermissions</span>()   <span class="c">// server</span>
+  <span class="k">return</span> (
+    &lt;<span class="f">FormEngine</span>
+      template={tpl}               <span class="c">// form-engine-core</span>
+      tone={tokens.color.surface}  <span class="c">// token</span>
+    /&gt;
+  )
+}</pre></div>
+          <div class="findings">
+            <div class="finding"><span class="tag">Gen</span><span class="txt">component + hook</span><span class="meta">FILES</span></div>
+            <div class="finding"><span class="tag">Gen</span><span class="txt">form-engine-core used</span><span class="meta">ENGINE</span></div>
+            <div class="finding"><span class="tag alt">Test</span><span class="txt">axe-core: 0 violations</span><span class="meta">A11Y</span></div>
+            <div class="finding"><span class="tag alt">Gen</span><span class="txt">Storybook story</span><span class="meta">STORY</span></div>
+          </div>
+        </div>
+      </div>
+
       <a class="backtop" href="#index">← back to directory</a>
     </div>
   </section>
@@ -310,6 +513,8 @@
   <!-- s09 -->
   <section class="section agent-sec" id="s09">
     <div class="wrap">
+      <div class="agent-grid">
+        <div>
       <div class="agent-head">
         <p class="eyebrow">cqa-final-debt · 09</p>
         <h2>Debt Detector</h2>
@@ -320,6 +525,27 @@
         <div class="spec-row"><dt>Package</dt><dd>cqa-final-debt</dd></div>
         <div class="spec-row"><dt>Produces</dt><dd>Debt findings (dimension = maintainability)</dd></div>
       </dl>
+        </div>
+        <div class="scanner" aria-hidden="true">
+          <div class="scanner-head"><span class="tl"><i></i><i></i><i></i></span>spec: case section nav → generate</div>
+          <div class="scan-body"><div class="scanline"></div><pre class="code"><span class="k">export function</span> <span class="f">SectionNav</span>({ sections }) {
+  <span class="k">const</span> { can } = <span class="f">usePermissions</span>()   <span class="c">// server</span>
+  <span class="k">return</span> (
+    &lt;<span class="f">FormEngine</span>
+      template={tpl}               <span class="c">// form-engine-core</span>
+      tone={tokens.color.surface}  <span class="c">// token</span>
+    /&gt;
+  )
+}</pre></div>
+          <div class="findings">
+            <div class="finding"><span class="tag">Gen</span><span class="txt">component + hook</span><span class="meta">FILES</span></div>
+            <div class="finding"><span class="tag">Gen</span><span class="txt">form-engine-core used</span><span class="meta">ENGINE</span></div>
+            <div class="finding"><span class="tag alt">Test</span><span class="txt">axe-core: 0 violations</span><span class="meta">A11Y</span></div>
+            <div class="finding"><span class="tag alt">Gen</span><span class="txt">Storybook story</span><span class="meta">STORY</span></div>
+          </div>
+        </div>
+      </div>
+
       <a class="backtop" href="#index">← back to directory</a>
     </div>
   </section>
@@ -327,6 +553,8 @@
   <!-- s10 -->
   <section class="section agent-sec" id="s10">
     <div class="wrap">
+      <div class="agent-grid">
+        <div>
       <div class="agent-head">
         <p class="eyebrow">cqa-final-reverse · 10</p>
         <h2>DB Analyser</h2>
@@ -337,6 +565,27 @@
         <div class="spec-row"><dt>Package</dt><dd>cqa-final-reverse</dd></div>
         <div class="spec-row"><dt>Produces</dt><dd>db-analysis.json</dd></div>
       </dl>
+        </div>
+        <div class="scanner" aria-hidden="true">
+          <div class="scanner-head"><span class="tl"><i></i><i></i><i></i></span>spec: case section nav → generate</div>
+          <div class="scan-body"><div class="scanline"></div><pre class="code"><span class="k">export function</span> <span class="f">SectionNav</span>({ sections }) {
+  <span class="k">const</span> { can } = <span class="f">usePermissions</span>()   <span class="c">// server</span>
+  <span class="k">return</span> (
+    &lt;<span class="f">FormEngine</span>
+      template={tpl}               <span class="c">// form-engine-core</span>
+      tone={tokens.color.surface}  <span class="c">// token</span>
+    /&gt;
+  )
+}</pre></div>
+          <div class="findings">
+            <div class="finding"><span class="tag">Gen</span><span class="txt">component + hook</span><span class="meta">FILES</span></div>
+            <div class="finding"><span class="tag">Gen</span><span class="txt">form-engine-core used</span><span class="meta">ENGINE</span></div>
+            <div class="finding"><span class="tag alt">Test</span><span class="txt">axe-core: 0 violations</span><span class="meta">A11Y</span></div>
+            <div class="finding"><span class="tag alt">Gen</span><span class="txt">Storybook story</span><span class="meta">STORY</span></div>
+          </div>
+        </div>
+      </div>
+
       <a class="backtop" href="#index">← back to directory</a>
     </div>
   </section>
@@ -344,6 +593,8 @@
   <!-- s11 -->
   <section class="section agent-sec" id="s11">
     <div class="wrap">
+      <div class="agent-grid">
+        <div>
       <div class="agent-head">
         <p class="eyebrow">cqa-final-reverse · 11</p>
         <h2>Journey Mapper</h2>
@@ -354,6 +605,27 @@
         <div class="spec-row"><dt>Package</dt><dd>cqa-final-reverse</dd></div>
         <div class="spec-row"><dt>Produces</dt><dd>user-journeys.json</dd></div>
       </dl>
+        </div>
+        <div class="scanner" aria-hidden="true">
+          <div class="scanner-head"><span class="tl"><i></i><i></i><i></i></span>spec: case section nav → generate</div>
+          <div class="scan-body"><div class="scanline"></div><pre class="code"><span class="k">export function</span> <span class="f">SectionNav</span>({ sections }) {
+  <span class="k">const</span> { can } = <span class="f">usePermissions</span>()   <span class="c">// server</span>
+  <span class="k">return</span> (
+    &lt;<span class="f">FormEngine</span>
+      template={tpl}               <span class="c">// form-engine-core</span>
+      tone={tokens.color.surface}  <span class="c">// token</span>
+    /&gt;
+  )
+}</pre></div>
+          <div class="findings">
+            <div class="finding"><span class="tag">Gen</span><span class="txt">component + hook</span><span class="meta">FILES</span></div>
+            <div class="finding"><span class="tag">Gen</span><span class="txt">form-engine-core used</span><span class="meta">ENGINE</span></div>
+            <div class="finding"><span class="tag alt">Test</span><span class="txt">axe-core: 0 violations</span><span class="meta">A11Y</span></div>
+            <div class="finding"><span class="tag alt">Gen</span><span class="txt">Storybook story</span><span class="meta">STORY</span></div>
+          </div>
+        </div>
+      </div>
+
       <a class="backtop" href="#index">← back to directory</a>
     </div>
   </section>
@@ -361,6 +633,8 @@
   <!-- s12 -->
   <section class="section agent-sec" id="s12">
     <div class="wrap">
+      <div class="agent-grid">
+        <div>
       <div class="agent-head">
         <p class="eyebrow">cqa-final-reverse · 12</p>
         <h2>Design Recoverer</h2>
@@ -371,6 +645,27 @@
         <div class="spec-row"><dt>Package</dt><dd>cqa-final-reverse</dd></div>
         <div class="spec-row"><dt>Produces</dt><dd>design-recovery.json</dd></div>
       </dl>
+        </div>
+        <div class="scanner" aria-hidden="true">
+          <div class="scanner-head"><span class="tl"><i></i><i></i><i></i></span>spec: case section nav → generate</div>
+          <div class="scan-body"><div class="scanline"></div><pre class="code"><span class="k">export function</span> <span class="f">SectionNav</span>({ sections }) {
+  <span class="k">const</span> { can } = <span class="f">usePermissions</span>()   <span class="c">// server</span>
+  <span class="k">return</span> (
+    &lt;<span class="f">FormEngine</span>
+      template={tpl}               <span class="c">// form-engine-core</span>
+      tone={tokens.color.surface}  <span class="c">// token</span>
+    /&gt;
+  )
+}</pre></div>
+          <div class="findings">
+            <div class="finding"><span class="tag">Gen</span><span class="txt">component + hook</span><span class="meta">FILES</span></div>
+            <div class="finding"><span class="tag">Gen</span><span class="txt">form-engine-core used</span><span class="meta">ENGINE</span></div>
+            <div class="finding"><span class="tag alt">Test</span><span class="txt">axe-core: 0 violations</span><span class="meta">A11Y</span></div>
+            <div class="finding"><span class="tag alt">Gen</span><span class="txt">Storybook story</span><span class="meta">STORY</span></div>
+          </div>
+        </div>
+      </div>
+
       <a class="backtop" href="#index">← back to directory</a>
     </div>
   </section>
@@ -378,6 +673,8 @@
   <!-- s13 -->
   <section class="section agent-sec" id="s13">
     <div class="wrap">
+      <div class="agent-grid">
+        <div>
       <div class="agent-head">
         <p class="eyebrow">cqa-final-reverse · 13</p>
         <h2>Coverage Deepener</h2>
@@ -388,6 +685,27 @@
         <div class="spec-row"><dt>Package</dt><dd>cqa-final-reverse</dd></div>
         <div class="spec-row"><dt>Produces</dt><dd>test-coverage-deep.json</dd></div>
       </dl>
+        </div>
+        <div class="scanner" aria-hidden="true">
+          <div class="scanner-head"><span class="tl"><i></i><i></i><i></i></span>spec: case section nav → generate</div>
+          <div class="scan-body"><div class="scanline"></div><pre class="code"><span class="k">export function</span> <span class="f">SectionNav</span>({ sections }) {
+  <span class="k">const</span> { can } = <span class="f">usePermissions</span>()   <span class="c">// server</span>
+  <span class="k">return</span> (
+    &lt;<span class="f">FormEngine</span>
+      template={tpl}               <span class="c">// form-engine-core</span>
+      tone={tokens.color.surface}  <span class="c">// token</span>
+    /&gt;
+  )
+}</pre></div>
+          <div class="findings">
+            <div class="finding"><span class="tag">Gen</span><span class="txt">component + hook</span><span class="meta">FILES</span></div>
+            <div class="finding"><span class="tag">Gen</span><span class="txt">form-engine-core used</span><span class="meta">ENGINE</span></div>
+            <div class="finding"><span class="tag alt">Test</span><span class="txt">axe-core: 0 violations</span><span class="meta">A11Y</span></div>
+            <div class="finding"><span class="tag alt">Gen</span><span class="txt">Storybook story</span><span class="meta">STORY</span></div>
+          </div>
+        </div>
+      </div>
+
       <a class="backtop" href="#index">← back to directory</a>
     </div>
   </section>

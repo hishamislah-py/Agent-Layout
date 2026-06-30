@@ -222,7 +222,7 @@
 <header class="topbar">
   <div class="wrap">
     <div class="bar-left" style="display:flex;align-items:center;gap:18px">
-      <a href="/toolkit" style="display:inline-flex;align-items:center;gap:6px;padding:7px 15px;border-radius:9px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:.8rem;font-weight:600;text-decoration:none;white-space:nowrap">← Back</a>
+      <a href="/toolkit?cat=Playwright%20QA" style="display:inline-flex;align-items:center;gap:6px;padding:7px 15px;border-radius:9px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:.8rem;font-weight:600;text-decoration:none;white-space:nowrap">← Back</a>
       <a class="brand" href="#top"><span class="dot"></span> Playwright&nbsp;<b>QA Pipeline</b></a>
     </div>
     <nav>
@@ -240,7 +240,7 @@
 
   <!-- HERO -->
   <section class="hero">
-    <div class="wrap hero-grid">
+    <div class="wrap">
       <div>
         <p class="eyebrow">Agent Catalog · 2 agents · 2 shared skills</p>
         <h1>The agents that build &amp; maintain the test suite</h1>
@@ -249,22 +249,6 @@
           <span>Stack&nbsp; <b>@playwright/test</b></span>
           <span>Driver&nbsp; <b>Playwright MCP</b></span>
           <span>Shared state&nbsp; <b>Run journals</b></span>
-        </div>
-      </div>
-      <div class="scanner" aria-hidden="true">
-        <div class="scanner-head"><span class="tl"><i></i><i></i><i></i></span> tests/specs/user-login.spec.js</div>
-        <div class="scan-body">
-          <div class="scanline"></div>
-<pre class="code"><span class="k">import</span> { test, expect } <span class="k">from</span> <span class="s">'../fixtures/fixtures.js'</span>;
-
-test(<span class="s">'user can log in'</span>, <span class="k">async</span> ({ loginPage }) =&gt; {
-    <span class="c">// Step 1: navigate &amp; submit credentials</span>
-    <span class="k">await</span> loginPage.<span class="f">login</span>(USER, PASS);
-
-    <span class="c">// assertion verified during the live run</span>
-    <span class="k">await</span> expect(loginPage.<span class="f">successBanner</span>)
-        .<span class="f">toBeVisible</span>();
-});</pre>
         </div>
       </div>
     </div>

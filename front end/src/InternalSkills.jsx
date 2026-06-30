@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { INTERNAL_SKILLS } from './internal.js'
 import { CARD_ICONS } from './cardIcons.jsx'
@@ -64,9 +64,15 @@ function matchesQuery(item, q) {
 
 export default function InternalSkills() {
   const navigate = useNavigate()
-  const [active, setActive] = useState('All')
+  const [searchParams, setSearchParams] = useSearchParams()
   const [query, setQuery] = useState('')
   const categories = useMemo(() => buildCategories(INTERNAL_SKILLS), [])
+  // Active category comes from the URL (?cat=…) so returning from a standalone
+  // skill page lands back on the same filter instead of resetting to "All".
+  const rawCat = searchParams.get('cat')
+  const active = categories.some((c) => c.label === rawCat) ? rawCat : 'All'
+  const setActive = (label) =>
+    setSearchParams(label === 'All' ? {} : { cat: label }, { replace: true })
   const visible = useMemo(() => {
     const q = query.trim().toLowerCase()
     return INTERNAL_SKILLS.filter((s) => (active === 'All' || s.category === active) && matchesQuery(s, q))
