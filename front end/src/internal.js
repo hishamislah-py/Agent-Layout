@@ -207,7 +207,7 @@ export const INTERNAL_SKILLS = [
     icon: '🔐',
     accent: '#F2C94C',
     short: 'Black-box API testing for auth, CORS, injection and rate limits.',
-    href: '/testing-skills.html#s01',
+    href: '/API-Security-Testing.html',
   },
   {
     name: 'tob-semgrep',
@@ -216,7 +216,7 @@ export const INTERNAL_SKILLS = [
     icon: '🔬',
     accent: '#F7DC84',
     short: 'Static code analysis with Semgrep and Trail of Bits rulesets.',
-    href: '/testing-skills.html#s02',
+    href: '/tob-semgrep.html',
   },
   {
     name: 'OWASP Security',
@@ -225,7 +225,7 @@ export const INTERNAL_SKILLS = [
     icon: '🛡️',
     accent: '#EAB308',
     short: 'Classifies findings by OWASP Top 10 and CWE.',
-    href: '/testing-skills.html#s03',
+    href: '/OWASP-Security.html',
   },
   {
     name: 'Web Application Security',
@@ -234,7 +234,7 @@ export const INTERNAL_SKILLS = [
     icon: '🌐',
     accent: '#D9A41A',
     short: 'Tests the frontend for XSS, insecure storage and exposed secrets.',
-    href: '/testing-skills.html#s04',
+    href: '/Web-Application-Security.html',
   },
   {
     name: 'tob-insecure-defaults',
@@ -243,7 +243,7 @@ export const INTERNAL_SKILLS = [
     icon: '🔑',
     accent: '#C8920A',
     short: 'Scans for hardcoded secrets and insecure defaults.',
-    href: '/testing-skills.html#s05',
+    href: '/tob-insecure-defaults.html',
   },
   {
     name: 'Threat Modeling',
@@ -252,7 +252,7 @@ export const INTERNAL_SKILLS = [
     icon: '🎯',
     accent: '#F2C94C',
     short: 'Maps threats and attack surface with STRIDE and PASTA.',
-    href: '/testing-skills.html#s06',
+    href: '/Threat-Modeling.html',
   },
   {
     name: 'Password Attacks & Sec-Fuzzing',
@@ -261,7 +261,7 @@ export const INTERNAL_SKILLS = [
     icon: '🔓',
     accent: '#F7DC84',
     short: 'Password lists and injection payloads for auth and input tests.',
-    href: '/testing-skills.html#s07',
+    href: '/Password-Attacks-and-Sec-Fuzzing.html',
   },
   {
     name: 'BRD / FRD Analyzer',
@@ -270,7 +270,7 @@ export const INTERNAL_SKILLS = [
     icon: '📋',
     accent: '#EAB308',
     short: 'Extracts and quality-checks requirements before testing.',
-    href: '/testing-skills.html#s08',
+    href: '/BRD-FRD-Analyzer.html',
   },
   {
     name: 'Playwright API Test Generator',
@@ -279,7 +279,7 @@ export const INTERNAL_SKILLS = [
     icon: '🎭',
     accent: '#D9A41A',
     short: 'Generates Playwright API test suites from specs.',
-    href: '/testing-skills.html#s09',
+    href: '/Playwright-API-Test-Generator.html',
   },
   {
     name: 'RTM Generator',
@@ -288,7 +288,7 @@ export const INTERNAL_SKILLS = [
     icon: '🧮',
     accent: '#C8920A',
     short: 'Builds a requirements traceability matrix for coverage proof.',
-    href: '/testing-skills.html#s10',
+    href: '/RTM-Generator.html',
   },
 
   // ---- CQA Skills (cqa-final-* packages) ----

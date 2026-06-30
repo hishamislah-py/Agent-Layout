@@ -260,7 +260,7 @@
 <header class="topbar">
   <div class="wrap">
     <div class="bar-left" style="display:flex;align-items:center;gap:18px">
-      <a href="/toolkit" style="display:inline-flex;align-items:center;gap:6px;padding:7px 15px;border-radius:9px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:.8rem;font-weight:600;text-decoration:none;white-space:nowrap">← Back</a>
+      <a href="/toolkit?cat=Onboarding%20Portal" style="display:inline-flex;align-items:center;gap:6px;padding:7px 15px;border-radius:9px;background:var(--surface);border:1px solid var(--line);color:var(--text);font-size:.8rem;font-weight:600;text-decoration:none;white-space:nowrap">← Back</a>
       <div class="brand"><span class="dot"></span> Onboarding&nbsp;Portal&nbsp;<b>· Agent Catalog</b></div>
     </div>
     <nav>
@@ -1152,7 +1152,7 @@ function render(slug){
     : '<span class="pill">spec only</span>';
 
   document.getElementById("app").innerHTML =
-  '<section class="hero fade"><div class="wrap hero-grid"><div>' +
+  '<section class="hero fade"><div class="wrap"><div>' +
     '<p class="eyebrow">Onboarding Portal · Stage ' + a.num + ' · ' + cat.label + '</p>' +
     '<h1>' + a.name + '</h1>' +
     '<div class="hero-status"><span class="pill">draft</span>' + runtimePill +
@@ -1160,11 +1160,6 @@ function render(slug){
     '<p class="lede">' + a.lede + '</p>' +
     '<div class="hero-meta">' + meta + '</div>' +
   '</div>' +
-    '<div class="scanner" aria-hidden="true"><div class="scanner-head">' +
-      '<span class="tl"><i></i><i></i><i></i></span>' + a.specimen.file + '</div>' +
-      '<div class="scan-body"><div class="scanline"></div><pre class="code">' + a.specimen.code + '</pre></div>' +
-      '<div class="findings">' + findings + '</div>' +
-    '</div>' +
   '</div></section>' +
 
   overviewSection +
