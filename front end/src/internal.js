@@ -9,9 +9,9 @@
 // If `href` is omitted, the card/chip opens the in-app /internal/<slug>
 // overview page instead. So this is drop-in: just set `href` later.
 
-// Display name + route for this section (the "Toolkit" page).
+// Display name + route for this section (the Engineering Agents page).
 export const HUB_NAME = 'Engineering Agents'
-export const HUB_PATH = '/toolkit'
+export const HUB_PATH = '/engineering-agents'
 
 // In-app Internal Skills hub (filterable card grid).
 export const SKILLS_PATH = '/internal-skills'
