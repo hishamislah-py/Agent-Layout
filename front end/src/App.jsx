@@ -69,7 +69,7 @@ export default function App() {
               <p className="gw-desc">Reusable capabilities the engineering agents build on.</p>
               <span className="gw-cta">View skills</span>
             </button>
-            <button className="gw-card" style={{ '--accent': '#E0A40C' }} onMouseMove={onMove} onClick={() => { window.location.href = '/external-agents.html' }}>
+            <button className="gw-card" style={{ '--accent': '#E0A40C' }} onMouseMove={onMove} onClick={() => { window.location.href = '/skill-library.html' }}>
               <span className="gw-icon"><img src="/gateway/external-skills.png" alt="" /></span>
               <h3 className="gw-title">Skill Library</h3>
               <p className="gw-desc">A curated catalog of open-source Agent Skills and MCP servers.</p>
