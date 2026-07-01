@@ -82,7 +82,7 @@ export default function App() {
               <p className="gw-desc">Explore our suite of production-ready AI agents across HR, finance, support and more.</p>
               <span className="gw-cta">Browse agents</span>
             </button>
-            <button className="gw-card" style={{ '--accent': '#FBD75B' }} onMouseMove={onMove} onClick={() => navigate(HUB_PATH)}>
+            <button className="gw-card" style={{ '--accent': '#F5C010' }} onMouseMove={onMove} onClick={() => navigate(HUB_PATH)}>
               <span className="gw-icon"><img src="/gateway/internal-agents.png" alt="" /></span>
               <h3 className="gw-title">{HUB_NAME}</h3>
               <p className="gw-desc">Internal agents that power the platform.</p>
