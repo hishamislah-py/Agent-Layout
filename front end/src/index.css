@@ -236,6 +236,27 @@ h1, h2, h3, h4, h5, h6 {
     width: 34.4vw;
   }
 }
+/* Phone (<=768px): a portrait screen is too tall/narrow for the desktop top
+   percentages. Shrink the discs and re-spread them to mirror the browser: a
+   small disc top-centre and two larger discs flanking the text left and right
+   at matching mid-heights. */
+@media (max-width: 768px) {
+  .sd-top {
+    left: 33%;
+    top: 18%;
+    width: 30vw;
+  }
+  .sd-right {
+    left: 60%;
+    top: 28%;
+    width: 36vw;
+  }
+  .sd-bottom {
+    left: 0%;
+    top: 30%;
+    width: 42vw;
+  }
+}
 
 /* ---------- Announcement bar ---------- */
 .announce {
