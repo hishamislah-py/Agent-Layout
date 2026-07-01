@@ -21,7 +21,7 @@ export default function AgentProfile() {
   return (
     <div className="embed-page" style={{ '--accent': app.accent }}>
       <header className="embed-bar">
-        <button className="embed-back" onClick={() => navigate('/')}>← Back</button>
+        <button className="embed-back" onClick={() => navigate(-1)}>← Back</button>
         <div className="embed-id"></div>
         {app.url && (
           <a className="embed-open" href={app.url} target="_blank" rel="noopener noreferrer">

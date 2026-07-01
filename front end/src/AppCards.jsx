@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { AGENTS } from './agents.js'
 import { CARD_ICONS } from './cardIcons.jsx'
@@ -93,7 +93,21 @@ function matchesQuery(app, q) {
 }
 
 export default function AppCards() {
-  const [active, setActive] = useState('All')
+  // Keep the selected category in the URL (?cat=HR) so it survives back/forward
+  // navigation — returning from an agent profile lands back on the same filtered
+  // view instead of resetting to "All". `replace` so it doesn't add history.
+  const [searchParams, setSearchParams] = useSearchParams()
+  const active = searchParams.get('cat') || 'All'
+  const setActive = (label) =>
+    setSearchParams(
+      (prev) => {
+        const next = new URLSearchParams(prev)
+        if (label === 'All') next.delete('cat')
+        else next.set('cat', label)
+        return next
+      },
+      { replace: true },
+    )
   const [query, setQuery] = useState('')
   const categories = useMemo(() => buildCategories(APPS), [])
   const visible = useMemo(() => {
