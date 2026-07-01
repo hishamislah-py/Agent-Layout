@@ -325,7 +325,7 @@ export const AGENTS = [
     category: 'Financial Services',
     icon: '🛑',
     accent: '#EAB308',
-    url: '',
+    url: 'https://ai.arttechgroup.com:7777/fraud-detection/',
     tag: 'Risk',
     rating: 4.8,
     short: 'Detect, flag and block fraudulent transactions.',
