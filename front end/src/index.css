@@ -220,6 +220,17 @@ h1, h2, h3, h4, h5, h6 {
   top: 30%;
   width: 440px;
 }
+/* Mobile: the decorative 3D discs are large enough to sit behind the hero
+   headline, description and button on narrow screens, which reads as overlap.
+   They're purely decorative, so hide them here; the dark background and gold
+   grid backdrop remain and the desktop scroll animation is untouched. */
+@media (max-width: 768px) {
+  .sd-top,
+  .sd-right,
+  .sd-bottom {
+    display: none;
+  }
+}
 
 /* ---------- Announcement bar ---------- */
 .announce {
