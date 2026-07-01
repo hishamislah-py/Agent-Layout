@@ -220,15 +220,42 @@ h1, h2, h3, h4, h5, h6 {
   top: 30%;
   width: 440px;
 }
-/* Mobile: the decorative 3D discs are large enough to sit behind the hero
-   headline, description and button on narrow screens, which reads as overlap.
-   They're purely decorative, so hide them here; the dark background and gold
-   grid backdrop remain and the desktop scroll animation is untouched. */
+/* Mobile (<=768px): the three full-size discs crowd the centred hero text.
+   Show a single disc as a scaled header visual centred at the top and hide the
+   other two; the hero content is pushed below it (see the .hero override). */
 @media (max-width: 768px) {
   .sd-top,
-  .sd-right,
-  .sd-bottom {
+  .sd-right {
     display: none;
+  }
+  .sd-bottom {
+    left: 0;
+    right: 0;
+    margin-left: auto;
+    margin-right: auto; /* centre the disc (framer keeps translate 0 at scroll 0) */
+    top: 24px;
+    width: min(60vw, 280px);
+  }
+}
+/* Tablet (769-1024px): keep all three discs but scaled down and clustered as a
+   header above the text (hero content is pushed below — see the .hero override).
+   Tops are chosen so every disc's bottom stays within ~195px. Desktop (>1024px)
+   is unchanged. */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .sd-top {
+    left: calc(50% - 205px);
+    top: 22px;
+    width: 140px;
+  }
+  .sd-bottom {
+    left: calc(50% - 95px);
+    top: 34px;
+    width: 190px;
+  }
+  .sd-right {
+    left: calc(50% + 55px);
+    top: 20px;
+    width: 140px;
   }
 }
 
@@ -396,6 +423,25 @@ h1, h2, h3, h4, h5, h6 {
   padding: 16px 30px;
   font-size: 16px;
   border-radius: 11px;
+}
+/* Tablet + mobile (<=1024px): stop centring the hero so its content sits below
+   the disc header (see the disc overrides in the .sd section). Placed after the
+   base .hero rule so it wins the cascade. Padding is per-breakpoint: it must
+   clear the single mobile disc vs. the taller 3-disc tablet cluster. */
+@media (max-width: 1024px) {
+  .hero {
+    justify-content: flex-start;
+  }
+}
+@media (max-width: 768px) {
+  .hero {
+    padding-top: min(260px, 68vw); /* clears the single disc (bottom ~233px) */
+  }
+}
+@media (min-width: 769px) and (max-width: 1024px) {
+  .hero {
+    padding-top: 230px; /* clears the 3-disc cluster (bottom ~195px) */
+  }
 }
 
 /* ---------- Gateway: three huge clickable cards ---------- */
