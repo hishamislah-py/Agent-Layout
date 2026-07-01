@@ -6,7 +6,32 @@ import { HUB_NAME, HUB_PATH, SKILLS_PATH } from './internal.js'
 
 export default function App() {
   const navigate = useNavigate()
-  const scrollTo = (id) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
+  // Drive the scroll with a fixed-duration eased JS animation instead of the
+  // browser's native smooth scroll, which is inconsistent across machines (often
+  // instant on desktop). A gradual scroll is what makes the disc fly-off /
+  // background transition play, so this keeps it smooth on every screen size.
+  const scrollTo = (id) => {
+    const el = document.getElementById(id)
+    if (!el) return
+    const startY = window.scrollY
+    const targetY = el.getBoundingClientRect().top + startY
+    const dist = targetY - startY
+    if (Math.abs(dist) < 2) return
+    const duration = 1000
+    const root = document.documentElement.style
+    const prevBehavior = root.scrollBehavior
+    root.scrollBehavior = 'auto' // don't let CSS smooth fight the JS animation
+    const ease = (t) => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2)
+    let start = null
+    const step = (ts) => {
+      if (start === null) start = ts
+      const p = Math.min((ts - start) / duration, 1)
+      window.scrollTo(0, startY + dist * ease(p))
+      if (p < 1) requestAnimationFrame(step)
+      else root.scrollBehavior = prevBehavior
+    }
+    requestAnimationFrame(step)
+  }
   const onMove = (e) => {
     const r = e.currentTarget.getBoundingClientRect()
     e.currentTarget.style.setProperty('--mx', `${e.clientX - r.left}px`)
