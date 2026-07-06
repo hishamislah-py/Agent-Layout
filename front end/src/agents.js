@@ -870,4 +870,33 @@ export const AGENTS = [
       ['Complexity', 'Medium'], ['Pricing', 'Contact sales'],
     ],
   },
+  {
+    name: 'InfraIQ',
+    slug: 'infra-iq',
+    category: 'IT Ops & Security',
+    icon: '🧩',
+    accent: '#D9A41A',
+    // No `url` yet — renders the "coming soon" state on the profile page.
+    tag: 'Operations',
+    rating: 4.7,
+    short: 'Understand, monitor and optimize your infrastructure.',
+    tagline: 'Understand, monitor and optimize your infrastructure with an AI agent — coming soon.',
+    tags: [{ label: 'Coming Soon', type: 'green' }, { label: 'Operations', type: 'blue' }],
+    whoFor: 'Platform, DevOps and infrastructure teams who want a single intelligent view of their environment.',
+    whatYouGet: 'An agent that maps your infrastructure, surfaces insights and recommends optimizations. Full details coming soon.',
+    howItWorks: 'Connect your infrastructure and observability sources — the agent builds a live picture and surfaces what matters. Details to follow.',
+    featureGroups: [
+      { title: 'Visibility', items: ['Infrastructure mapping', 'Live health signals', 'Dependency insights'] },
+      { title: 'Optimization', items: ['Cost & usage insights', 'Recommended actions', 'Drift detection'] },
+    ],
+    useCases: [
+      { title: 'Infra visibility', desc: 'Get one intelligent view across your environment.', industry: 'Platform' },
+      { title: 'Cost optimization', desc: 'Spot waste and right-size resources.', industry: 'DevOps' },
+      { title: 'Drift detection', desc: 'Catch configuration drift before it bites.', industry: 'IT Operations' },
+    ],
+    specs: [
+      ['Deployment', 'Web app'], ['Availability', 'Cloud'], ['Audience', 'Platform & DevOps'],
+      ['Complexity', 'Medium'], ['Pricing', 'Contact sales'],
+    ],
+  },
 ]
