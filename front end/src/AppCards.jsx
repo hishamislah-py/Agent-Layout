@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { AGENTS } from './agents.js'
-import { CARD_ICONS, CARD_ICON_SVGS } from './cardIcons.jsx'
+import { CARD_ICONS } from './cardIcons.jsx'
 
 const APPS = AGENTS
 
@@ -70,9 +70,7 @@ function Card({ app }) {
     >
       <div className="card-head">
         <span className="card-icon">
-          {CARD_ICON_SVGS[app.slug] ? (
-            CARD_ICON_SVGS[app.slug]
-          ) : CARD_ICONS[app.slug] ? (
+          {CARD_ICONS[app.slug] ? (
             <img src={CARD_ICONS[app.slug]} alt="" className="card-icon-img" />
           ) : (
             app.icon
