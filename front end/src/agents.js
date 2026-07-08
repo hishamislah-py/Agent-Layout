@@ -818,6 +818,7 @@ export const AGENTS = [
   {
     name: 'Goal-Driven Autonomous Agent',
     slug: 'goal-driven-autonomous-agent',
+    hidden: true, // placeholder — hidden from the listing, kept for later
     category: 'Developer Tools',
     icon: '🎯',
     accent: '#EAB308',
@@ -876,6 +877,7 @@ export const AGENTS = [
   {
     name: 'InfraIQ',
     slug: 'infra-iq',
+    hidden: true, // placeholder — hidden from the listing, kept for later
     category: 'IT Ops & Security',
     icon: '🧩',
     accent: '#D9A41A',
