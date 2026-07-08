@@ -119,6 +119,7 @@ export const AGENTS = [
   {
     name: 'Art Intelligence Platform',
     slug: 'art-intelligence',
+    hidden: true, // placeholder — hidden from the listing, kept for later
     category: 'Research & Analysis',
     icon: '📊',
     accent: '#C8920A',
@@ -322,6 +323,7 @@ export const AGENTS = [
   {
     name: 'Fraud Detection Agent',
     slug: 'fraud-detection',
+    hidden: true, // placeholder — hidden from the listing, kept for later
     category: 'Financial Services',
     icon: '🛑',
     accent: '#EAB308',
@@ -873,6 +875,7 @@ export const AGENTS = [
   {
     name: 'InfraIQ',
     slug: 'infra-iq',
+    hidden: true, // placeholder — hidden from the listing, kept for later
     category: 'IT Ops & Security',
     icon: '🧩',
     accent: '#D9A41A',

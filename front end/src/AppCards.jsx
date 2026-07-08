@@ -4,7 +4,7 @@ import { motion } from 'framer-motion'
 import { AGENTS } from './agents.js'
 import { CARD_ICONS } from './cardIcons.jsx'
 
-const APPS = AGENTS
+const APPS = AGENTS.filter((a) => !a.hidden)
 
 // Display order for the browse-by-category bar. Any category not listed here
 // is appended afterwards in first-seen order, so new categories never vanish.
@@ -133,7 +133,7 @@ export default function AppCards() {
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search agents — try 'fraud', 'HR', 'compliance'…"
+            placeholder="Search agents — try 'HR', 'compliance'…"
             aria-label="Search agents"
           />
         </div>
