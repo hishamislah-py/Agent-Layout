@@ -498,6 +498,7 @@ export const AGENTS = [
   {
     name: 'IT Helpdesk Agent',
     slug: 'it-helpdesk-agent',
+    hidden: true, // placeholder — hidden from the listing, kept for later
     category: 'IT Ops & Security',
     icon: '🖥️',
     accent: '#D9A41A',
@@ -875,7 +876,6 @@ export const AGENTS = [
   {
     name: 'InfraIQ',
     slug: 'infra-iq',
-    hidden: true, // placeholder — hidden from the listing, kept for later
     category: 'IT Ops & Security',
     icon: '🧩',
     accent: '#D9A41A',
