@@ -1,10 +1,20 @@
+import { useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { AGENTS } from './agents.js'
+
+const DEFAULT_TITLE = 'ART — Discover AI Agents'
 
 export default function AgentProfile() {
   const { slug } = useParams()
   const navigate = useNavigate()
   const app = AGENTS.find((a) => a.slug === slug)
+
+  // Reflect the selected agent in the browser tab, and restore the default
+  // title when leaving the profile.
+  useEffect(() => {
+    document.title = app ? `${app.name} — ART` : DEFAULT_TITLE
+    return () => { document.title = DEFAULT_TITLE }
+  }, [app])
 
   if (!app) {
     return (
