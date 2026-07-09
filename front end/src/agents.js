@@ -702,6 +702,7 @@ export const AGENTS = [
   {
     name: 'Customer Support Resolution Intelligence Orchestrator',
     slug: 'support-resolution-orchestrator',
+    hidden: true, // placeholder — hidden from the listing, kept for later
     category: 'Customer Service',
     icon: '🧭',
     accent: '#FBD75B',
